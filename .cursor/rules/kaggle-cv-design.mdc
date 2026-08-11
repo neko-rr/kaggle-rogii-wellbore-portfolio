@@ -1,0 +1,32 @@
+---
+description: >-
+  CV unit（row/group/time）を宣言し、row/random を根拠不十分で採択しない。
+  oracle を提出 GO にしない。形 smoke を性能より前。詳細は CV-DESIGN.md。
+alwaysApply: false
+globs:
+  - docs-ja/cv-design.md
+  - exp/**
+  - "**/cv-design.md"
+  - "**/experiment-checklist.md"
+---
+
+# CV 設計（Kaggle 汎用 · 詳細）
+
+SSOT: `.cursor/skills/_shared/CV-DESIGN.md` · Skill `kaggle-cv-design`  
+常時要約: Rule `kaggle-decision-gates` · 地図 `_shared/DECISION-FLOW.md`  
+コンペ宣言: `docs-ja/cv-design.md`
+
+## Agent 必須
+
+1. 戦略 CHK・primary GO の前に **`cv_unit`（row|group|time|custom）** が `cv-design.md` にある  
+2. **row / random KFold** を採択根拠にするなら group/time リーク無しの**根拠段落**があること  
+3. **oracle / offline ceiling / leak 指標**だけで提出・Final・primary GO を出さない（`lane:diagnostic` のみ）  
+4. 性能を追う CHK の前に **形 smoke**（id・列・行数・短時間 run 等 · profile 依存）  
+5. CV 設計時は **knowledge retrieve（axis A / cv-validation）** を参照し、apply/avoid を突合（カード空なら明記）
+6. **cv_unit 固定前**は SA-7 `pre-cv-lock` 推奨
+
+## 禁止
+
+- ❌ unit 未宣言の CV 勝負  
+- ❌ diagnostic スコアを Best 採用の主根拠  
+- ❌ 他コンペの CV をデータ構造無視でコピー  

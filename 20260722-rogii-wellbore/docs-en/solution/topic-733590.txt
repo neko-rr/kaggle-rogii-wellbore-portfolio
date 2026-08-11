@@ -1,0 +1,431 @@
+﻿Topic #733590: [83rd Place Solution] Trust the CV
+  Author: Ray
+  Posted: 2026-08-07 14:38:31.449000
+  Votes: 1  Comments: 0
+
+Team: ML is all you need
+Final result: 83rd place, Silver Medal, Private RMSE 7.522
+
+Our best public-leaderboard submission scored 6.018, but its private score fell to 8.522. We selected a different final candidate using grouped out-of-fold evidence rather than the public leaderboard. That conservative candidate scored 7.522 privately窶覇xactly 1.000 RMSE better窶蚤nd secured a silver medal.
+
+The decisive component was not a larger boosting ensemble. We treated the CatBoost/physics trajectory as a strong prior, then used a deliberately conservative three-scale Bayesian gamma-ray posterior to decide whether the observed geology justified moving that trajectory. This write-up explains the selected spline-0730 pipeline and, especially, why its Bayesian layer survived the final model-selection audit.
+
+
+
+TL;DR
+
+
+
+The decisive layer was Bayesian: three complementary GR posteriors handled alignment ambiguity, posterior-mode uncertainty and scale sensitivity.
+
+The boosting base was CatBoost-only: no LightGBM or XGBoost was blended into the selected supervised branch.
+
+Particle-filter alignment, trajectory geometry and spatial formation structure supplied strong priors.
+
+A confidence model decided how far to move from the learned base toward a physical reconstruction for each well.
+
+The Bayesian GR update was intentionally small: its maximum possible move was only ﾂｱ4.5 ft, with an automatic fallback to the unchanged prior.
+
+The numerically best aggregate CV policy was not selected. Its advantage over the pre-validated policy was inside bootstrap uncertainty and did not reproduce consistently across folds.
+
+
+1. Problem framing: estimate a geological trajectory, not independent rows
+
+For each horizontal well, we observe:
+
+
+
+the trajectory (MD, X, Y, Z);
+
+gamma ray GR along the horizontal well, with missing and noisy values;
+
+TVT_input up to the Prediction Start point;
+
+a paired vertical typewell containing GR(TVT).
+
+
+We must infer the hidden continuation of TVT after the Prediction Start. The natural latent variable is therefore a smooth, well-level TVT path. The typewell GR curve is a noisy geological dictionary: a candidate TVT path is plausible when the GR sampled along that path resembles the observed horizontal GR.
+
+This framing shaped every part of the solution:
+
+
+
+generate target-free alignment paths;
+
+learn residual errors with well-grouped validation;
+
+constrain the result with geometry and regional structure;
+
+use GR again as a conservative posterior correction.
+
+
+2. Validation was part of the model
+
+The most important design choice was the validation unit. Random row splits would leak almost the entire shape of a held-out well into training, so all main comparisons used five folds grouped by well.
+
+The Bayesian evaluation covered 770 wells with complete OOF artifacts. We maintained two saved OOF protocols:
+
+
+
+Reference OOF: our primary grouped evaluation, preserving the baseline pipeline's saved prediction contract.
+
+Strict OOF: a more conservative replay used as a second sanity check.
+
+
+The absolute values of the two columns should not be compared to each other. We used them to ask whether a model decision reproduced under both protocols. Headline numbers are pooled OOF RMSE, where lower is better.
+
+
+
+
+
+
+Learned branch
+Reference CV
+Strict CV
+Decision
+
+
+
+
+Confidence-V2 base
+7.312774
+7.752287
+Baseline
+
+
+Cat + validated Bayesian
+7.110946
+7.532230
+Selected
+
+
+Cat + CV-best Bayesian
+7.095976
+7.531603
+Lower raw aggregate, higher selection risk
+
+
+Cat70/LGB30 + validated Bayesian
+7.111193
+7.530996
+Essentially tied, extra complexity
+
+
+Cat70/LGB30 + CV-best Bayesian
+7.098542
+7.532611
+No stable gain
+
+
+
+
+The selected Bayesian policy improved the Cat-only Confidence-V2 base in all five folds under both protocols. That consistency mattered more than winning the third decimal place of a repeatedly searched aggregate CV.
+
+3. Stage 1: target-free particle alignment
+
+The first prior came from aligning each horizontal GR sequence to its paired typewell GR curve.
+
+For each well we ran:
+
+
+
+500 particles per trajectory simulation;
+
+32 deterministic seeds;
+
+sequential GR likelihood weighting;
+
+resampling when the effective particle count became too small.
+
+
+The state was expressed through U = Z + TVT, which makes geological offset easier to model along the trajectory. The filter was anchored at the last visible TVT_input point and propagated into the blind interval.
+
+Instead of trusting one stochastic path, we summarized the seed ensemble with robust statistics:
+
+
+
+likelihood-weighted and per-step-weighted paths;
+
+point-wise median and trimmed mean;
+
+seed standard deviation, IQR and MAD;
+
+effective sample size and entropy;
+
+end-of-well disagreement and outlier diagnostics.
+
+
+These quantities became both a target-free TVT prior and uncertainty features for the learned residual model.
+
+4. Stage 2: CatBoost learned the particle-filter residual
+
+The supervised base predicted the residual relative to the particle expert:
+
+$$\widehat{\mathrm{TVT}}_{\mathrm{Cat}}(i)=\widehat{\mathrm{TVT}}_{\mathrm{PF}}(i)+f_{\mathrm{CatBoost}}(x_i).$$
+
+The final model used 27 features drawn from four groups:
+
+
+
+particle-path estimates and disagreements;
+
+slopes from the visible TVT prefix;
+
+trajectory coordinates and deltas;
+
+azimuth, distance-from-anchor and likelihood diagnostics.
+
+
+This was Cat-only in the boosting sense. ExtraTrees models appeared later only as well-level confidence and blend controllers; the selected boosting prediction did not ensemble CatBoost with LightGBM or XGBoost.
+
+5. Heel-anchored geometry and regional physical structure
+
+5.1 Heel-anchored projection
+
+Unconstrained point-wise residuals can create an implausible jump immediately after the last known TVT. We therefore fitted a robust quadratic curve in
+
+$$U=Z+\mathrm{TVT}.$$
+
+as a function of normalized progress through the blind interval. The curve was fixed to zero offset at the heel, and the projected path was blended 50/50 with the raw CatBoost path.
+
+5.2 Structural field
+
+We constructed a second, independent physical estimate from regional information:
+
+
+
+smoothed formation surfaces for EGFDU, EGFDL and BUDA;
+
+a five-seed Fourier-feature neural potential field over (X, Y);
+
+triangulated formation offsets;
+
+cross-fitted residual profiles from geometrically similar wells.
+
+
+The physical offset was:
+
+$$\Delta U_{\mathrm{phys}}=0.25\,\Delta U_{\mathrm{potential}}+0.75\left(\Delta U_{\mathrm{surface}}+0.5\,\Delta U_{\mathrm{neighbor}}\right).$$
+
+A small ExtraTrees committee estimated an initial per-well blend coefficient. A second confidence model then adjusted it using path-shape and multi-scale GR-fit diagnostics. Small predicted shifts below 0.03 were suppressed, shifts reached full confidence at 0.10, and full-confidence shifts were strengthened by 1.15. The final coefficient remained clipped to [0, 1].
+
+We call the resulting branch Confidence-V2:
+
+$$\widehat{\mathrm{TVT}}_{\mathrm{V2}}=\widehat{\mathrm{TVT}}_{\mathrm{Cat}}+\alpha_{\mathrm{well}}\left(\widehat{\mathrm{TVT}}_{\mathrm{phys}}-\widehat{\mathrm{TVT}}_{\mathrm{Cat}}\right).$$
+
+6. The decisive layer: a three-scale Bayesian GR posterior
+
+The final step revisited the core inverse problem: does the observed GR provide enough evidence to move the V2 trajectory? Instead of asking a deterministic aligner for one best path, we treated Confidence-V2 as the prior trajectory, the horizontal/typewell GR match as the likelihood, and a bounded correction curve as the posterior update.
+
+The figure below shows the complete Bayesian update. The main idea is deliberately simple: preserve multiple plausible alignment modes, average across three GR scales, and cap how much the posterior is allowed to overrule the prior.
+
+
+
+6.1 Why a posterior instead of one deterministic alignment?
+
+Three properties of the data made a Bayesian formulation useful:
+
+
+
+Repeated GR motifs create multiple plausible alignments. Keeping several posterior modes is safer than committing to one local optimum.
+
+The evidence quality changes by well. Missing GR, weak typewell similarity and noisy intervals should reduce the confidence of the update.
+
+The V2 path is already strong. The posterior should make a calibrated geological adjustment, not rebuild the global trajectory from scratch.
+
+
+This distinction was central to the final solution: Bayesian inference was used as an uncertainty-aware decision layer, not as an unconstrained replacement model.
+
+6.2 Robust observation model
+
+The visible prefix was used to fit a robust affine mapping between typewell GR and horizontal GR. For a candidate correction curve ﾎｴ(s), the residual at a blind observation was approximately
+
+$$r_i=\mathrm{GR}^{\mathrm{horizontal}}_i-\left[a\,\mathrm{GR}^{\mathrm{typewell}}!\left(\widehat{\mathrm{TVT}}_{\mathrm{V2},i}+\delta(s_i)\right)+b+d(s_i)\right].$$
+
+where d(s) is a low-order drift term. A robust likelihood reduced the influence of spikes and bad GR intervals. The visible prefix therefore calibrated both the GR mapping and the effective noise level before any blind-interval correction was accepted.
+
+6.3 Low-capacity correction prior
+
+The correction was deliberately low-dimensional:
+
+$$\delta(s)=B_{\mathrm{spline}}(s)\theta_s+B_{\mathrm{PCA}}(s)\theta_p.$$
+
+
+
+B_spline: piecewise-linear basis with 8 knots, fixed to zero at the start;
+
+B_PCA: the first 8 strictly OOF residual-shape components;
+
+smoothness and amplitude priors prevented high-frequency path chasing;
+
+at most 800 valid GR observations were used per well.
+
+
+This low-capacity prior was important: the Bayesian layer could express broad stratigraphic drift and a small number of learned residual shapes, but it could not freely imitate noisy GR point by point.
+
+6.4 Multi-start dynamic programming and posterior averaging
+
+GR alignment is multi-modal: several TVT shifts can match similar-looking log patterns. A single optimizer start was therefore unsafe.
+
+We generated coarse dynamic-programming starts over shifts from 竏・0 to +30 ft in 2-ft increments, using transition penalties {0.01, 0.05, 0.20}. Up to seven sufficiently distinct modes were refined with the original 21-point smoothed GR likelihood and combined using approximate posterior evidence. Duplicate converged modes were removed so that repeated starting points could not gain artificial posterior mass.
+
+Three deliberately different experts were then averaged:
+
+
+
+
+Expert
+Coarse GR window
+DP segments
+Smoothness
+Weight
+
+
+
+
+Coarse-101
+101
+8
+1.0
+0.40
+
+
+Segment-16
+101
+16
+0.5
+0.40
+
+
+Coarse-51
+51
+8
+1.0
+0.20
+
+
+
+
+Inside every expert we used 60% smooth multi-start posterior + 40% PCA8 posterior.
+
+The deployed update was exactly:
+
+$$\delta_{\mathrm{final}}=0.45\,\mathrm{clip}!\left(0.40\delta_{101}+0.40\delta_{\mathrm{seg16}}+0.20\delta_{51},-10,+10\right).$$
+
+$$\widehat{\mathrm{TVT}}_{\mathrm{final}}=\widehat{\mathrm{TVT}}_{\mathrm{V2}}+\delta_{\mathrm{final}}.$$
+
+Thus, no matter how strongly the GR posterior disagreed, it could move the path by at most ﾂｱ4.5 ft. If a well had fewer than 20 usable GR observations or posterior fitting failed, the pipeline automatically fell back to the unchanged V2 prediction.
+
+That cap was not merely defensive programming. It encoded our belief that the supervised/physical branch should set the global trajectory, while the Bayesian layer should make only a local geological correction. In other words, uncertainty affected both which modes were averaged and how much the final posterior could move the prediction.
+
+7. Why the validated Bayesian posterior beat the raw CV minimum
+
+The searched CV-best policy used weights 20/40/40, a ﾂｱ15 ft raw clip and output weight 0.525. It achieved a slightly lower aggregate score:
+
+
+
+Reference: 7.095976 vs 7.110946;
+
+Strict: 7.531603 vs 7.532230.
+
+
+But those differences were not stable.
+
+
+
+The pre-validated policy's improvement over the V2 base had bootstrap intervals entirely below zero:
+
+
+
+Reference: [竏・.316888, 竏・.083106];
+
+Strict: [竏・.336939, 竏・.098735].
+
+
+In contrast, the CV-best minus validated intervals crossed zero:
+
+
+
+Reference: [竏・.043512, +0.014638];
+
+Strict: [竏・.036388, +0.041390].
+
+
+The aggressive policy was also worse on Reference folds 0 and 1 and on Strict fold 1. When policy selection itself was nested with leave-one-fold-out selection, the score deteriorated to 7.119409 / 7.551179. That was a clear warning that the apparent CV minimum included selection optimism.
+
+Our final rule was simple:
+
+
+  
+Prefer the pre-specified policy that improves every fold under both protocols over the policy that wins only the repeatedly searched aggregate.
+
+
+8. What the Bayesian analysis ruled out
+
+LightGBM did not survive the Bayesian layer
+
+A 70% CatBoost / 30% LightGBM-Huber base improved the V2-only score slightly. After applying the same Bayesian policies, however, it was effectively tied with or slightly worse than the Cat-only base. The extra model therefore added complexity without independent evidence of a stable gain.
+
+Public leaderboard optimization was the wrong final objective
+
+The Public-LB-best submission was excellent on the visible split, but its private score was much worse. Our final selection treated Public LB as diagnostic information窶馬ot a validation fold.
+
+9. Final leaderboard shake
+
+The private leaderboard provided the final external check on the model-selection argument: the selected Bayesian candidate reached 7.522, while the submission optimized around our Public-LB best finished at 8.522.
+
+
+
+
+
+
+Candidate
+Public RMSE
+Private RMSE
+Outcome
+
+
+
+
+Selected Cat + three-scale validated Bayesian
+6.901
+7.522
+Rank 83, Silver
+
+
+Public-LB-best stack
+6.018
+8.522
+Bronze range
+
+
+
+
+The robust candidate beat our Public-LB-best submission by exactly 1.000 private RMSE. More importantly, it confirmed the reason we selected it: stable grouped evidence generalized better than a large gain on one leaderboard split.
+
+10. What we learned
+
+
+
+Split at the natural entity level. In this competition the entity was the well, not the row.
+
+Use physics to define the search space. Particle alignment, heel anchoring and structural fields made the learned task much easier.
+
+Let uncertainty control correction size. The Bayesian layer was useful because it was conservative, multi-start and bounded.
+
+Track selection bias, not only CV. A tiny aggregate improvement after a large search is not automatically the best final model.
+
+Make final candidates genuinely different. Two branches that collapse after the same calibration do not provide leaderboard-shake protection.
+
+Public LB is one sample. It should never replace a reproducible validation argument.
+
+
+Conclusion
+
+Our silver medal did not come from choosing the lowest number we could find. It came from deciding which number we trusted.
+
+The selected solution combined a strong CatBoost/physics prior with a small, multi-modal and low-capacity Bayesian GR posterior. The Bayesian layer was decisive precisely because it was restrained: it preserved several plausible geological alignments, weighted them by evidence, and never moved the prior by more than ﾂｱ4.5 ft. We gave up a tiny amount of searched local CV and a large amount of Public-LB excitement in exchange for fold consistency, bootstrap support and lower selection bias. On the private leaderboard, that trade was worth exactly 1.000 RMSE and a silver medal.
+
+Thanks to ROGII and Kaggle for a fascinating competition, and congratulations to everyone who made the final leaderboard!
+
+No comments

@@ -1,0 +1,95 @@
+﻿Topic #733307: 48th 竊・407th Place: How It Failed, and What We Learned Along the Way
+  Author: Tony Li
+  Posted: 2026-08-06 12:21:14.507000
+  Votes: 21  Comments: 3
+
+ROGII ended with a classic leaderboard shake-up ,and gave me the full Kaggle experience ・: 48th on the Public Leaderboard and 407th on the Private Leaderboard, a drop of 359 places.
+
+During the final 5 days, I used Codex as a long-running research agent. It helped with model research, implementation, validation, notebook packaging, and submission planning. It saved an enormous amount of time and produced a genuine Public-LB improvement窶巴ut the final results showed that our model-selection process did not generalize.
+
+What the scores actually showed
+
+
+
+
+Model
+What it was
+Local CV
+Public LB
+Private LB
+CV窶撤rivate gap
+
+
+
+
+H72
+A no-geology residual model. It started from our physics/GR-alignment and bounded per-well Ridge baseline, added a TabM residual correction, then doubled that correction.
+8.643
+5.818
+8.796
+0.153
+
+
+K161
+A trajectory-tracking model followed by two residual learners: Ridge for projection errors and CatBoost for raw/geological errors.
+5.800
+5.989
+8.935
+3.135
+
+
+H5
+A regional-geology correction using information from nearby training wells.
+8.195
+6.602
+8.663
+0.468
+
+
+H86
+A simple 50/50 average of two related TabM residual models.
+8.627
+5.908
+8.735
+0.108
+
+
+
+
+H72窶冱 exact resubmission scored 5.821 Public and 8.795 Private, almost identical to its first run. Therefore, its result was not caused by a bad seed or broken notebook. Its local CV of 8.643 was actually a much better prediction of the Private score than the unusually optimistic Public score.
+
+K161 was different. Its 5.800 local CV predicted the Public score reasonably well but missed the Private score by more than 3 RMSE. Its own pre-submission audit also showed that the main CV score improved while several transfer and stability checks failed.
+
+How validation became unreliable
+
+I found no clear evidence of direct row leakage: the models were cross-fitted and did not simply train on the validation targets.
+
+The more likely problem was adaptive validation overfitting : Codex did not leak rows; it leaked decisions. We repeatedly reused the same 773 wells, folds, parent OOF predictions, residual features, and validation reports to design each new generation. Every individual experiment could be technically out-of-fold, while the overall research process gradually learned what worked on that fixed validation population.
+
+The Public Leaderboard then became another selection set. Models such as H5 looked weak publicly but generalized better privately, while models selected around the best Public score did not necessarily transfer.
+
+The agent was not the problem
+
+Congratulations to the teams 7th Place 窶・窶廩MM + UNet: Agent Is All You Need窶・ 
+23rd Kaggle Agent Solution  and 36th Place 窶・窶廨PT5.6 Sol 窶・Yolo.窶・ All are successful examples of agent-driven competition workflows.
+
+Their results make the lesson more precise: an agent is a powerful multiplier, but it still needs the right search space, representation, and validation system.
+
+My biggest takeaway
+
+For every competition, choosing the right basic model and representation is essential, and it should always be the first step.
+
+The winning solution converted wells into image-like inputs, trained U-Nets, and ensembled multiple models. The 7th-place solution also combined an HMM with a U-Net. We spent most of our effort improving physics, trajectory, tabular, and residual-correction models without first establishing that image/U-Net approach as a serious baseline.
+
+Next time, I would begin with a model-and-representation bake-off, lock a spatially separated holdout before starting the agent loop, and use the Public Leaderboard mainly for confirmation rather than repeated selection.
+
+This was still a valuable first agent-oriented competition for me. The workflow saved a huge amount of engineering time. The main failure was not using an agent窶琶t was automating the search before the basic representation and validation design were fully trustworthy.
+
+Comments:
+笏懌楳 Georgy Mamarin (2026-08-07 20:59:26.223000) [+-1]
+笏・ "Codex did not leak rows; it leaked decisions" 窶・that diagnosis is in my references under your name, and it is the mechanism the cross-writeup numbers keep finding. Your H72 is the pattern in minia...
+笏懌楳 Will (2026-08-06 12:55:42.077000) [+1]
+笏・ Thank you for sharing this is very useful! I have been on this side before ・
+笏懌楳 tennogh (2026-08-06 12:40:21.103000) [+2]
+笏・ Interesting point about OOF decisions overfitting. Fable did at one point criticize my CV scheme because it was not nested, and my CV-PB gap in the end was quite large (e.g. 5.7 - 7.5). In Birdclef...
+

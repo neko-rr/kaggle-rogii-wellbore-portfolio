@@ -1,0 +1,6 @@
+{
+  "version": 1,
+  "updated": "{{COMP_DATE}}",
+  "description": "任意。特定 CHK だけ台帳/エスカレーションを bypass するとき使う。通常は空のまま。",
+  "allowlist": {}
+}

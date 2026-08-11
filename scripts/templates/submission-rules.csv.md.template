@@ -1,0 +1,40 @@
+# 提出ルール — {{COMP_SLUG}}（csv）
+
+> skill: kaggle-submission-validator  
+> submission-profile: **csv**  
+> last-updated: {{COMP_DATE}}
+
+## 提出形式
+
+| 項目 | 内容 |
+|---|---|
+| 成果物 | Overview / sample_submission どおり（例: `submission.csv` · 列はコンペ指定） |
+| **変更禁止** | Agent が列名・ファイル名・ID 規則を勝手に変えない |
+| **標準提出** | **Notebook 紐づけ**（UI「Submit to Competition」または CLI `-k` / `-v`） |
+| 非推奨 | ローカル csv の **`-f` のみ**（採点は通っても Notebook が提出履歴に残らない） |
+
+## L0-L1（自動）
+
+Code Competition のとき:
+
+```powershell
+.\.venv\Scripts\python.exe .\scripts\check-codecomp-submit-kernel.py -p ".\my-notebook\<slug>"
+.\scripts\validate-submission.ps1 -ArtifactPath .\submission.csv -Profile csv `
+  -ExpectedColumns "<Overviewの列>" -ExpectedRows <N> -CompInner .\{{COMP_SLUG}}
+```
+
+## L2（手動 · コンペ固有）
+
+- [ ] sample_submission と列名・順序が一致（**形式を変えていない**）
+- [ ] 行数・ID 集合が一致
+- [ ] NaN / Inf が無い
+- [ ] 提出 kernel はコンペデータから E2E（固定 CSV コピー専用 NB 禁止）
+- [ ] **Notebook 紐づけ**で提出する（zip/csv 直 `-f` のみは避ける）
+## 提出手順（標準）
+
+SSOT: `.cursor/skills/_shared/NOTEBOOK-LINKED-SUBMIT.md`
+
+1. validator PASS
+2. 自 kernel を Save Version / `kernels push`
+3. UI Submit **または** CLI `-k <YOUR_USER>/<SLUG> -v N -f submission.csv`
+4. 403 時は **zip/csv-only に逃げない** — 自 fork 更新を先に

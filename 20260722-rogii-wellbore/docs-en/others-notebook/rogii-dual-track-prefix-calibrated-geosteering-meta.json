@@ -1,0 +1,171 @@
+{
+  "slug": "rogii-dual-track-prefix-calibrated-geosteering",
+  "title": "ROGII Dual-Track Prefix-Calibrated Geosteering",
+  "gpu": true,
+  "internet": false,
+  "datasets": [
+    "phongnguyn23021656/koolbox-offline",
+    "nina2025/rogii-03",
+    "pilkwang/rogii-model-package",
+    "thbdh5765/rogii-v10-fresh-artifacts",
+    "fleongg/rogii-claude-models-pub",
+    "needless090/rogii-tabicl-mirror",
+    "ravaghi/wellbore-geology-prediction-artifacts"
+  ],
+  "kernels": [],
+  "n_cells": 57,
+  "imports": [
+    "catboost",
+    "glob",
+    "hashlib",
+    "joblib",
+    "json",
+    "koolbox",
+    "lightgbm",
+    "matplotlib",
+    "multiprocessing",
+    "numba",
+    "numpy",
+    "os",
+    "os,",
+    "pandas",
+    "pathlib",
+    "scipy",
+    "seaborn",
+    "sklearn",
+    "sys,",
+    "time",
+    "warnings"
+  ],
+  "defs": [
+    "_wheel_matches_runtime",
+    "_install_or_path_koolbox",
+    "_make_koolbox_fallback_module",
+    "CFG",
+    "_safe_competition_data_root",
+    "tvt_from_contacts",
+    "load_well",
+    "run_particle_filter",
+    "run_pf_lik_ensemble",
+    "run_pf_lik_ensemble_scales",
+    "beam_search",
+    "run_beam_ensemble",
+    "selector_well_code",
+    "parse_selector_variant",
+    "_selector_tw_gr_arrays",
+    "_selector_eval_mask",
+    "_selector_gr_scale",
+    "_selector_fft_denoise_gr",
+    "_selector_apply_heel_calibration",
+    "_selector_heel_report_fields",
+    "_selector_gr_misfit",
+    "_selector_lag1_autocorr",
+    "_selector_temp_from_resid",
+    "_selector_prefix_trust",
+    "selector_bimodal_scan",
+    "_bimodal_selector_weight",
+    "apply_selector_variant",
+    "_interp1",
+    "_resamp",
+    "_beam_jit",
+    "_pf_ancc",
+    "_pf_z",
+    "_grid",
+    "_gr_sig",
+    "_nn",
+    "_smooth",
+    "beam_search",
+    "run_pf_ancc",
+    "run_pf_z",
+    "robust_slope"
+  ],
+  "md_heads": [
+    [
+      0,
+      "# ROGII Dual-Track Prefix-Calibrated Geosteering"
+    ],
+    [
+      1,
+      "## Problem Geometry and Prediction Flow"
+    ],
+    [
+      2,
+      "## Core Trajectory Equations"
+    ],
+    [
+      3,
+      "## Heel Calibration and Ambiguous GR Alignment"
+    ],
+    [
+      4,
+      "## Prefix-Verified Contact Reconstruction"
+    ],
+    [
+      5,
+      "## Control Panel"
+    ],
+    [
+      13,
+      "## Residual Ensemble and Physical Selector"
+    ],
+    [
+      29,
+      "## Robust Projection and Learned Trajectory"
+    ],
+    [
+      46,
+      "## Guarded Same-Well Contact Layer"
+    ],
+    [
+      49,
+      "## Visible-Prefix Candidate Selection"
+    ],
+    [
+      51,
+      "## Disagreement-Gated Model-Package Residual"
+    ],
+    [
+      55,
+      "## Diagnostics and Output Contract"
+    ],
+    [
+      56,
+      "## Design Principle"
+    ]
+  ],
+  "first_md": "# ROGII Dual-Track Prefix-Calibrated Geosteering\n\nThis notebook reconstructs hidden TVT from a physical trajectory family and a learned trajectory family, then permits only prefix-verified, bounded corrections. The design keeps broad predictors responsible for global shape while local geologic evidence controls datum and contact-sensitive adjustments.\n\n## Problem Geometry and Prediction Flow\n\nFor well (w), the visible heel is\n\n$$\nH_w=\\{i:T^{input}_{w,i}\\text{ is observed}\\},\n$$\n\nand the scoring suffix is\n\n$$\nQ_w=\\{i:T^{input}_{w,i}\\text{ is missing}\\}.\n$$\n\nThe target-free requirement means that every suffix decision must be inferred from geometry, logs, mounted train artifacts, or a validation experiment formed entirely inside (H_w). The pipeline therefore proceeds from broad to local evidence:\n\n1. Estimate a residual trajectory from grouped tree models and a particle-filter anchor.\n2. Build an independent physical selector trajectory from likelihood PF and beam candidates.\n3. Form a ridge/selector anchor and robustly project the implied stratigraphic level (U=T+Z).\n4. Build a learned trajectory from pretrained booster features and blend it with the projected anchor.\n5. Apply a contact reconstruction only when the current well's visible prefix verifies it.\n6. Mask several suffixes of the visible prefix, rank candidate generators, and make a bounded visible-prefix correction.\n7. Optionally add a disagreement-gated model-package residual.\n8. Validate row count, id order, and finite TVT values before writing the final file.\n\nThe order matters: later layers may refine an earlier path, but they cannot silently replace it without a local guard.\n\n## Core Trajectory Equations\n\nLet (T_i^0) denote the last visible TVT carried into hidden row (i), and let (m_i\\ge 0) be MD since the prediction start. The residual branch uses a warm-up factor\n\n$$\nr_i(\\tau)=1-\\exp\\left(-\\frac{m_i}{\\tau}\\right)\n$$\n\nand combines the ensemble and PF residuals as\n\n$$\n\\delta_i^{R}\n=\\alpha\\,r_i(\\tau)\n\\left[(1-w_{pf})\\delta_i^{ens}+w_{pf}\\delta_i^{pf}\\right].\n$$\n\nThe deployed residual controls are\n\n$$\n\\alpha=1.0,\\qquad \\tau=85,\\qquad w_{pf}=0.15.\n$$\n\nAn independent selector produces (T_i^{S}) from the likelihood-PF/beam family. The first anchor is\n\n$$\nT_i^{A}=0.30\\left(T_i^0+\\delta_i^{R}\\right)+0.70T_i^{S}.\n$$\n\nProjection is performed on stratigraphic level (U_i=T_i^A+Z_i). With normalized measured depth (s_i\\in[0,1]), a robust degree-four polynomial (f_4) estimates\n\n$$\n\\widehat U_i=U_{last}+f",
+  "code_hits": [
+    [
+      6,
+      "# Select the active mathematical path. | SUBMISSION_PROFILE = 'dual_track_prefix_modelpkg_005' |  | PROFILE_PRESETS = { |     'dual_track_prefix_balanced': dict( |         sp45_blend_weight=0.55, |         run_model_package_correction=False, |     ), |     'dual_track_prefix_balanced_w054': dict( |         sp45_blend_weight=0.54, |         run_model_package_correction=False, |     ), |     'dual_track_prefix_modelpkg_005': dict( |         sp45_blend_weight=0.55,  # 0.55 |         run_model_package_correction=True, |         "
+    ],
+    [
+      7,
+      "# Runtime bridge for the visible-prefix implementation. | import os | os.environ['ROGII_GOLD_PREFIX_CAL'] = '1' if RUN_VISIBLE_PREFIX_CALIBRATION else '0' | os.environ['ROGII_GOLD_PROFILE'] = VISIBLE_PREFIX_PROFILE | os.environ['ROGII_GOLD_INCLUDE_PF'] = '1' if VISIBLE_PREFIX_INCLUDE_PF else '0' | os.environ['ROGII_GOLD_CAL_SEEDS'] = str(int(VISIBLE_PREFIX_CAL_SEEDS)) | os.environ['ROGII_GOLD_FINAL_SEEDS'] = str(int(VISIBLE_PREFIX_FINAL_SEEDS)) | os.environ['ROGII_GOLD_PARTICLES'] = str(int(VISIBLE_PREFIX_PAR"
+    ],
+    [
+      8,
+      "import sys, os, glob, subprocess, types | from pathlib import Path |  | _koolbox_roots = [Path(p) for p in globals().get('KOOLBOX_OFFLINE_ROOTS', ()) if str(p).strip()] | _koolbox_root = next((p for p in _koolbox_roots if p.exists()), None) | if _koolbox_root is None: |     # Some notebook environments mount koolbox through a package-manager input |     # whose folder name changes. Search only for koolbox-looking wheels/folders. |     _auto_hits = [] |     for _pat in ('/kaggle/input/**/koolbox*.whl', '/kaggle/in"
+    ],
+    [
+      9,
+      "from lightgbm import LGBMRegressor, log_evaluation, early_stopping | from sklearn.metrics import root_mean_squared_error | from sklearn.model_selection import GroupKFold | from sklearn.linear_model import Ridge | from catboost import CatBoostRegressor | from scipy.spatial import cKDTree | from scipy.signal import savgol_filter | from joblib import Parallel, delayed | from koolbox import Trainer | from pathlib import Path | from numba import njit | import matplotlib.pyplot as plt | import multiprocessing | import seaborn "
+    ],
+    [
+      11,
+      "SELECTOR_N_EVAL_THRESHOLD = 4840.0 | SELECTOR_Z_SPAN_THRESHOLDS = (136.73000000000016, 185.5133333333342) |  | SELECTOR_BIN_VARIANTS = { |     0: 'pf_scale_5_hold_0.2', |     1: 'pf_scale_3_hold_0.15', |     2: 'pf_scale_12_beam_0.2_hold_0.15', |     3: 'pf_scale_5_hold_0.15', |     4: 'pf_scale_5_beam_0.05_hold_0.05', |     5: 'pf_scale_12_beam_0.2_hold_0.05', | } |  | SELECTOR_GLOBAL_VARIANT = 'pf_scale_8_hold_0.2' | SELECTOR_SCALES = (3.0, 5.0, 8.0, 12.0) |  | FORMATION_COLS = ['ANCC', 'ASTNU', 'ASTNL', 'EGFDU', 'EGFDL', "
+    ],
+    [
+      12,
+      "# Optional read-only oracle/tail diagnostics for train wells. | if bool(globals().get('RUN_CV_REPORT', False)): |     import numpy as _cv_np |     import pandas as _cv_pd |     from pathlib import Path as _CvPath |  |     def _cv_rmse(y, p): |         y = _cv_np.asarray(y, dtype=float) |         p = _cv_np.asarray(p, dtype=float) |         m = _cv_np.isfinite(y) & _cv_np.isfinite(p) |         if not bool(m.any()): |             return _cv_np.nan, 0, 0.0 |         err = y[m] - p[m] |         return float(_cv_np.sqrt(_cv_n"
+    ],
+    [
+      18,
+      "for i, params in enumerate(lgb_params):    |     save_path = f\"models/lightgbm-{i+1}\" |      |     if (CFG.artifacts_path / save_path).exists(): |         print(f\"Loading lightgbm-{i+1} from disk...\") |          |         trainer_paths = (CFG.artifacts_path / save_path).glob('*.pkl') |         trainer = joblib.load(list(trainer_paths)[0]) |          |         print(f\"Loaded lightgbm-{i+1} with overall RMSE: {trainer.overall_score:.4f}\\n\") |     else: |       |         trainer = Trainer( |             estimator=LGBMRegres"
+    ],
+    [
+      19,
+      "for i, params in enumerate(cb_params):     |     save_path = f\"models/catboost-{i+1}\" |     if (CFG.artifacts_path / save_path).exists(): |         print(f\"Loading catboost-{i+1} from disk...\") |          |         trainer_paths = (CFG.artifacts_path / save_path).glob('*.pkl') |         trainer = joblib.load(list(trainer_paths)[0]) |          |         print(f\"Loaded catboost-{i+1} with overall RMSE: {trainer.overall_score:.4f}\\n\") |     else: |         trainer = Trainer( |             estimator=CatBoostRegressor(**p"
+    ]
+  ]
+}

@@ -1,0 +1,27 @@
+# lifecycle-manifest — 成果物ライフサイクル索引
+
+> **Agent:** 状態が変わったら **物理移動と同ターンで本表を 1 行更新**する。  
+> SSOT: `.cursor/skills/_shared/ARTIFACT-LIFECYCLE.md` · Skill: `kaggle-notebook-folders`  
+> comp-type: `{COMP_TYPE}` · submission-profile: `{SUBMISSION_PROFILE}`
+
+| name | state | folder | path | artifact | submit_ref | updated | note |
+|---|---|---|---|---|---|---|---|
+| _example-wip_ | wip | my-notebook | my-notebook/_example-wip_/ | main.py-dir | — | YYYY-MM-DD | bootstrap 後に削除可 |
+
+## 状態 ID
+
+| state | folder |
+|---|---|
+| wip | `my-notebook/` |
+| planned | `my-notebook/planned/` |
+| local-eval | `my-local-eval-notebook/{name}/` |
+| ran | `my-ran-notebook/{name}/` |
+| submitted | `my-submitted-notebook/{name}/` |
+
+## 移動トリガー（他 Skill）
+
+| イベント | Skill | 必須操作 |
+|---|---|---|
+| 実行記録 | `kaggle-kernels-runbook` | → `ran` + manifest |
+| local-eval fork | `local-eval-from-submit-notebook` | → `local-eval` のみ |
+| 提出凍結 | `kaggle-submission-validator` | → `submitted` + manifest |

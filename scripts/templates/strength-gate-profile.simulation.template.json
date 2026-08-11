@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "submission_profile": "simulation",
+  "description": "COMP_NAME — edit dimensions for your KPI slices (not only player-count splits)",
+  "baseline_label": "CURRENT_BEST",
+  "candidate_label": "CANDIDATE",
+  "dimensions": [
+    {
+      "id": "overall",
+      "label": "primary KPI (overall win%)",
+      "tier": "primary",
+      "source": "metrics_json",
+      "metrics_key": "overall",
+      "thresholds": { "mu_fail_pt": -5.0, "hedge_fail_pt": -15.0 }
+    },
+    {
+      "id": "guard_main_slice",
+      "label": "main weakness slice (e.g. vs strong / hard map)",
+      "tier": "guard",
+      "source": "metrics_json",
+      "metrics_key": "guard_main",
+      "thresholds": { "mu_fail_pt": -10.0, "warn_pt": 0.0 }
+    },
+    {
+      "id": "protocol_regression",
+      "label": "local protocol overall",
+      "tier": "guard",
+      "source": "protocol_json",
+      "check": "overall_pass",
+      "required_for": ["mu"]
+    }
+  ],
+  "protocol": {
+    "mu_require_overall_pass": true,
+    "mu_warn_loss_delta_wins_zero": true,
+    "warn_if_seed_subset_lte": 5
+  },
+  "stratified": {
+    "required_for_purpose": ["mu", "hedge"],
+    "section_markers": {}
+  },
+  "metrics": {
+    "required_for_purpose": ["mu", "hedge"],
+    "file": "exp/strength-gate-metrics.json"
+  },
+  "slots": {
+    "effective_count": 2,
+    "block_diagnostic_as_effective": true
+  }
+}

@@ -1,0 +1,29 @@
+---
+description: 工程内比較グラフ（within-stage）を実験恒常SSOTとして維持する
+alwaysApply: true
+---
+
+# 工程内比較グラフ（実験恒常）
+
+## SSOT
+
+| 種別 | パス |
+|---|---|
+| テキスト恒常 | `exp/within-stage-comparisons.md` |
+| Live Canvas | ワークスペース `canvases/within-stage-comparisons.canvas.tsx` |
+| 再試表 | `exp/work/wave31-selector-replace/pipeline-cascade-retest.md` |
+
+日付付き `latest/within-stage-comparisons-*.md` は履歴。**正は日付なしの恒常 MD + Canvas。**
+
+## Agent 必須
+
+1. 工程内 Best・不足穴・有望順が変わったら、実験整理時に恒常 MD と Canvas を更新候補にする  
+2. 「工程内比較グラフを更新」「within-stage を最新に」→ 上記セットを更新  
+3. 数値は `hyperparameter-table` / cascade を正とする  
+4. Trust / Pack / Public を同一軸で順位づけしない
+
+## 禁止
+
+- 恒常リンクを切って日付ファイルだけにする  
+- Pack と Trust を同じ棒で「Best」扱いする
+---

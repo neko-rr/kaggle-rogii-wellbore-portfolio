@@ -1,0 +1,12 @@
+# my-submitted-notebook/
+
+**LB 提出済みスナップショット（編集禁止）。**
+
+- 索引: [`../lifecycle-manifest.md`](../lifecycle-manifest.md)
+- Skill: `kaggle-submission-validator` · `kaggle-notebook-folders`
+
+## 凍結
+
+validator **PASS** 後にコピー。**移動必須:** manifest を `submitted` に更新（`submit_ref` · μ は `experiment-result-management` で追記）。
+
+改造は `my-notebook/` で fork する。

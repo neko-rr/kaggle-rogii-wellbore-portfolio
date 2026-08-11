@@ -1,0 +1,7 @@
+# notebook-score-history — {{COMP_NAME}}
+
+> **append only** — 行の編集・削除禁止。  
+> Skill: `kaggle-simulation-tracker`
+
+| captured_utc | slug | title | owner | public_score | score_kind | updated_stale_days | delta | medal | submitted_ref | source |
+|---|---|---|---|---|---|---|---|---|---|---|

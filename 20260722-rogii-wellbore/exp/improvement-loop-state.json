@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "updated": "2026-08-05",
+  "streaks": {
+    "T0": {
+      "consecutive_nogo": 7,
+      "last_chk": "CHK-315"
+    },
+    "T1": {
+      "consecutive_nogo": 2,
+      "last_chk": "SUB-tip-mpkg020"
+    },
+    "T2": {
+      "consecutive_nogo": 1,
+      "last_chk": "CHK-695"
+    },
+    "T3": {
+      "consecutive_nogo": 3,
+      "last_chk": "CHK-781"
+    },
+    "T4": {
+      "consecutive_nogo": 0,
+      "last_chk": "CHK-CPU-D"
+    }
+  },
+  "last_go": {
+    "chk": "CHK-CPU-D",
+    "action_type": "T4",
+    "date": "2026-08-05"
+  }
+}

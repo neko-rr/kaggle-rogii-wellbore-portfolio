@@ -1,0 +1,45 @@
+---
+description: >-
+  コンペ中の機密・公開禁止、GitHubは任意（使うならprivate＋事前承認）、
+  終了後の意図的公開、ColabにGitHubは不要。常時適用。
+alwaysApply: true
+---
+
+# Kaggle コンペ機密・同期方針
+
+コンペ期間中のリーク防止と、同期手段の誤用防止。
+
+## 期間の区別
+
+| 期間 | GitHub / コード公開 | Kaggle 自作資産 |
+|------|---------------------|-----------------|
+| **コンペ中** | **パブリック公開禁止**。使うなら **private のみ**、かつ **ユーザー事前承認後** | 常に **Private**（Rule `kaggle-private-assets`） |
+| **コンペ終了後** | ユーザーが **意図的に Public 化してよい**（規約・ライセンス・秘匿を scrub した上で） | 方針はユーザー判断。Agent は無断 Public 化しない |
+
+## GitHub は必須ではない
+
+- **Google Colab 開始条件に GitHub は含まれない**
+- Colab に必要なのは Google アカウント（＋大容量データなら Drive）
+- コード同期が必要になったときだけ Git／GitHub を検討する
+- Agent は「Colab のため GitHub を作れ」と誘導しない
+
+## Agent 禁止（コンペ中）
+
+1. **Public** リポジトリの作成・push・visibility 変更
+2. ユーザー承認なしの `git remote add` / `git push` / `gh repo create`
+3. コンペデータ・認証情報・再配布禁止物の Git 追加
+4. 「同期のためなら Public でよい」という提案
+
+## Agent 必須
+
+1. Git／GitHub 操作の前に **コンペ中か終了後か** を確認する（不明ならユーザーに聞く）
+2. コンペ中に同期するなら **private ＋ 事前承認** を明示して待つ
+3. 終了後の Public 化は **ユーザー明示指示** があるときだけ支援する
+4. 詳細手順は Skill `kaggle-git-security`、Colab は `cursor-colab-runtime`（MCP）＋グローバル `google-colab-mcp`
+
+## SSOT
+
+- 本 Rule（`alwaysApply: true`）
+- Rule `kaggle-private-assets`
+- Skill `kaggle-git-security`
+- テンプレ: `%USERPROFILE%\.cursor\kaggle-template\root\.cursor\rules\kaggle-comp-confidentiality.mdc`

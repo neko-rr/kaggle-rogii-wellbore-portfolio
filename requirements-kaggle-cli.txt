@@ -1,0 +1,4 @@
+# Kaggle CLI - all competition types
+# Usage: .\scripts\setup-kaggle-venv.ps1 -Profile cli
+kaggle>=2.2.0
+ruff>=0.8.0

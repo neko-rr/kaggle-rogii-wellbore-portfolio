@@ -1,0 +1,15 @@
+# Local Agent / short eval - rogii-wellbore
+# Install (repo root):
+#   .\scripts\setup-comp-venv.ps1 -CompRoot ".\20260722-rogii-wellbore"
+# Agent: ImportError -> append here -> re-run setup-comp-venv (no one-shot global pip).
+# Encoding: ASCII or UTF-8 BOM only (Windows pip).
+#
+numpy
+pandas
+scikit-learn
+#
+# pyarrow
+# scipy
+# matplotlib
+# lightgbm
+# xgboost

@@ -1,0 +1,12 @@
+# my-local-eval-notebook/
+
+**検証専用 fork（LB 提出しない）。**
+
+- 索引: [`../lifecycle-manifest.md`](../lifecycle-manifest.md)
+- Skill: `local-eval-from-submit-notebook` · `kaggle-notebook-folders`
+
+## ルール
+
+- 提出用 NB / bot と **同一パスに混ぜない**
+- fork 作成時 **移動必須:** 本フォルダ `{name}/` に置き、manifest を `local-eval` に更新
+- 改善はここで行い、採用分だけ `my-notebook/` の提出用へ反映

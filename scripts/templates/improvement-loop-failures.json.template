@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "updated": "{{COMP_DATE}}",
+  "description": "抽象仮説の禁止台帳。同じ失敗を言い換えて繰り返さない。コンペ開始時は空。NO-GO が『型』として確定したら追記する。",
+  "escalation": {
+    "T0": { "max_consecutive_nogo": 2, "escalate_to": "T3" },
+    "T1": { "max_consecutive_nogo": 2, "escalate_to": "T3" },
+    "T2": { "max_consecutive_nogo": 2, "escalate_to": "T3" },
+    "T3": { "max_consecutive_nogo": 3, "escalate_to": "rethink-hypothesis" },
+    "T4": { "max_consecutive_nogo": 3, "escalate_to": "T3" }
+  },
+  "failures": []
+}

@@ -1,0 +1,31 @@
+---
+description: >-
+  レーン（primary/public/diagnostic）と Final N。他レーン小差で止めない。
+  N は既定で2と決めない。詳細は LANES-AND-FINAL-SLOTS.md。
+alwaysApply: false
+globs:
+  - docs-ja/comp-strategy.md
+  - docs-ja/comp-timeline.md
+  - exp/**
+  - "**/experiment-checklist.md"
+---
+
+# レーン · Final 枠（Kaggle 汎用 · 詳細）
+
+SSOT: `.cursor/skills/_shared/LANES-AND-FINAL-SLOTS.md`  
+常時要約: Rule `kaggle-decision-gates` · 地図 `_shared/DECISION-FLOW.md`  
+固有の \%・N・閾値: `docs-ja/comp-strategy.md` · `comp-timeline.md` のみ
+
+## Agent 必須
+
+1. CHK / Bet / GO·NO-GO に **`lane: primary | public | diagnostic`**  
+2. **あるレーンの悪化・小差だけ**で **別レーン**を止めない  
+3. **diagnostic** だけで提出 Final や primary 全体を NO-GO にしない  
+4. Final **N または K** は Overview → `comp-timeline`。**勝手に 2 と決めない**  
+5. **N≥2** かつ shake med/high（または Public partial）なら Final を **public 一系統だけ**にしない  
+6. Host 未開示で「Public＝易しい」と決めつけて Stop を設計しない  
+7. Final 直前は **SA-7 `pre-final`** 推奨
+
+## 正しい停止
+
+- 当該 lane の acceptance 割れ · 形壊れ · **Fnnn** · ユーザー Stop

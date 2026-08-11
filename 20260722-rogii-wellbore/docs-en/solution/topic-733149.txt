@@ -1,0 +1,60 @@
+﻿Topic #733149: Public LB was a poor predictor of Private LB in our experiments
+  Author: Shin Nakamura
+  Posted: 2026-08-06 01:25:54.833000
+  Votes: 2  Comments: 0
+
+I tested different ensemble weights for a strong public notebook (w_pub = weight assigned to the public notebook predictions). Surprisingly, increasing its weight consistently improved the Public Leaderboard, while worsening both our local CV and the Private Leaderboard.
+
+
+
+
+Config / w_pub weight
+Local CV (OOF)
+Public LB
+Private LB
+
+
+
+
+w_pub = 0.61
+8.4548 (Worst)
+6.160 (Best)
+8.842 (Worst)
+
+
+w_pub = 0.61
+8.2480
+6.385
+8.599
+
+
+w_pub = 0.45
+8.0436
+6.600 (Worst)
+8.313 (Best)
+
+
+w_pub = 0.45
+7.9918 (Best)
+6.572
+8.417
+
+
+
+
+This suggests that, at least in our case, optimizing for the Public LB led to worse generalization.
+
+In contrast, our local cross-validation (OOF over all 773 training wells) tracked the Private LB much more closely. The model with the best CV also achieved the best Private score, even though it ranked worst on the Public LB.
+
+One possible explanation is that the Public evaluation set had a distribution that differed from the Private evaluation set. If so, giving too much weight to models that were particularly strong on the Public LB may have amplified this bias instead of improving generalization.
+
+I'm curious whether other participants observed something similar:
+
+
+
+Did your local CV correlate better with the Private LB than the Public LB?
+
+Did you intentionally avoid tuning on the Public LB near the end?
+
+No comments
+

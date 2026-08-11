@@ -1,0 +1,5 @@
+#!/bin/sh
+# Kaggle comp pre-commit — dataset / 秘匿情報 / PS1 UTF-8 BOM
+ROOT="$(git rev-parse --show-toplevel)"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$ROOT/scripts/check-staged-secrets.ps1" || exit $?
+exec powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$ROOT/scripts/check-ps1-utf8-bom.ps1" -Staged

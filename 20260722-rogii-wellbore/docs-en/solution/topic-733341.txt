@@ -1,0 +1,39 @@
+﻿Topic #733341: That's a wrap - thank you all!
+  Author: Igor Kuvaev
+  Posted: 2026-08-06 15:50:39.640000
+  Votes: 27  Comments: 7
+
+After three months, ROGII - Wellbore Geology Prediction has closed. 6,191 teams and over 7,000 participants made 164,000 submissions at guessing where the drill bit sits inside the formation. Thank you all.
+
+Congratulations to our top of the leaderboard: @w5833946 , @tatamikenn , @tereka &amp; @takoihiraokazu , and @alijs1 &amp; @arunodhayan &amp; @jsday96 &amp; @l1ghtsource - with @daimaruk right behind. (Standings are preliminary until results are verified.)
+
+But the leaderboard is only half of it. The forums were exceptional! You taught each other - and taught us a few things about our own data. If you haven't posted your approach yet, please do; the negative results are as valuable as the wins.
+
+Thank you to @ryanholbrook and @macruzbar, to the Kaggle team, and to everyone who prepared the data and kept the forums moving.
+
+It's been a genuine pleasure hosting. See you in the next one.
+
+Comments:
+笏懌楳 Maxwell Santoro (2026-08-06 21:53:46.350000) [+3]
+笏・ This was my first Kaggle competition, and I managed to nab bronze (and could have reached silver if I had chosen my final submission wiser). Thanks for a genuinely interesting challenge.
+笏懌楳 tennogh (2026-08-06 16:09:43.760000) [+4]
+笏・ Thanks for a very interesting and challenging competition. 
+笏・ 
+笏・ Now that the competition is over, would you mind answering a few questions?
+笏・ 
+笏・ I'm curious about the actual drilling workflow. From my und...
+  笏懌楳 Igor Kuvaev (2026-08-08 20:53:45.800000) [+2]
+  笏・ @tennogh Most of the wells these days are drilled for shale and tight formations (100s of thousands) and these wells are drilled with well trajectory + GR data only
+  笏・ it could me mud log data (materi...
+    笏懌楳 tennogh (2026-08-08 21:41:06.350000) [+0]
+    笏・ Thank you for your answer. I had discussed with a geologist who was surprised that we were working only with this data, but he doesn't have current experience in the field.
+    笏・ 
+    笏・ Regarding the map, I be...
+笏懌楳 Andrey Chankin (2026-08-06 20:34:50.803000) [+1]
+笏・ @igorakuvaev how much does your approach score on this dataset?
+  笏懌楳 Igor Kuvaev (2026-08-06 22:29:47.383000) [+7]
+  笏・ ours is RMSE 8.0, so Kaggles beat us on the 3rd week of the competition
+笏懌楳 Georgy Mamarin (2026-08-09 18:22:54.360000) [+0]
+笏・ Thank you to the ROGII team. Two things I will take away from this one.
+笏・ 
+笏・ The target was one geologist's interpretation rather than an instrument reading, and you said so from the start. That change...

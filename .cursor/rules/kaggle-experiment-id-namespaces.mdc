@@ -1,0 +1,26 @@
+---
+description: >-
+  実験ID名前空間 — CHK=仮説チケット / F=禁止台帳 / LES=学び / KGL=横断カード。
+  接頭辞の意味をコンペごとに変えない。
+alwaysApply: true
+---
+
+# 実験 ID 名前空間（横断）
+
+SSOT 全文: `.cursor/skills/_shared/EXPERIMENT-ID-NAMESPACES.md`
+
+| 接頭 | 意味 | 置き場 |
+|---|---|---|
+| **CHK-** | 仮説検証チケット（作業キュー） | `exp/experiment-checklist.md` |
+| **Fnnn** | **禁止確定**のみ（Failure） | `exp/improvement-loop-failures.json` |
+| **T0–T4** | 実験の型 | ban gate |
+| **LES-** | コンペ内の学び（任意） | retro / latest — **F にしない** |
+| **KGL-** | 横断知見カード | `knowledge/` |
+
+## 禁止
+
+- ❌ **F＝「知見」「Finding」** として使う（他コンペ習慣の持ち込み）
+- ❌ 良い学びを F 台帳に載せる
+- ❌ 他コンペの F 番号をそのまま引用する
+
+gate: Rule `kaggle-hypothesis-ban-ledger` · Skill `kaggle-experiment-checklist`

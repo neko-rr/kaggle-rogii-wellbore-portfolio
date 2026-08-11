@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "updated": "2026-08-04",
+  "description": "exp/work cleanup protection by ROLE, not hardcoded tip names. Update best_* when Best changes (with exp-index).",
+  "best_artifact": "my-submitted-notebook/tip-gated-lik-temp-0p15",
+  "best_zip": "",
+  "extra_protect_dirs": [
+    "exp/work/wave0-ruler",
+    "exp/work/wave13-gated-refine",
+    "exp/work/chk161-gated-soft",
+    "exp/work/kernels-output-tip-gated-lik-temp-0p1",
+    "exp/work/wave31-neural-proposal/out-618c-e2e-harvest",
+    "exp/work/wave31-neural-proposal/out-618c-e2e-analysis",
+    "exp/work/wave31-neural-proposal/out-618b-soft-diag-inject",
+    "exp/work/colab-final-t2"
+  ],
+  "extra_protect_files": [],
+  "notes": "提出済 tip = SUB-14 tip-gated-lik-temp-0p15 Public 6.269。Trust候補未提出 = 618c tip⊕soft_diag (local 19.54)。Public枠2診断 = tip×farvol 6.190。枠差替はユーザー。Cleanup never deletes verify-*-report.json / compare-*.json / validate-*-zip.json."
+}

@@ -1,0 +1,42 @@
+﻿id,title,authorName,commentCount,votes,postDate
+
+733480,4th Place Solution,,4,23,2026-08-07 04:43:44.033000
+
+717573,Score Without Tabular Models,,20,23,2026-07-02 06:50:42.033000
+
+702131,A geophysicist's take: domain priors + Q-3D tortuosity (public notebook + repo),,0,22,2026-05-21 13:41:20.677000
+
+714514,What wrong with TVT,,11,22,2026-06-26 12:56:52.763000
+
+719389,Does CV correlates with LB・・,15,21,2026-07-04 23:17:13.797000
+
+733307,"48th 竊・407th Place: How It Failed, and What We Learned Along the Way",,3,21,2026-08-06 12:21:14.507000
+
+711878,The ﾂｱ15 ft datum: why some wells are unsolvable,,14,19,2026-06-22 06:01:33.449000
+
+704273,How much should we trust the LB score?,,6,18,2026-06-04 04:06:20.449000
+
+703344,be careful if you are using transformer and bfloat16,,1,18,2026-05-30 05:26:30.043000
+
+699207,Can a single model achieve LB/CV below 10.0?,,11,18,2026-05-13 05:11:56.953000
+
+726751,New to ROGII? A beginner's map 窶・7 visuals + an honest look at why row-wise ML fails,,2,17,2026-07-16 12:11:00.180000
+
+733304,27th Place Solution,,0,17,2026-08-06 12:12:40.400000
+
+726465,Where does the top-team signal come from below the per-well line-oracle?,,19,16,2026-07-15 11:06:09.466000
+
+723815,What is your worst performing well?,,21,16,2026-07-08 11:02:22.486000
+
+701691,cv and lb correlations .....,,16,16,2026-05-19 01:24:38.821000
+
+705210,PNG files don't match the data,,12,16,2026-06-09 02:41:24.544000
+
+733281,8th place - PF ranker + Synthetic-Pretrained U-Net,,2,16,2026-08-06 16:38:42.400000
+
+733522,5th Place Solution,,6,15,2026-08-07 07:54:03.730000
+
+707613,PF baseline got LB 8.863 - any ideas to make it learnable with NN?,,8,13,2026-06-11 03:15:20.326000
+
+733305,11th Place Solution,,0,13,2026-08-06 12:20:48.077000
+

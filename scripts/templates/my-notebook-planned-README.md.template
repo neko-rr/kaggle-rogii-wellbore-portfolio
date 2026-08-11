@@ -1,0 +1,23 @@
+# planned/
+
+**作成済みだが未実行**の成果物（Kaggle / Colab **未実行** · ローカル sim 未記録）。
+
+- 索引: [`../../lifecycle-manifest.md`](../../lifecycle-manifest.md)
+- Skill: `kaggle-notebook-folders`
+
+## 入れるもの
+
+- 未実行の `.ipynb`（tabular）
+- 未実行の **bot ディレクトリ**（simulation · `main.py` ツリー）
+- 実行キューから外した WIP
+
+## 入れないもの
+
+| 移動先 | 条件 |
+|---|---|
+| `my-notebook/`（親） | いま編集 · 実行準備中 |
+| `my-ran-notebook/` | **実行済み** |
+| `my-submitted-notebook/` | **提出済み** |
+| `my-local-eval-notebook/` | 検証 fork |
+
+実行完了 → `my-ran-notebook/` + **`lifecycle-manifest.md` を `ran` に更新**。

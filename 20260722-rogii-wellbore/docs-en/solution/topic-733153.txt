@@ -1,0 +1,272 @@
+﻿Topic #733153: # 40th public 竊・2000th private: an exact LB instrument aimed at the wrong target
+  Author: TheOneTheOnly
+  Posted: 2026-08-06 01:40:33.857000
+  Votes: 4  Comments: 0
+
+Thanks to Rogii and Kaggle for a problem that was a real geophysical inverse
+problem rather than a tabular puzzle, and to
+@evansussex, whose public notebook was the
+base my final stack was built on. Also to @k256 (rank 29), who wrote during
+the competition that the sub-7.3 public lineage many of us were sitting on would
+"shake down to ~10 private." I logged that and did not act on it. My private
+score was 9.52.
+
+I finished around 2000th, so this is not a solution writeup. It's what I learned
+from being confidently, measurably wrong for nine days.
+
+
+
+The result
+
+
+
+
+
+public
+private
+
+
+
+
+start of my correction program
+6.358
+9.443
+
+
+final submission
+5.799
+9.520
+
+
+change
+竏・.559
++0.077
+
+
+
+
+Nine days of leaderboard-guided optimisation produced 竏・4% transfer 窶・
+negative, not merely diminished. Ranking my 50 late submissions both ways, the
+top-8 by public score and the top-8 by private score share zero entries.
+Correlation across the 37 serious ones: +0.215.
+
+There was no bug. Every layer was verified against an independent
+reimplementation to 1e-12. The models underneath had leak-free GroupKFold-by-well
+CV. The failure was conceptual, and it has a precise cause.
+
+
+
+1. Effective sample size is the number of wells, not the number of rows
+
+My final stack carried about twenty post-hoc constants 窶・per-band offsets, gain
+weights, blend weights 窶・that were fitted against public leaderboard feedback.
+I treated each measurement as exact because it was exact: it recovered the
+public subset's mean to four decimal places.
+
+What I never did was ask how well the public subset's mean estimates the
+population mean.
+
+My own analysis had already answered it. 63% of residual variance in this
+problem is between-well. Rows within a well are one effective observation, not
+three thousand. With ~199 hidden wells and roughly a quarter of them public,
+that's ~55 effective samples:
+
+SE(band mean) 竕・8 ft / 竏・5 竕・1.1 ft
+
+
+The offsets I was shipping were 0.5窶・.5 ft. I was fitting noise of exactly
+the size of my signal, and then stacking twenty of those corrections on top of
+each other.
+
+If you take one thing from this post: when between-group variance dominates,
+your n is the group count. In this competition that single number 窶・55
+instead of 180,000 窶・was the difference between a defensible correction and a
+guaranteed collapse, and it was computable in week one without a single
+submission.
+
+2. Precision is not validity
+
+I built a measurement procedure that predicted twenty consecutive submission
+scores to within 0.001窶・.004 RMSE, five correction layers deep. That record was
+the reason I kept going, and it was worthless as evidence.
+
+It predicted the public score. The public score was the quantity being
+fitted. Every "confirmation" was self-consistency, never generalisation 窶・a
+perfectly calibrated instrument reporting, over and over, that it had
+successfully hit the target I aimed it at.
+
+An accuracy record only counts as validation if the thing being predicted is
+independent of the thing being optimised. Mine wasn't, and I let the sheer
+consistency of it override an argument I could have made from first principles.
+
+3. The signal told me to throw away the only component that generalised
+
+This is the part I find hardest to look at.
+
+My best private submission (8.859) was one I rejected. It was an ANCC
+spatial surface model 窶・a regional dip plane plus a Fourier-feature MLP on the
+residual, fitted with GroupKFold by well 窶・blended in at weight 0.25.
+
+Standalone it is a bad model: 13.5 RMSE against 9.4 for my best booster. But
+it was by far the most decorrelated partner I ever measured, ﾏ・= 0.25窶・.56
+against the tree ensemble where every other model family sat at 0.93窶・.95. It is
+a different information source 窶・spatial geometry 窶・rather than another
+learner on the same features.
+
+The public leaderboard said its optimal blend weight was 0.026. I shrank it
+to nothing and moved on. The private set wanted 0.25+. Every one of my top
+five private submissions carries a higher field weight than public said was
+optimal.
+
+The mechanism is worth internalising: my public-fitted constants had already
+absorbed the public residual, so a genuinely generalising component had nothing
+left to explain there and looked useless. Overfitting doesn't just add
+noise 窶・it actively suppresses the components that would have saved you.
+
+4. A blend weight measured against a weak base does not transfer to a strong one
+
+This one is general and I'd never seen it stated plainly. For a two-model blend,
+
+w* = (ﾏダbﾂｲ 竏・ﾏ・ｷﾏダbﾂｷﾏダf) / (ﾏダbﾂｲ + ﾏダfﾂｲ 竏・2ﾏ・ｷﾏダbﾂｷﾏダf)
+
+
+The numerator collapses as your own model improves. I measured the same spatial
+partner at w* = 0.22 offline (against a sub-branch with ﾏダb = 9.51) and
+w* = 0.026 on the leaderboard (against the composed final, ﾏダb = 6.12).
+Same partner, same physics, same ﾏ・窶・the weight moved by 8ﾃ・ purely because the
+base changed.
+
+Corollary, which is what makes it useful: a partner is worth most where you
+are weakest. Re-derive every blend weight at the ﾏダb it will actually ship
+against, and expect it to be band-dependent.
+
+5. A partner's error magnitude transfers; its correlation with your error does not
+
+Two separate partners confirmed this. The spatial field's ﾏ・transferred from
+offline to hidden within 2% (14.04 竊・13.75). A gamma-ray alignment
+estimator's RMS transferred within 8.5%. Both were correctly built.
+
+But their correlation with my error evaporated. The GR estimator regressed at
+ﾏ・= +0.274 offline and returned +0.026 on the hidden set 窶・not weakened,
+absent.
+
+The reason is structural, and I made the same mistake twice: I measured both
+partners against one branch of my model and shipped them against the composed
+final. Correlation with your error is a property of your base, not of the
+partner. The GR offset looked like new information against the learned branch
+alone; against a prediction that was already 37% a spatial projection, it was
+redundant.
+
+Validate any new information source against the final composed prediction,
+never against one component of it.
+
+6. For a blend partner, decorrelation beats accuracy
+
+Measured on leak-free by-well OOF, optimal-weight gain from adding a second
+model:
+
+
+
+
+partner
+own OOF
+ﾏ・with base error
+gain
+
+
+
+
+TCN
+9.639
+0.845
++0.416 ft
+
+
+TabM
+9.370
+0.917
++0.403 ft
+
+
+best single LGBM
+9.548
+0.976
++0.163 ft
+
+
+
+
+The least accurate model was the best partner, and the strongest single tree
+was nearly useless. Related: greedy/weighted ensembling only beat equal
+weights when members were genuinely diverse 窶・on 0.97+ correlated members it
+just absorbed fold noise and lost to a plain average. Check member diversity
+before choosing an ensembling method.
+
+7. An offline model comparison is only valid if the baseline is what you're actually replacing
+
+I shipped two model swaps and both failed on the leaderboard. The second one
+took nine days of feature work 窶・pruning 41 harmful features, adding spatial
+ones, a retrained ensemble 窶・and looked like +0.61 ft offline.
+
+The flaw: I compared my retrain of the incumbent's config against my new
+models. But what actually ships is the incumbent's real artifacts, for
+which no honest OOF exists and cannot exist 窶・they were trained on all of my
+training wells. I had measured "new config beats my reproduction of their
+config" and deployed it as if it were "new models beat their models."
+
+If the incumbent can't be scored honestly on your CV, you have no offline read
+on the swap at all.
+
+8. When an offline number would leapfrog you 90 ranks, assume leakage
+
+Four separate self-leak traps, three of them in code I had already written and
+believed:
+
+
+
+an LOO benchmark whose fallback averaged the query well's own points
+
+evaluating models on the three visible test wells 窶・which are also present in
+train/ with full targets
+
+refitting both models before comparing, so the delta was dominated by the
+difference in leak rather than skill (this one predicted a jump from ~95th to
+top 5)
+
+a local neighbour-distance reproduction where the leaked copy of a well filled
+every neighbour slot, silently collapsing the analysis to zero rows
+
+
+Implausibility was a better detector than any code review. The reflex worth
+building: a result this good is evidence of a bug, not of skill.
+
+
+
+What I'd do differently
+
+
+
+Compute effective sample size before fitting anything. Groups, not rows.
+It kills most fine-grained corrections on arithmetic alone.
+
+Cap the number of parameters fitted against any signal you can't hold out
+窶・against n_eff, not against your row count.
+
+Shrink hard. Anything whose only measurement channel is the leaderboard
+ships at a fraction of its measured optimum, or not at all.
+
+Select final entries by offline CV, not public score. My best private
+submission was already in my history. I just didn't pick it.
+
+When an offline-validated component and the leaderboard disagree, the
+leaderboard is not automatically right. I'd adopted "offline gates screen,
+the LB decides" as a rule after it worked twice early on. It was the wrong
+rule and it cost the competition.
+
+
+An exact instrument aimed at the wrong target takes you exactly where you
+pointed it. Happy to discuss any of this 窶・and if anyone in the top 20 measured
+the public/private transfer of their own stack, I'd genuinely like to compare.
+
+No comments
+

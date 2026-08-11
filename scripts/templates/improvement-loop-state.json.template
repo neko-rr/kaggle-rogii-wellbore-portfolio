@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "updated": "{{COMP_DATE}}",
+  "streaks": {
+    "T0": { "consecutive_nogo": 0, "last_chk": "" },
+    "T1": { "consecutive_nogo": 0, "last_chk": "" },
+    "T2": { "consecutive_nogo": 0, "last_chk": "" },
+    "T3": { "consecutive_nogo": 0, "last_chk": "" },
+    "T4": { "consecutive_nogo": 0, "last_chk": "" }
+  },
+  "last_go": null
+}

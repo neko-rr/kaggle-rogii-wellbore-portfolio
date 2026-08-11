@@ -1,0 +1,40 @@
+---
+description: PowerShell 5.1 向け — 日本語入り .ps1 は UTF-8 BOM 必須。新規・編集後は check-ps1-utf8-bom を通す。
+alwaysApply: true
+---
+
+# PowerShell .ps1 — UTF-8 BOM（PS 5.1）
+
+Windows PowerShell **5.1** は、UTF-8 **BOM 無し**の `.ps1` を ANSI（日本語環境では CP932）と誤読する。日本語コメント・文字列が入っていると **構文エラー**になる。
+
+## Agent 必須
+
+1. **新規・編集した `.ps1` に非 ASCII（日本語等）がある場合は UTF-8 BOM 付きで保存する**
+2. 編集後は必ず検査する:
+
+```powershell
+.\scripts\check-ps1-utf8-bom.ps1
+# FAIL 時（内容は変えず BOM のみ付与）:
+.\scripts\check-ps1-utf8-bom.ps1 -Fix
+```
+
+3. Write / StrReplace 後に BOM が落ちやすい。**`-Fix` で直してから実行・配布する**
+4. テンプレへコピーする前にも同チェック（`-IncludeTemplate` 可）
+
+## 判定（機械）
+
+| 状態 | 結果 |
+|---|---|
+| 先頭 `EF BB BF` | PASS |
+| BOM 無し + 非 ASCII あり | FAIL → `-Fix` |
+| BOM 無し + ASCII のみ | PASS（任意で BOM 可） |
+
+## 禁止
+
+- 日本語入り `.ps1` を BOM 無しのまま commit / 実行 / テンプレ同期する
+- 「動いたから OK」で検査を省略する（Agent の編集で BOM が消えるため）
+
+## SSOT
+
+- `scripts/check-ps1-utf8-bom.ps1`
+- テンプレ同名スクリプト（`kaggle-template/root/scripts/`）

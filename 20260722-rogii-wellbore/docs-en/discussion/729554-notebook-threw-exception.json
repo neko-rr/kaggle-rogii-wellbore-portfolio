@@ -1,0 +1,19 @@
+{
+  "topic": {
+    "id": 729554,
+    "title": "Submission fails with \"Notebook Threw Exception\" although submission.csv is generated correctly",
+    "authorName": "Angel R, Gadea L.",
+    "commentCount": 1,
+    "votes": -1,
+    "postDate": "2026-07-26T01:21:40.037000"
+  },
+  "comments": [
+    {
+      "id": 3503561,
+      "authorName": "PC Jimmmy",
+      "votes": 0,
+      "postDate": "2026-07-26T02:06:55.837000",
+      "content": "<p>The logs never show the submission failures.  The log your seeing is only the one generated when the 3 fake test wells get run.</p>\n<p>Most of that type error is shape or memory error related to the fact that 200 wells are in test rather than 3.\nIf your code can easily be modified these errors best caught by predicting on TRAIN rather than test in the editor.</p>\n<p>If you can't get to a solution - make the notebook public and share a link here and someone will help.  Kind of hard to trouble shoot in the dark.</p>"
+    }
+  ]
+}

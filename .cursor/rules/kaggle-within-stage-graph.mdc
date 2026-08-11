@@ -1,0 +1,29 @@
+---
+description: 工程内比較グラフ（within-stage）を実験恒常SSOTとして維持する
+alwaysApply: true
+---
+
+# 工程内比較グラフ（実験恒常）
+
+## SSOT
+
+| 種別 | パス |
+|---|---|
+| テキスト恒常 | `20260722-rogii-wellbore/exp/within-stage-comparisons.md` |
+| Live Canvas | `canvases/within-stage-comparisons.canvas.tsx`（ワークスペース canvases） |
+| 再試表 | `exp/work/wave31-selector-replace/pipeline-cascade-retest.md` |
+
+日付付き `latest/within-stage-comparisons-*.md` は履歴。**正は日付なしの恒常 MD + Canvas。**
+
+## Agent 必須
+
+1. 工程内 Best・不足穴・有望順が変わったら、ユーザー依頼がなくても **次の実験整理時に** 恒常 MD と Canvas を更新候補にする  
+2. ユーザーが「工程内比較グラフを更新」「within-stage を最新に」と言ったら、上記セットを更新する  
+3. 数値は `hyperparameter-table` / cascade を正とし、グラフだけ先に書かない  
+4. Trust / Pack / Public を同一軸で順位づけしない
+
+## 禁止
+
+- グラフを `latest/` の日付ファイルだけに退避して恒常リンクを切る  
+- Pack 勝ちを Trust/Public と同じ棒に載せて「Best」と誤読させる
+---

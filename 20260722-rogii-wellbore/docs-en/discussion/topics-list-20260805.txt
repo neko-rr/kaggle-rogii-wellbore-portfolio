@@ -1,0 +1,22 @@
+﻿    id  title                                                                                             authorName  commentCount  votes  postDate                    
+------  ------------------------------------------------------------------------------------------------  ----------  ------------  -----  --------------------------  
+694973  How to get started + Competition's Official Discord                                                                     23     15  2026-04-27 21:33:19.370000  
+697416  Welcome to ROGII - Wellbore Geology Prediction!                                                                         17     37  2026-05-06 00:04:21.663000  
+716699  How to submit your Writeup for the Working Note Award                                                                   43     11  2026-06-30 21:24:40.128000  
+697400  [EDIT] Dataset issue - Fixed!                                                                                            7     18  2026-05-05 22:46:46.774000  
+727171  Working Note Award - winners!!!                                                                                          0     48  2026-07-18 03:51:39.763000  
+709495  New: Working Note Awards! Submit by July 6                                                                              14     18  2026-06-18 23:29:46.734000  
+707695  Private Test Update and Rescore                                                                                          5     18  2026-06-11 14:04:07.034000  
+731550  How should we choose the final two submissions before a possible big LB shake-up?                                       37     24  2026-07-31 16:02:15.765000  
+732443  Regarding the scoring time                                                                                               5     -4  2026-08-03 02:20:03.278000  
+732455  Leaderboard thoughts                                                                                                     9     20  2026-08-03 05:34:36.837000  
+732296  Notebook Threw Exception                                                                                                 6     -4  2026-08-02 10:36:31.600000  
+732432  teammate ban                                                                                                             2      0  2026-08-02 22:00:41.316000  
+732422  Does the 9-hour runtime limit also apply to the private LB rerun?                                                        1      1  2026-08-02 19:06:14.432000  
+730983  It took me 5 hours to upload and submit the file the second time                                                         1     -4  2026-07-30 16:04:54.527000  
+719235  Question about the geologists' analysis                                                                                  1     28  2026-07-04 17:56:01.022000  
+728477  棟 The public LB is a precise ruler and a biased one 窶・I had been using it for the wrong question                         3      0  2026-07-23 13:39:07.560000  
+729862  Looking for Team                                                                                                         4      0  2026-07-26 21:13:13.068000  
+730092  *"Submission format error on valid file 窶・help needed"*                                                                  1     -4  2026-07-27 23:02:47.454000  
+729554  Submission fails with "Notebook Threw Exception" although submission.csv is generated correctly                          5     -5  2026-07-26 01:21:40.037000  
+720701  Final Gold and Silver Medal Cutoff Predictions                                                                          11      6  2026-07-06 02:21:42.619000  

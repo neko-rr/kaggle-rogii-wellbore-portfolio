@@ -1,0 +1,27 @@
+---
+description: >-
+  レーン・CV・SA-7 の短い常時リマインド（詳細 Rule の要約）。
+  高コスト前に adversarial。他 lane 小差だけで止めない。
+alwaysApply: true
+---
+
+# Decision gates（要約 · 常時）
+
+詳細地図: `_shared/DECISION-FLOW.md`  
+詳細 Rule（必要時）: `kaggle-lanes-and-final-slots` · `kaggle-cv-design` · `kaggle-adversarial-review`
+
+## 必須（短）
+
+1. CHK / GO には **`lane: primary|public|diagnostic`**  
+2. primary の前に **`docs-ja/cv-design.md` の cv_unit**（無ければ CV 勝負しない）  
+3. **oracle / ceiling だけで** 提出・Final·primary GO にしない  
+4. **他レーン小差だけ**で別レーンや Wave を止めない  
+5. Final **N/K は timeline**（既定で 2 としない）  
+6. **高コスト前（Bet / Final / 本採用 / CV 固定 / harvest）** は SA-7 または kill-list 自問。**毎 CHK 禁止**  
+7. Agent がコードを書いたら **`.\scripts\run-static-checks.ps1` PASS** まで本実験しない（**エディタ Ruff 拡張は代替不可** · Skill `kaggle-static-check`）  
+8. ローカル計算の **ImportError** は **`requirements-local.txt` 追記 → `setup-comp-venv.ps1`**（ワンショット pip 禁止 · Skill `kaggle-comp-deps`）  
+9. SA-7 · ban · static · deps · pretrain · validator を **互いに代替しない**
+
+## 停止してよい
+
+当該 lane acceptance 割れ · static FAIL · 形壊れ · **Fnnn** · ユーザー Stop

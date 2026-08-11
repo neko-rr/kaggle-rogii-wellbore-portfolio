@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "updated": "{{COMP_DATE}}",
+  "description": "exp/work cleanup protection by ROLE, not hardcoded tip names. Update best_* when Best changes (with exp-index).",
+  "best_artifact": "",
+  "best_zip": "",
+  "extra_protect_dirs": [],
+  "extra_protect_files": [],
+  "notes": "Optional: create exp/work/current-best as a directory junction/symlink to the best_artifact folder. Cleanup never deletes verify-*-report.json / compare-*.json / validate-*-zip.json."
+}

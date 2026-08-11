@@ -1,0 +1,25 @@
+---
+description: >-
+  提出上限・有効枠・メダル帯・締切UTCはコンペ固有。他コンペ記憶で断定せず
+  comp-timeline / Overview を読む。メダルはチーム数バンド+floor（Progression公式）。
+alwaysApply: true
+---
+
+# コンペ制約・メダル・UTC（セッション横断）
+
+SSOT 本文: `.cursor/skills/_shared/KAGGLE-MEDALS-AND-CONSTRAINTS.md`  
+Skill: `kaggle-competition-constraints` · 固有数値: `docs-ja/comp-timeline.md`  
+公式: https://www.kaggle.com/progression/competitions
+
+## Agent 必須
+
+1. **提出回数・有効 LB・Final/Private 枠を口にする前**に `docs-ja/comp-timeline.md` を読む。無ければ Overview / Rules を確認してから。**他コンペの数字や「だいたい5回」で埋めない**
+2. **simulation:** 「最新 N 件が LB に効く」と「Final 2 選択」を混同しない
+3. **メダル:** チーム数 **N** を明示 → バンドで Bronze/Silver/Gold を計算（% は **floor** · N≥250 の Gold は `10+floor(0.002×N)`）。N が分からなければ帯を断定しない
+4. **締切:** 明記がなければ **23:59 UTC**。発話・要約は UTC。JST は求められたときだけ併記
+
+## 禁止
+
+- ❌ コンペ A の 1 日上限をコンペ B に転用する
+- ❌ 「上位 10% = 金」などバンド無視の短絡
+- ❌ 日本時間だけを締切の正にして UTC を落とす

@@ -1,0 +1,26 @@
+# Colab × Cursor 実行メモ — {{COMP_NAME}}
+
+> Skill: **`cursor-colab-runtime`**  
+> 公式: https://developers.googleblog.com/google-colab-is-coming-to-vs-code/  
+> コンペ固有の Input / データパス / GPU 方針のみここに書く。接続手順 SSOT は Skill 本体。
+
+## 本コンペでの Colab 用途
+
+| 用途 | ノート配置 | GPU |
+|---|---|---|
+| _（例: 長時間学習）_ | `my-notebook/` | T4 等 |
+
+## データ
+
+| データ | 取得方法 | Colab 上のパス |
+|---|---|---|
+| _（未設定）_ | Mount Server → `sample_data/` または Kaggle API | — |
+
+## 実行後
+
+- `my-ran-notebook/{nb-name}/run-log.md` — Skill `kaggle-kernels-runbook`
+- `lifecycle-manifest.md` — state: `ran`
+
+## アクセス手順（短縮）
+
+ユーザーが「Colab 接続」と言ったら Skill **`cursor-colab-runtime`** の **ユーザー向けアクセス手順** をそのまま出す。

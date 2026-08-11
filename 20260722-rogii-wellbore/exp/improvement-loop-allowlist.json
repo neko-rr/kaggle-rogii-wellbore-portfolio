@@ -1,0 +1,609 @@
+{
+  "version": 1,
+  "updated": "2026-08-05",
+  "description": "任意。特定 CHK だけ台帳/エスカレーションを bypass するとき使う。通常は空のまま。",
+  "allowlist": {
+    "CHK-031": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "T3 streak=3 は CHK-021/022/023（heel/nbr/hedge代理）由来。ユーザー承認済み GPU 計画の Final2 本命は別仮説（drift+NCC 自前再学習）。escalation のみ bypass · failures キーワード照合は継続。",
+      "date": "2026-07-24"
+    },
+    "CHK-020": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "同上 · 計画承認済み tip NW_N graft（別仮説）。",
+      "date": "2026-07-24"
+    },
+    "CHK-041": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "同上 · 計画承認済み _BH_* hedge（CHK-023 退化代理とは別 · tip 本物 _BH_）。",
+      "date": "2026-07-24"
+    },
+    "CHK-070": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "ユーザー承認 GPU学習メイン計画。仮説は CatBoost residual/drift GroupKFold 自前再学習（F007 の薄いNCC+LGBM絶対TVTとは別）。failures キーワード照合は継続。",
+      "date": "2026-07-24"
+    },
+    "CHK-071": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "ユーザー承認 GPU学習メイン計画。tip Track A / tabular LGBM 再学習（枠1副線）。",
+      "date": "2026-07-24"
+    },
+    "CHK-040": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "ユーザー承認 CHK-040 学習計画。heel+窓 NCC 特徴→drift head。F010 軌道tabular残差とは別機構。failures キーワード照合は継続。",
+      "date": "2026-07-24"
+    },
+    "CHK-081": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "ユーザー承認 GPU積極利用。ゲート付き近傍<150+GR類似（F002素朴コピーではない）。failures照合継続。",
+      "date": "2026-07-24"
+    },
+    "CHK-100": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "Wave-7 計画承認。B1 学習内方位分割（後処理F006/F009・F013プロファイルとは別）。T3 streakは別仮説由来。",
+      "date": "2026-07-24"
+    },
+    "CHK-101": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "Wave-7 計画承認。Best Trust CV 実測（学習改変なし・T0 escalationはWave-6由来）。",
+      "date": "2026-07-24"
+    },
+    "CHK-102": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "Wave-7 · CHK-100 PASS時のT2。",
+      "date": "2026-07-24"
+    },
+    "CHK-103": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "Wave-7 · CHK-100 NO-GO時の方位特徴1本限り。",
+      "date": "2026-07-24"
+    },
+    "CHK-273": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "ユーザー明示の次実験。T3 streakは Wave-21/22（soft混ぜ・近傍クリップ・hedge）由来。本CHKは cascade モード→tip PF ls_offset 再初期化（バンク soft 混ぜなし · ≠F027）。failures キーワード照合は継続。",
+      "date": "2026-07-29"
+    },
+    "CHK-274": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "ユーザー明示 CHK-274。T3 streak は別仮説由来。本CHKは cascade バンク専用 soft(T,scale) 再フィット（≠F022 tip weight スイープ · ≠F027 固定 T0.15）。failures キーワード照合は継続。",
+      "date": "2026-07-29"
+    },
+    "CHK-278": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "ユーザー明示 CHK-278。T2 streak は Wave-22 由来。焼なまし。failures 照合継続。",
+      "date": "2026-07-29"
+    },
+    "CHK-276": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "ユーザー明示 CHK-276。T3 streak 別仮説。本CHKは天井候補の hedge 前確定／後差替（≠259 attractor×temp のみ）。failures 照合継続。",
+      "date": "2026-07-29"
+    },
+    "CHK-277": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "ユーザー明示 CHK-277。T3 streak 別仮説。本CHKはシード特徴→oracle順位の簡易ランカー（ラベル無し推論）。failures 照合継続。",
+      "date": "2026-07-29"
+    },
+    "CHK-288": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "ユーザー明示 -Force CHK-288。T3 streak=44 は Wave-21〜23 由来。本CHKは innovation-guided proposal（287 PASS の改修方向固定 · ≠F026 spr拡散 · ≠284/285 後段尤度）。failures 照合継続。",
+      "date": "2026-07-29"
+    },
+    "CHK-289": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "ユーザー明示『2時間実験継続』。T3 streak 別仮説由来。本CHKは train井から学習した conditional proposal（状態+GR窓→ΔTVT）· ≠F033 Newton残差ガイド · ≠F026 spr。failures 照合継続。",
+      "date": "2026-07-30"
+    },
+    "CHK-290": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "ユーザー明示『2時間実験継続』・GPU2枠並列。本CHKは生成中 ESS連動resample+局所MCMC rejuvenation（≠F030後段焼なまし刈り込み · ≠F033）。failures 照合継続。",
+      "date": "2026-07-30"
+    },
+    "CHK-300": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "ユーザー明示『3.5h・全部実験・CPU/GPU許可』。Wave-25 難井専用レーン（易井凍結）。T3 streakは全体改修F033–F035由来。本CHKは hard-only 遠MD観測再重み（≠284全体Student-t）。failures照合継続。",
+      "date": "2026-07-30"
+    },
+    "CHK-301": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "Wave-25 · ユーザー3.5h許可。hard-only anchor/heel緩和。failures照合継続。",
+      "date": "2026-07-30"
+    },
+    "CHK-302": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "Wave-25 · ユーザー3.5h許可。hard-only短長窓混合。failures照合継続。",
+      "date": "2026-07-30"
+    },
+    "CHK-303": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "Wave-25 · ユーザー3.5h許可。hard-onlyスパイクマスク。failures照合継続。",
+      "date": "2026-07-30"
+    },
+    "CHK-304": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "Wave-25 · ユーザー3.5h許可。hard-only TW局所スケール。failures照合継続。",
+      "date": "2026-07-30"
+    },
+    "CHK-305": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "Wave-25 · ユーザー3.5h許可。観測勝者GPU統合。failures照合継続。",
+      "date": "2026-07-30"
+    },
+    "CHK-306": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "Wave-25 · ユーザー3.5h許可。hard-only PN(MD)スケジュール（≠F033 Newton · ≠F026 spr）。failures照合継続。",
+      "date": "2026-07-30"
+    },
+    "CHK-307": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "Wave-25 · ユーザー3.5h許可。着床前後regime。failures照合継続。",
+      "date": "2026-07-30"
+    },
+    "CHK-308": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "Wave-25 · ユーザー3.5h許可。総粒子固定の難井予算再配分（≠F026増粒子のみ）。failures照合継続。",
+      "date": "2026-07-30"
+    },
+    "CHK-309": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "Wave-25 · ユーザー3.5h許可。rate clip幅。failures照合継続。",
+      "date": "2026-07-30"
+    },
+    "CHK-310": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "Wave-25 · ユーザー3.5h許可。小区間PF。failures照合継続。",
+      "date": "2026-07-30"
+    },
+    "CHK-311": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "Wave-25 · ユーザー3.5h許可。動力学勝者GPU。failures照合継続。",
+      "date": "2026-07-30"
+    },
+    "CHK-312": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "Wave-25 · ユーザー3.5h許可。tipバンク内単一シード（≠F027/F032）。failures照合継続。",
+      "date": "2026-07-30"
+    },
+    "CHK-313": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "Wave-25 · ユーザー3.5h許可。井内可変温度（≠F025グローバル梯子）。failures照合継続。",
+      "date": "2026-07-30"
+    },
+    "CHK-314": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "Wave-25 · ユーザー3.5h許可。既知tip+未知別経路。failures照合継続。",
+      "date": "2026-07-30"
+    },
+    "CHK-315": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "Wave-25 · ユーザー3.5h許可。形状保存弱補正（≠F020）。failures照合継続。",
+      "date": "2026-07-30"
+    },
+    "CHK-316": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "Wave-25 · ユーザー3.5h許可。factorial統合。failures照合継続。",
+      "date": "2026-07-30"
+    },
+    "CHK-317": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "Wave-25 · ユーザー3.5h許可。層別頑健。failures照合継続。",
+      "date": "2026-07-30"
+    },
+    "CHK-318": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "Wave-25 · ユーザー3.5h許可。tip-cv。failures照合継続。",
+      "date": "2026-07-30"
+    },
+    "CHK-319": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "Wave-25 · ユーザー3.5h許可。再現。failures照合継続。",
+      "date": "2026-07-30"
+    },
+    "CHK-320": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "Wave-25 · ユーザー3.5h許可。E2E/Final判断（自動提出なし）。failures照合継続。",
+      "date": "2026-07-30"
+    },
+    "CHK-369": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "Wave-29 ユーザー承認 · CPU/GPU許可。T3/T4 streakは tip同家系F038–F040由来。本CHKは tipと状態・尤度が異なる自前PF/SMC設計+smoke（≠tipノブ · ≠F004 Sunny再提出）。failures照合継続。",
+      "date": "2026-07-30"
+    },
+    "CHK-370": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "Wave-29 · CHK-369後のS1a門番。別面本学習（≠tip同家系直し）。failures照合継続。",
+      "date": "2026-07-30"
+    },
+    "CHK-371": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "Wave-29 · S1a門番PASS後のE2E自kernelのみ。failures照合継続。",
+      "date": "2026-07-30"
+    },
+    "CHK-372": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "Wave-29 · S1b系列ネット設計smoke（tip非混合）。failures照合継続。",
+      "date": "2026-07-30"
+    },
+    "CHK-373": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "Wave-29 · S1b本学習+門番。failures照合継続。",
+      "date": "2026-07-30"
+    },
+    "CHK-380": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "Wave-29 ユーザー承認 · B8 FINAL後段監査。T3/T4 streak別仮説由来。本CHKは soft→hedge→FINAL区間マップ（≠F015中間面昇格 · ≠F031 hedge lockスイープ）。failures照合継続。",
+      "date": "2026-07-30"
+    },
+    "CHK-381": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "Wave-29 · 候補ノブ1つの事前文書（≠F031言い換え）。failures照合継続。",
+      "date": "2026-07-30"
+    },
+    "CHK-382": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "Wave-29 · FINAL tip-cvのみ判定（soft無視）。failures照合継続。",
+      "date": "2026-07-30"
+    },
+    "CHK-425": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "Wave-31 overnight LOCAL · ユーザー明示 -Force。T3 streak=3 は CHK-392 Soft-Preserve 由来。本CHKは tip-cv selector 定義置換（モード/質量加重中点 · 推論 soft なし · ≠F015/F041 Soft-Preserve）。failures キーワード照合は -Force でスキップ可だが本エントリは escalation のみ。",
+      "date": "2026-07-31"
+    },
+    "CHK-618": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "ユーザー明示『2時間実験と探索』· T3 streak=3 rethink。本CHKは tip土台⊕Soft部分注入（Soft FINAL/F041禁止 · ≠600 Softゲート特徴のみ · ≠F036 tipバンク差し替え）。failures照合継続。",
+      "date": "2026-08-03"
+    },
+    "CHK-618b": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "618のpack soft_diag版 · 同上2h許可 · Soft FINAL禁止。",
+      "date": "2026-08-03"
+    },
+    "CHK-611": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "2h bath探索 · T3 streak rethink後の安定性ゲート（別仮説）。",
+      "date": "2026-08-03"
+    },
+    "CHK-616": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "2h bath探索 · Agree∧Stable。",
+      "date": "2026-08-03"
+    },
+    "CHK-617": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "2h bath探索 · 悪化井BL確認。",
+      "date": "2026-08-03"
+    },
+    "CHK-612": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "2h bath · T2パートナー薄ブレンド（farvol除外）。T2 streak別仮説由来。",
+      "date": "2026-08-03"
+    },
+    "CHK-604": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "2h bath · soft_diag/ESSゲート入力（≠F023採択）。",
+      "date": "2026-08-03"
+    },
+    "CHK-605": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "2h bath · 温度midゲート材料（≠F025 FINAL再提出）。",
+      "date": "2026-08-03"
+    },
+    "CHK-603": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "2h bath · 副特徴ゲート。",
+      "date": "2026-08-03"
+    },
+    "CHK-606": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "2h bath · hard信号ゲート特徴（≠F036）。",
+      "date": "2026-08-03"
+    },
+    "CHK-607": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "2h bath · Soft logitsゲートのみ（≠F041 Soft-Preserve）。",
+      "date": "2026-08-03"
+    },
+    "CHK-601": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "2h bath · beam短T4。",
+      "date": "2026-08-03"
+    },
+    "CHK-615": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "2h bath · 579分岐表（着弾待ちでも雛形作成可）。",
+      "date": "2026-08-03"
+    },
+    "CHK-688": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "T3 streak=5 は CHK-712/695/745 系（現L残差α・ridge residual E2E）由来。本CHKは F043 が明示許可する L 再学習（tip-cv hard20 train_stack → learned dump）。pretrain local PASS 後・GPUはユーザー明示許可時のみ。failures キーワード照合は継続。",
+      "date": "2026-08-04"
+    },
+    "CHK-747": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "ユーザー『戦略的に実験·CPU/GPU許可』。T3/T4 streak は residual-α/F043 系。本CHKは Trust GO 三点定規の process 適用のみ（学習なし）。",
+      "date": "2026-08-04"
+    },
+    "CHK-748": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "同上 · T2 vs mean_worst Spearman 診断（faces 上 score only）。",
+      "date": "2026-08-04"
+    },
+    "CHK-749": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "同上 · 666 worst-fold wells 診断 → 761 設計入力（≠F043 α）。",
+      "date": "2026-08-04"
+    },
+    "CHK-750": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "同上 · SSOT faces 041247 T3 catalog 再測（学習なし · 面ドリフト確認）。",
+      "date": "2026-08-04"
+    },
+    "CHK-751": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "同上 · hard20 vs T2 乖離表（診断 only）。",
+      "date": "2026-08-04"
+    },
+    "CHK-758": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "同上 · tip⊕ residual を Trust 本命から外す process。",
+      "date": "2026-08-04"
+    },
+    "CHK-760": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "同上 · residual 報告に Δvs666 必須 process。",
+      "date": "2026-08-04"
+    },
+    "CHK-752": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "ユーザー実験継続·688待ちの並行診断/準備。T3 streak bypass。failures照合継続。",
+      "date": "2026-08-04"
+    },
+    "CHK-755": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "ユーザー実験継続·688待ちの並行診断/準備。T3 streak bypass。failures照合継続。",
+      "date": "2026-08-04"
+    },
+    "CHK-763": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "ユーザー実験継続·688待ちの並行診断/準備。T3 streak bypass。failures照合継続。",
+      "date": "2026-08-04"
+    },
+    "CHK-761": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "ユーザー実験継続·688待ちの並行診断/準備。T3 streak bypass。failures照合継続。",
+      "date": "2026-08-04"
+    },
+    "CHK-762": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "ユーザー実験継続·688待ちの並行診断/準備。T3 streak bypass。failures照合継続。",
+      "date": "2026-08-04"
+    },
+    "CHK-754": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "並行診断 688待ち。failures照合継続。",
+      "date": "2026-08-05"
+    },
+    "CHK-757": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "並行診断 688待ち。failures照合継続。",
+      "date": "2026-08-05"
+    },
+    "CHK-765": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "1h CV loop · ユーザー明示 · failures照合継続",
+      "date": "2026-08-05"
+    },
+    "CHK-739": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "1h CV loop · ユーザー明示 · failures照合継続",
+      "date": "2026-08-05"
+    },
+    "CHK-715": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "1h CV loop · ユーザー明示 · failures照合継続",
+      "date": "2026-08-05"
+    },
+    "CHK-737": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "1h CV loop · ユーザー明示 · failures照合継続",
+      "date": "2026-08-05"
+    },
+    "CHK-764": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "1h CV loop · ユーザー明示 · failures照合継続",
+      "date": "2026-08-05"
+    },
+    "CHK-766": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "1h CV loop · ユーザー明示 · failures照合継続",
+      "date": "2026-08-05"
+    },
+    "CHK-724": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "CPU wait: anti-promote CI on residual form (faces) · T4 streak bypass · failures continue",
+      "date": "2026-08-05"
+    },
+    "CHK-783": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "CPU wait: set-diff hard∩749 vs 761 for L1 schedule · faces-only · failures continue",
+      "date": "2026-08-05"
+    },
+    "CHK-WAIT-CPU": {
+      "bypass": [
+        "escalation"
+      ],
+      "reason": "CPU wait multi-diag pack while GPU L · faces/local only · no residual-alpha · failures continue",
+      "date": "2026-08-05"
+    }
+  }
+}

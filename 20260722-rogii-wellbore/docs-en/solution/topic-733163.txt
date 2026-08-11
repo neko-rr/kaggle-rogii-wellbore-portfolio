@@ -1,0 +1,469 @@
+﻿Topic #733163: 2287th -> 75th Place: Physics-constrained HMM/DP
+  Author: GG Ayo (AyoGG)
+  Posted: 2026-08-06 02:11:43.908000
+  Votes: 1  Comments: 0
+
+ROGII Wellbore Geology Prediction 窶・Solution Writeup
+
+Private 7.444 ﾂｷ Public 7.188 ﾂｷ CV 5.976 (773 wells, pooled RMSE)
+
+Pure HMM/DP GR-matching plus a 5-member equal-weight ensemble. No neural network in the final model.
+
+
+
+English
+
+1. Results
+
+
+
+
+Model
+CV (773)
+Public (52)
+Private (148)
+
+
+
+
+persistence baseline
+15.910
+窶・
+窶・
+
+
+single model (base)
+6.205
+8.115
+7.752
+
+
+best single (mbt60)
+6.166
+7.838
+7.703
+
+
+TEAM5 ensemble (submitted)
+5.976
+7.188
+7.444
+
+
+
+
+TEAM5 ranked 3rd out of my 24 scored submissions on private. The best I ever uploaded was 7.383.
+
+2. Physical framing
+
+Everything follows from one geometric identity:
+
+TVT = FE 竏・Z          (formation elevation minus borehole depth)
+
+
+Z is surveyed and available in test. So the unknown is a single smooth curve
+FE(MD), not 5000 independent TVT values. The problem collapses from "predict a trajectory" to "estimate one
+slowly-varying rate a = dFE/dMD; geometry supplies the shape."
+
+Two consequences that shaped everything:
+
+
+
+The shape of the prediction is largely given by Z already. GR's only job is calibrating the rate.
+
+
+3. Method
+
+State (delta, rate) where delta = TVT 竏・ps_tvt; one block per 15 ft MD; exact forward窶澱ackward over a discretised
+441 ﾃ・33 grid.
+
+Emission has exactly two terms.
+
+
+
+
+Level term 窶・median_rows[(gr 竏・mu)ﾂｲ] ﾂｷ n / (gsﾂｲﾂｷTAU)
+A block spans only ~0.26 ft of TVT, so the typewell lookup is near-constant inside it. This asks "which delta
+explains this block's GR level".
+
+
+Difference term 窶・((盧｡_b 竏・ﾎｼﾌЮb) 竏・ﾏ・ｷ(盧｡_{b竏・} 竏・ﾎｼﾌЮ{b竏・}))ﾂｲ ﾂｷ W_DIFF
+Residual bias is correlated 0.50窶・.85 between adjacent blocks; AR (1)
+whitening removes 29窶・1% of it while preserving the displacement signal. Single biggest contributor: 竏・.43 ft.
+
+
+Dynamics: rate random walk, direct delta diffusion (applied in batches so the per-step sigma stays representable on
+the grid), Gaussian rate prior.
+
+Multi-basin hedging (MB): run the DP K times with delta restricted to bands centred at mean_delta + c, then
+average the solutions weighted by tempered marginal evidence. MB_TEMP = 30 is required 窶・blocks are correlated, so the
+effective sample size is far below the block count and raw log-evidence is roughly 30ﾃ・overconfident.
+
+Residual template: (GR 竏・typewell) binned by TVT from the known prefix. Only 3窶・% of the 0.5 ft bins have
+observations (~1.3 rows each) 窶・the template is isolated spikes, not a curve. Applied with shrink = 0.30.
+
+Output shrinkage: per-row blend toward persistence; distance ramp with a James窶鉄tein floor.
+
+4. Three first principles
+
+Derived empirically; each killed a whole family of ideas.
+
+P1 窶・Equal SNR across frequency and space. Any mechanism that re-weights existing evidence fails: filtering,
+multi-scale, band selection, despiking, adaptive gs, heteroscedastic weighting. All tested, all worse.
+
+P2 窶・Over-constraint is regularisation (the "1/3 law"). Optimal hyperparameters are systematically ~1/3 of the
+measured statistic: shrink
+0.79 竊・0.30, SIG_RATE 0.0078 竊・0.002, SIG_DELTA 2.1 竊・0.75 ft. Eleven independent relaxation attempts all made
+things worse.
+
+P3 窶・Sparse blanks are a third layer of regularisation. Densifying the template (interpolation, lower thresholds,
+coarser grid, kernel smoothing) makes it statistically better (ﾎｲ 0.79 竊・0.83) and the DP worse (6.21 竊・6.53).
+Lowering shrink does not compensate.
+
+5. Ceiling measurements 窶・how much is each piece worth?
+
+Before building anything, I ran cheat experiments: hand the model the true answer for exactly one component, keep
+everything else honest, and see how good the score gets. If handing over the truth for component X only improves the
+score a little, then X is not where the remaining error lives 窶・and no amount of clever engineering on X will help.
+
+
+
+
+Cheat given to the model
+Score
+What it tells you
+
+
+
+
+GR replaced by clean synthetic signal
+3.188
+The noise floor. Nobody can beat this.
+
+
+Perfect typewell correction, everywhere
+3.994
+If the reference curve were perfect, we'd score ~4.
+
+
+Perfect correction, but only where we can actually measure it
+6.041
+窶ｦ
+
+
+Perfect average dip angle
+6.569
+Worse than not cheating at all
+
+
+my actual model
+6.205
+
+
+
+
+
+Read rows 2 and 3 together 窶・this is the whole story of the competition.
+
+The reference curve (the "typewell") is a vertical well's GR log used as a template for matching. It doesn't perfectly
+describe the rock at the horizontal well's location, so we build a correction from the part of the well where we
+already know the answer. Row 2 says: if that correction were perfect everywhere, we'd score 3.99. Row 3 says: if it's
+perfect only in the depth range the known part of the well actually passed through, we score 6.04 窶・barely better
+than my real 6.205.
+
+In other words: the correction we can actually estimate is already estimated about as well as it can be. The missing
+2.2 ft lives entirely in depths the well never visited before going blind. A frequency decomposition showed that
+missing information sits below 16 ft wavelength 窶・fine detail that simply is not present in the vertical well's log at
+all.
+
+That is an information wall, not an engineering problem. After measuring this I should have stopped trying to improve
+the single model.
+
+Row 4 is the other surprise: giving the model the true average dip angle makes it worse. The model's hand-tuned
+constraints are calibrated around its own imperfect estimate; handing it a better number breaks that calibration. This
+is the first sign of a theme that runs through everything below 窶・being more faithful to reality does not mean
+predicting better.
+
+6. The core impasse 窶・why the model sometimes locks onto the wrong layer
+
+The failure mode. Sedimentary rock is layered and cyclic: sand-shale-sand, repeating. So the GR log looks similar
+at depths roughly 12 ft apart. When the model matches the horizontal well's GR against the reference curve, it can lock
+onto the wrong repeat 窶・off by one "floor" of the building. Once locked, it stays locked and follows that wrong layer
+for thousands of feet.
+
+The evidence for this diagnosis:
+
+
+
+Errors are staircase-shaped: a 4-step piecewise-constant fit covers 95.5% of the well within 3 ft. Errors don't
+drift, they jump.
+
+The typical jump is 7.48 ft, and the typewell's own repeat spacing (measured by autocorrelation) has a median of
+12.5 ft, with 54% of wells in the 8窶・5 ft range. Same scale. The jumps go to the neighbouring repeat. Why it
+cannot be fixed by searching harder. The algorithm I use (forward窶澱ackward) is exact 窶・it computes the
+mathematically correct answer given the model. So the model isn't failing to find the best explanation; the best
+explanation is genuinely wrong. Measured at the jump points:
+
+
+cost of taking the correct path (from the smoothness assumption):   30窶・9 units
+how much better the GR data fits the correct path:                  竏・.14 units
+
+
+That second number is negative. The GR data itself very slightly prefers the wrong layer. No search improvement can
+fix that 窶・it's a statement about the data.
+
+Why I couldn't detect it either. If I can't prevent the mistake, maybe I can at least flag it and fall back to
+something safe. So I built 13 different detectors 窶・posterior uncertainty, disagreement between forward and backward
+passes, evidence scores, disagreement across model variants, gradient-boosted trees on geometry, a CNN on the sequence,
+and several more. Every one performed at chance level.
+
+The most damning measurement: I looked at how concentrated the errors are along each well. In wells that went badly
+wrong, the worst 10% of segments account for 34.7% of the total error. In wells that went fine, that number is
+34.6%. Identical. Catastrophic wells are not a different kind of failure 窶・they are the same process, just with
+bigger amplitude. There is no boundary to detect.
+
+7. What failed
+
+This is the part I'd most want to read in someone else's writeup, so here it is in full. The short version: I tried
+about twenty distinct mechanisms; exactly one (the ensemble) worked. Everything below has a number attached, and most
+entries close off a whole family of ideas rather than one experiment.
+
+A recurring lesson worth stating up front: several of these failed precisely because they made the model more
+physically realistic. The model is deliberately too rigid, and that rigidity is what stops it from bending its
+trajectory to fit the wrong rock layer.
+
+7a. The dip angle ("rate") 窶・four ways to attack it, four dead ends
+
+"Rate" here means how fast the well is moving up or down through the rock layers. It's the one number GR is supposed to
+calibrate.
+
+
+
+Give it the true average value 竊・6.569, worse than estimating it (above).
+
+Take away its freedom to vary 竊・11.083. Catastrophic; the well must be allowed to deviate.
+
+Tune how much it's allowed to wander 竊・sharp optimum at 0.002. Interesting detail: 0.001 (8.445) is worse than
+0.003 (6.987). Being too rigid hurts more than being too loose 窶・the only place in this project where that's true.
+
+Change the shape of the wandering. I measured the real distribution of rate changes: it has kurtosis 1226 and
+sd/MAD = 49.9 窶・wildly heavy-tailed, meaning most steps are tiny but occasionally there's a huge jump (faults,
+structural breaks). This is real, present in 40% of wells. So I replaced the bell-curve assumption with heavy-tailed
+alternatives that match reality: Laplace (7.008), a two-Gaussian mixture (6.74 / 6.97 / 7.14), rare full resets, and
+jumps triggered by wellbore curvature (6.21 / 6.34). Every single one made the score worse. Modelling reality
+faithfully made prediction worse, because heavy tails give the trajectory permission to jump 窶・and it jumps to the
+wrong layer.
+
+
+7b. Using the well's XY position
+
+Formation surfaces tilt in 2D, so in principle the well's horizontal heading matters. In practice: only 5.8% of wells
+turn more than 15ﾂｰ, fitting a tilted plane and extrapolating is catastrophic (126 ft error vs 26 ft on the turning
+wells), and the correlation between "how sharply the well curves" and "how much the rock dip changes" is 0.044. The
+wells are nearly straight; there's no information in the heading.
+
+7c. Improving the reference curve
+
+
+
+Stretching the depth axis (layers thicken/thin laterally, so the vertical well's depth scale may not match the
+horizontal well's). This is real 窶・spread of about ﾂｱ2%, and estimable from the known part of the well. But correcting
+it improves the GR match by only 1.8%, far too little to matter.
+
+Finer depth resolution. The typewell is sampled every 0.5 ft. Coarsening it to 1.0 ft costs 0.70 ft of score, so
+the model is genuinely sensitive here 窶・but there is no finer data available, and finer model grid (0.25 ft) made
+things worse, not better.
+
+Coverage, not accuracy, is the constraint 窶・see ﾂｧ5.
+
+
+7d. Small stuff, measured and struck off
+
+
+
+Grid discretisation: the error floor from representing the trajectory on a 15 ft block grid is 0.056 ft.
+Contribution to the total: 0.0003 ft. Irrelevant.
+
+Missing GR readings: 30% of the blind-section rows have interpolated rather than measured GR. Correlation between
+a well's missing-data rate and its error:
+竏・.049. The well with the longest continuous gap (240 ft) scores 1.64 ft 窶・one of the best. The system is
+completely immune to this.
+
+
+7e. Landmark anchors 窶・the one that nearly worked
+
+
+
+Mean value: ORACLE_IR 6.569 窶・perfect mean rate is worse than the estimate.
+
+Degrees of freedom: SIG_RATE = 0 竊・11.083.
+
+Diffusion magnitude: sharp optimum at 0.002. Notably 0.001 (8.445) is worse than 0.003 (6.987) 窶・under-constraining
+hurts more than over-constraining.
+
+Kernel shape: measured ﾎ排ate has kurtosis 1226, sd/MAD = 49.9 窶・extreme heavy tails, present in 40% of
+wells (genuine, not a data artefact). Yet Laplace (7.008), two-Gaussian mixture (6.74 / 6.97 / 7.14), uniform escape,
+and curvature-conditioned modulation (6.21 / 6.34) all made it worse. Faithfulness to the generating process 竕
+better prediction. Geometry: XY azimuth projection 窶・only 5.8% of wells turn &gt;15ﾂｰ; plane extrapolation is
+catastrophic on the turning subset (126 vs 26 ft);
+corr(|ﾎ排ate|, |ﾎ配-slope|) = 0.044.
+
+
+Template: transverse stretch of the typewell TVT axis is real (SD ~2%, estimable from the prefix) but worth only
+1.8% residual improvement; coverage 窶・not value estimation 窶・is the binding constraint; 0.5 ft resolution is already
+past diminishing returns (coarsening to 1.0 ft costs 0.70 ft pooled, but no finer data exists).
+
+Representation: block/grid discretisation floor measured at 0.056 ft (quadrature cost 0.0003 ft) 窶・struck off.
+
+GR gaps: corr(missing rate, log r_dp) = 竏・.049; the well with the longest gap (240 ft) scores r_dp = 1.64. 30%
+of blind rows are interpolated GR and the system is immune to it.
+
+Instead of matching GR values, match shapes: find peak窶鍍rough窶菟eak patterns in the horizontal well's GR and look for
+the same pattern in the reference curve. This gives a sparse set of hard pins 窶・"at this point in the well, the depth is
+here, ﾂｱ1 ft."
+
+It works remarkably well where it fires: matching reaches 97.1% top-1 at 2.9% false rate when the query curve is
+built on truth TVT. Crucially, replacing truth with the DP prediction barely degrades it (88.9% vs 89.1%) 窶・shape
+matching is invariant to a constant delta offset 窶・and wrong wells score identically to correct wells (0.959 vs
+0.960), the only signal in 13 attempts that survived where it was needed. But only 24% of horizontal-well GR events
+have any counterpart in the typewell; the best usable rule reaches 61.6% precision at ﾂｱ2 ft; soft-masking it into the DP
+hurt monotonically as the mask hardened (6.167 / 6.171 / 6.196 / 6.207). Geometric consistency voting failed to filter
+false anchors because typewell self-similarity makes same-well errors correlated 窶・multiple anchors drift into the
+same secondary basin together.
+
+7f. Fitting a smooth curve instead of a step-by-step path
+
+The trajectory is extremely compressible (cheat measurement:
+deg1 6.699, deg3 4.425, deg4 3.820 窶・a straight line already matches the DP). But CMA-ES reaches only 17.6, and
+100% of wells have a global optimum with lower cost than the truth coefficients (0.849 vs 1.685; two independent
+runs converge identically). A smooth trajectory can slice diagonally across multiple horizontal low-cost bands, placing
+every step in some local minimum; the truth is confined to one basin and must pass through high-cost regions.
+Parameterisation blocks per-block jumps but grants a worse freedom: continuous traversal of multiple basins. This is
+precisely why the DP's per-block Markov structure plus rate prior wins 窶・it forces local coherence.
+
+8. Ensemble 窶・the only thing that worked
+
+The mechanism is geometric midpoint interpolation on basin disagreement, not selection. Members that individually
+score worse than the baseline are the useful ones, because they fail in different directions.
+
+
+
+
+Member
+config delta
+solo CV
+
+
+
+
+base
+MB 3/10/6/30
+6.205
+
+
+mbt100
+MB 5/15/8/100
+6.315
+
+
+k2
+RESIDUAL_K0=2, shrink=1.0
+6.465
+
+
+sr0125
+SIG_RATE=0.00125
+7.251
+
+
+mbacf
+MB step = per-well typewell autocorrelation peak
+6.166
+
+
+equal-weight mean
+
+5.976
+
+
+
+
+Selection discipline (four config-management incidents taught this the hard way):
+
+
+
+Every member is declared as BASE_ENV + its own deltas, never inheriting file defaults; meta_{tag}.json records
+the full env and triggers a re-run on mismatch.
+
+Divergence pre-screen: drop members with RMS deviation from base &lt; 0.10 ft, or deviation correlation &gt; 0.995 with a
+better member.
+
+Swap-greedy (forward + swap + drop) instead of pure forward.
+
+Null pruning: each member's marginal contribution against a sign-flipped null.
+
+The final team was fixed by 5-fold membership stability, not by the full-set score (k2 5/5, mbt100 5/5,
+sr0125 4/5, mbacf 4/5). Bootstrap on that pre-registered team: improvement +0.212, P (&gt;0) = 96.8%, no selection
+bias.
+
+
+Higher-order attempts failed: per-well member selection via GR self-consistency (Spearman 0.043; argmin was worse than
+random choice), and a PCA of member response across wells (PC1 explains 32% but is a difficulty axis, correlating 竕､
+0.09 with every truth-free well feature).
+
+9. CV vs LB 窶・the part worth reading
+
+24 submissions with all three numbers:
+
+corr(CV, private)      +0.930      Spearman +0.893
+corr(public, private)  +0.404      Spearman +0.511
+corr(CV, public)       +0.558
+
+
+CV predicts private more than twice as well as the public leaderboard does.
+Regression slopes: private ~ CV is 0.620; private ~ public only 0.275.
+
+Simulation before the reveal (drawing disjoint 52/148 from the 773 CV wells, 20k reps):
+
+
+
+pooled SD on 52 wells: 1.133 ft, p5窶菟95 spanning 3.65 ft
+
+pooled SD on 148 wells: 0.654 ft
+
+shake (public 竏・private) SD: 1.385 ft; 73% chance of exceeding 0.5 ft
+
+for two models 0.19 ft apart in CV: 24.0% flip on 52 wells, 10.8% on 148, and 30.9% chance the public and private
+orderings disagree
+
+
+Observed shake SD came out at 0.985 窶・same order of magnitude.
+
+There is also a systematic offset: private 竏・CV = +1.084 (sd 0.475),
+public 竏・CV = +1.296. 24 of 25 submissions scored worse on LB than on CV, so the test wells are genuinely harder than
+the training distribution and the small public split adds ﾂｱ1.1 ft of noise on top. Before the reveal I framed this
+as a two-way question 窶・"is the offset a harder test set, or just an unlucky 52 wells?" 窶・with predictions of ~7.26
+and ~5.84 respectively. The observed 7.444 settles it: the test set is genuinely harder.
+
+The rule this supports: trust CV; use LB only as a tie-breaker when CV differences are under ~0.1 ft; never re-tune
+on LB feedback.
+
+10. What I would do differently
+
+Neighbour-well bedding-plane priors. I closed this axis because only 21 of 773 wells share a typewell file 窶・but
+that measures shared typewell, not spatial proximity. Another competitor independently reached CV竕・B 8.0 using
+XY-neighbour bedding planes to estimate g' = dFE/dMD and reported it works well. My xyz_diag tested something
+different ("does XY azimuth help the DP's rate?", corr 0.044) and I over-generalised the negative result. This is the
+one axis I believe was closed in error.
+
+Accept the ceiling earlier. TPL_COV_ONLY = 6.041 窶・perfect template values in observable bins are worth only 0.16
+ft 窶・was measurable early. It should have redirected effort to cross-well information immediately, instead of the ~10
+further single-model mechanisms I tested afterwards.
+
+Measure before building. The habits that paid off: every new parameter's off-value must reproduce the baseline
+bit-for-bit before sweeping; pass/fail criteria declared before running; oracle probes to bound the ceiling before
+implementing; null controls whenever taking a minimum over estimators. These caught at least four wrong conclusions and
+three patches that had silently never taken effect.
+
+No comments
+

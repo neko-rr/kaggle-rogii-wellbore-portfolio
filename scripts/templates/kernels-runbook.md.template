@@ -1,0 +1,92 @@
+# Kernels Runbook — {{COMP_SLUG}}
+
+> skill: kaggle-kernels-runbook  
+> participant: {{PARTICIPANT}}  
+> comp-url: {{COMP_URL}}  
+> last-updated: {{COMP_DATE}} UTC
+
+Kaggle / Colab 実行の環境メモ **SSOT**。  
+**提出方式 SSOT:** `.cursor/skills/_shared/NOTEBOOK-LINKED-SUBMIT.md`（方式 1 UI · 方式 2/2b CLI）
+
+---
+
+## 実行場所の方針
+
+| 用途 | 場所 |
+|---|---|
+| 短時間（推論・軽い検証） | ローカル or Kaggle Notebook（多くは CPU） |
+| 長時間 / GPU 必要 | Kaggle（9h 上限）または Colab — **ユーザーが A/B 選択**。許可後はそのレーンを idle 放置しない · 無断 GPU 起動禁止（Skill `kaggle-kernels-runbook` · Rule `kaggle-private-assets`） |
+| スモーク・gate | ローカル or Kaggle 短時間 |
+
+**長時間実行の前提:** `kaggle-pretrain-gate` PASS
+
+## Private 必須
+
+- 自作 Notebook / Dataset / Model: `is_private` / `isPrivate: true`
+- push 前: `scripts/assert-kaggle-private.ps1`
+- `datasets create --public` 禁止
+
+---
+
+## Input 固定（Kaggle）
+
+| Input | slug | version | 備考 |
+|---|---|---|---|
+| Dataset | — | — | |
+| Models | — | — | |
+
+Internet: **OFF**（例外時は notes に理由）
+
+---
+
+## Kaggle 設定メモ
+
+| 項目 | 値 |
+|---|---|
+| Accelerator | （run-log に記録） |
+| Internet | OFF |
+| 実行時間上限 | 9h |
+
+---
+
+## fork 実行チェックリスト（notebook-output）
+
+### 経路 A — Kaggle UI
+
+1. **Run All** → 出力（例: `/kaggle/working/submission.zip`）を確認
+2. **Save Version** → Version N と kernel slug を `run-log.md` に記録
+3. ローカル DL 後 validator（`submission-rules.md`）
+4. **LB 提出:** UI **Submit to Competition** または CLI `-k` / `-v`（`NOTEBOOK-LINKED-SUBMIT.md` 方式 2）
+
+### 経路 B — CLI 完結（`kernels push`）
+
+1. `kernels pull <slug> -m` → embedded zip 等を更新
+2. **`kernels push -p <folder>/`** → Version N を `run-log.md` に記録
+3. `kernels status` が **COMPLETE** · `kernels files` で出力サイズ確認
+4. validator PASS 後 → `competitions submit -k/-v`（`NOTEBOOK-LINKED-SUBMIT.md` 方式 2b）
+
+**公式 CLI:** [kernels push / metadata](https://github.com/Kaggle/kaggle-cli/blob/main/docs/tutorials.md) · 実行は `.\scripts\kaggle-cli.ps1`
+
+5. **Agent は `kernels push` / `competitions submit` しない**（ユーザー OK 時も NB 紐づけを案内）
+
+---
+
+## Colab 設定メモ
+
+| 項目 | 値 |
+|---|---|
+| ランタイム | — |
+| ドライブ保存先 | — |
+
+接続手順: Skill **`cursor-colab-runtime`**
+
+---
+
+## 関連
+
+| ファイル | 役割 |
+|---|---|
+| `my-ran-notebook/{nb}/run-log.md` | デバッグ共有ログ · `output_version` |
+| `pretrain-gates/` | 学習前ゲート |
+| `submission-validations/` | 提出前検証 |
+| `NOTEBOOK-LINKED-SUBMIT.md` | 提出方式 SSOT |

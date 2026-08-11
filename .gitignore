@@ -1,0 +1,85 @@
+# =============================================================================
+# Kaggle コンペ — Git 除外（GitHub 公開を想定）
+# Skill: kaggle-git-security / scripts/check-staged-secrets.ps1
+# =============================================================================
+
+# --- コンペデータ（ライセンス上 GitHub に載せない）---
+**/dataset/**
+!**/dataset/.gitkeep
+!**/dataset/README.md
+
+# --- Kaggle 認証 ---
+.kaggle/
+kaggle.json
+
+# --- 秘匿情報 ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials.json
+secrets/
+**/secrets/**
+
+# --- 学習成果物・提出物（大容量・再現は Kaggle/Colab 側）---
+submission.zip
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.ckpt
+*.onnx
+**/triton/
+**/checkpoints/
+
+# --- Notebook ---
+.ipynb_checkpoints/
+*.nbconvert.ipynb
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.envrc
+
+# --- OS / エディタ ---
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*~
+
+# --- ログ（パス・提出 ref が含まれる場合あり）---
+*.log
+exp/submissions-cli.log
+
+# --- 一時・キャッシュ ---
+.cache/
+tmp/
+temp/
+*.tmp
+scripts/_scrub_abs_paths_once.py
+**/_cleanup-*.log
+**/_tmp_*
+**/agent-tools/**
+
+# --- Kaggle横断知見（外側Gitから分離・必要ならPrivate nested repo）---
+/knowledge/
+
+# Cursor ローカル（エージェント作業ログ・絶対パスが混じりやすい）
+.cursor/projects/
+**/canvases/
+
+# Cursor hooks audit log
+.cursor/hooks/audit/
+
+scripts/_security_scan*.py
+scripts/_scrub*.py
+
+.ruff_cache/
+
+# Cursor plan drafts (local UI; Japanese names / path encoding fragile)
+.cursor/plans/
+

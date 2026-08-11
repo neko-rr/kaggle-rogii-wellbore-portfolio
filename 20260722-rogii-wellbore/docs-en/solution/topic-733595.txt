@@ -1,0 +1,24 @@
+﻿Topic #733595: Recap of Competition - Congratulations to the Winners!
+  Author: Elizabeth Park
+  Posted: 2026-08-07 15:20:30.345000
+  Votes: 6  Comments: 0
+
+Hi Kagglers,
+
+We窶决e happy to announce the conclusion of the ROGII - Wellbore Geology Prediction competition. Thank you everyone for your participation!
+
+This competition ended with 16,426 registrations and 6,956 participants on 6,125 teams. We had 161,975 submissions from 119 countries. For 1,242 users (including 12 in the top 100!), this was their first competition. Thank you all for your hard work in this competition and congratulations to our winners and to those who gained a new ranking!  
+
+The top potential winning teams will be contacted via email for the next steps. We look forward to learning more about their winning solutions.
+
+We've cleaned the leaderboard and disqualified some teams that have violated the rules. If you think you were removed by mistake, or believe you have evidence that suggests another team cheated, please contact compliance. Please fill in all the fields honestly.
+
+We highly encourage you to post a solution write-up about your approach and solution in the forums (see instructions). You may also refer to Kaggle Solution Write-Up Documentation for guidance. You are  also encouraged to publish your models on Kaggle Models!
+
+Thanks for continuing to make Kaggle a great place to learn, practice, and test data science techniques!
+
+Happy Modeling!
+
+Kaggle Team
+
+No comments

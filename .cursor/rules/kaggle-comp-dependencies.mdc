@@ -1,0 +1,28 @@
+---
+description: >-
+  コンペ依存は requirements-local.txt。ImportError はリスト追記後
+  setup-comp-venv。グローバル/ワンショット pip 禁止。
+alwaysApply: true
+---
+
+# コンペ依存（local packages）
+
+SSOT: `_shared/COMP-DEPENDENCIES.md`  
+リスト: **`<comp-inner>/requirements-local.txt`**  
+導入: `.\scripts\setup-comp-venv.ps1 -CompRoot "<comp-inner>"`
+
+## Agent 必須
+
+1. ローカルで `import` する計算パッケージは **requirements-local.txt に書く**  
+2. **ImportError / ModuleNotFoundError** のとき:
+   - パッケージ名をリストに追記  
+   - `setup-comp-venv.ps1 -CompRoot …`（または `pip install -r` **同じファイル**）  
+   - import smoke PASS 後に再実行  
+3. CLI だけなら `setup-kaggle-venv.ps1`（numpy は入らない）
+
+## 禁止
+
+- ❌ グローバル `pip install`  
+- ❌ リスト未更新のワンショット install  
+- ❌ 「Kaggle ノートにはある」だけでローカルリストを省略（Agent は `.venv` で動く）  
+- ❌ `.venv` を Git に入れる  

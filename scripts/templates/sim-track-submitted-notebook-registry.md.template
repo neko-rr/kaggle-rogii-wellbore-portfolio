@@ -1,0 +1,7 @@
+# submitted-notebook-registry — {{COMP_NAME}}
+
+> 自チーム提出 NB / kernel の slug ↔ ローカル凍結パス。  
+> 提出時: `my-submitted-notebook/` 凍結 + **`lifecycle-manifest.md`** 更新。
+
+| slug | submit_ref | local_path | kernel_version | notes |
+|---|---|---|---|---|

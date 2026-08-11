@@ -1,0 +1,436 @@
+{
+  "fetched": "2026-07-23T02:56:50Z (filename)",
+  "competition": "rogii-wellbore-geology-prediction",
+  "metric": "RMSE lower better",
+  "n_teams_on_public_lb": 5491,
+  "score_best": 4.859,
+  "score_median_all": 8.863,
+  "score_median_lt100": 8.4225,
+  "cutoffs": {
+    "1": 4.859,
+    "2": 4.905,
+    "3": 5.108,
+    "5": 5.265,
+    "10": 5.511,
+    "25": 6.017,
+    "50": 6.309,
+    "100": 6.469,
+    "200": 6.535,
+    "500": 6.662,
+    "1000": 7.01
+  },
+  "medal_approx_by_team_pct": {
+    "disclaimer": "For competitions with >=1000 teams: Gold=top 10 teams, Silver=top 5%, Bronze=top 10%. Final medals use Private LB.",
+    "gold": {
+      "rank_le": 10,
+      "score_le": 5.511
+    },
+    "silver": {
+      "rank_le": 275,
+      "score_le": 6.587
+    },
+    "bronze": {
+      "rank_le": 550,
+      "score_le": 6.675
+    }
+  },
+  "kazeneko": {
+    "lb_rows": [
+      {
+        "rank": 444,
+        "teamId": "16347969",
+        "team": "Kazeneko",
+        "score": 6.644,
+        "date": "2026-07-21 22:34:51",
+        "n_sub": 11,
+        "members": "kazeneko77"
+      }
+    ],
+    "best_public_from_submissions": 6.644,
+    "rank_by_best_score": 442,
+    "percentile_from_top": 8.05,
+    "n_submissions_cli": 12,
+    "n_complete": 11,
+    "n_pending": 1,
+    "public_medal_band_approx": "bronze"
+  },
+  "band_counts": [
+    [
+      "4.5-5",
+      2
+    ],
+    [
+      "5-5.5",
+      6
+    ],
+    [
+      "5.5-6",
+      14
+    ],
+    [
+      "6-6.5",
+      125
+    ],
+    [
+      "6.5-7",
+      828
+    ],
+    [
+      "7-7.5",
+      917
+    ],
+    [
+      "7.5-8",
+      533
+    ],
+    [
+      "8-9",
+      350
+    ],
+    [
+      "9-10",
+      409
+    ],
+    [
+      "10-16",
+      1531
+    ],
+    [
+      "16-50",
+      392
+    ],
+    [
+      "50-inf",
+      384
+    ]
+  ],
+  "top25": [
+    {
+      "rank": 1,
+      "teamId": "15882587",
+      "team": "shu01",
+      "score": 4.859,
+      "date": "2026-07-18 09:03:33",
+      "n_sub": 17,
+      "members": "shu01jp"
+    },
+    {
+      "rank": 2,
+      "teamId": "16211055",
+      "team": "Yannan Chen",
+      "score": 4.905,
+      "date": "2026-07-23 02:23:14",
+      "n_sub": 94,
+      "members": "yannan90"
+    },
+    {
+      "rank": 3,
+      "teamId": "15891270",
+      "team": "SaintLouis",
+      "score": 5.108,
+      "date": "2026-07-22 00:01:11",
+      "n_sub": 253,
+      "members": "alexbstl,garink,ryanstoner"
+    },
+    {
+      "rank": 4,
+      "teamId": "15999593",
+      "team": "Rishikesh Jani",
+      "score": 5.237,
+      "date": "2026-07-22 05:40:17",
+      "n_sub": 134,
+      "members": "rishikeshjani"
+    },
+    {
+      "rank": 5,
+      "teamId": "15870218",
+      "team": "Shrey Gandhi",
+      "score": 5.265,
+      "date": "2026-07-22 09:07:13",
+      "n_sub": 134,
+      "members": "shreygandhi"
+    },
+    {
+      "rank": 6,
+      "teamId": "15864151",
+      "team": "L & J & A & A",
+      "score": 5.325,
+      "date": "2026-07-22 20:08:51",
+      "n_sub": 380,
+      "members": "alijs1,arunodhayan,jsday96,l1ghtsource"
+    },
+    {
+      "rank": 7,
+      "teamId": "15868189",
+      "team": "yu4u",
+      "score": 5.443,
+      "date": "2026-07-17 01:42:09",
+      "n_sub": 43,
+      "members": "ren4yu"
+    },
+    {
+      "rank": 8,
+      "teamId": "15868731",
+      "team": "Tucker Arrants",
+      "score": 5.444,
+      "date": "2026-07-18 02:27:41",
+      "n_sub": 157,
+      "members": "tuckerarrants"
+    },
+    {
+      "rank": 9,
+      "teamId": "16292952",
+      "team": "Nocturne & Adil",
+      "score": 5.502,
+      "date": "2026-07-22 10:15:16",
+      "n_sub": 213,
+      "members": "adilkhabibullin,nocturnebflat123"
+    },
+    {
+      "rank": 10,
+      "teamId": "15904349",
+      "team": "Ryo Takaki",
+      "score": 5.511,
+      "date": "2026-07-22 17:31:42",
+      "n_sub": 285,
+      "members": "ryotakaki"
+    },
+    {
+      "rank": 11,
+      "teamId": "15863902",
+      "team": "tennogh",
+      "score": 5.551,
+      "date": "2026-07-22 20:54:00",
+      "n_sub": 40,
+      "members": "tennogh"
+    },
+    {
+      "rank": 12,
+      "teamId": "16040849",
+      "team": "tremors",
+      "score": 5.566,
+      "date": "2026-07-22 23:19:03",
+      "n_sub": 118,
+      "members": "datafan07,nlztrk"
+    },
+    {
+      "rank": 13,
+      "teamId": "15873784",
+      "team": "Ruby",
+      "score": 5.648,
+      "date": "2026-07-19 06:09:33",
+      "n_sub": 26,
+      "members": "w5833946"
+    },
+    {
+      "rank": 14,
+      "teamId": "15910775",
+      "team": "TKP",
+      "score": 5.693,
+      "date": "2026-07-22 08:55:31",
+      "n_sub": 222,
+      "members": "kazuwhite,priyanshujain32,takumi0220"
+    },
+    {
+      "rank": 15,
+      "teamId": "15937990",
+      "team": "Hit Imai",
+      "score": 5.74,
+      "date": "2026-07-22 11:24:32",
+      "n_sub": 177,
+      "members": "hitimai"
+    },
+    {
+      "rank": 16,
+      "teamId": "15994289",
+      "team": "Can",
+      "score": 5.747,
+      "date": "2026-07-19 17:12:51",
+      "n_sub": 66,
+      "members": "canentay"
+    },
+    {
+      "rank": 17,
+      "teamId": "15910655",
+      "team": "roglike",
+      "score": 5.821,
+      "date": "2026-07-22 19:39:59",
+      "n_sub": 199,
+      "members": "eijixxx,gaopengren"
+    },
+    {
+      "rank": 18,
+      "teamId": "16232990",
+      "team": "k256.dev",
+      "score": 5.864,
+      "date": "2026-07-22 17:07:36",
+      "n_sub": 112,
+      "members": "k256net"
+    },
+    {
+      "rank": 19,
+      "teamId": "16201230",
+      "team": "Rob Boyd",
+      "score": 5.877,
+      "date": "2026-07-22 20:59:49",
+      "n_sub": 174,
+      "members": "robboyd"
+    },
+    {
+      "rank": 20,
+      "teamId": "15863668",
+      "team": "Komil Parmar",
+      "score": 5.94,
+      "date": "2026-07-22 19:06:45",
+      "n_sub": 76,
+      "members": "komilparmar"
+    },
+    {
+      "rank": 21,
+      "teamId": "16162057",
+      "team": "Andrey Chankin",
+      "score": 5.967,
+      "date": "2026-07-22 11:40:26",
+      "n_sub": 59,
+      "members": "bluepill"
+    },
+    {
+      "rank": 22,
+      "teamId": "16419086",
+      "team": "monkey",
+      "score": 5.976,
+      "date": "2026-07-22 14:56:02",
+      "n_sub": 87,
+      "members": "marsonchu"
+    },
+    {
+      "rank": 23,
+      "teamId": "15873817",
+      "team": "Alexey Zakharov",
+      "score": 6.003,
+      "date": "2026-07-22 13:12:50",
+      "n_sub": 31,
+      "members": "drzoidberg"
+    },
+    {
+      "rank": 24,
+      "teamId": "15868272",
+      "team": "寿! & yiyu0716 & 萤火2018",
+      "score": 6.004,
+      "date": "2026-07-22 15:20:56",
+      "n_sub": 331,
+      "members": "aiwody,taka3776toshi,yiyu0716"
+    },
+    {
+      "rank": 25,
+      "teamId": "15867661",
+      "team": "tereka & Takoi",
+      "score": 6.017,
+      "date": "2026-07-22 18:26:43",
+      "n_sub": 217,
+      "members": "takoihiraokazu,tereka"
+    }
+  ],
+  "neighborhood": [
+    {
+      "rank": 437,
+      "teamId": "16016297",
+      "team": "もこもこ",
+      "score": 6.642,
+      "date": "2026-07-21 14:08:44",
+      "n_sub": 80,
+      "members": "mokomoko3"
+    },
+    {
+      "rank": 438,
+      "teamId": "16269978",
+      "team": "THIRUPATHI KANNAN K",
+      "score": 6.642,
+      "date": "2026-07-22 12:01:18",
+      "n_sub": 10,
+      "members": "thirupathikannank"
+    },
+    {
+      "rank": 439,
+      "teamId": "15872296",
+      "team": "Ozan M.",
+      "score": 6.642,
+      "date": "2026-07-22 20:46:27",
+      "n_sub": 209,
+      "members": "analyticaobscura"
+    },
+    {
+      "rank": 440,
+      "teamId": "16542323",
+      "team": "Kunal Desale",
+      "score": 6.643,
+      "date": "2026-07-22 00:33:15",
+      "n_sub": 6,
+      "members": "kunaldesale2408"
+    },
+    {
+      "rank": 441,
+      "teamId": "16448958",
+      "team": "Ksana",
+      "score": 6.643,
+      "date": "2026-07-22 11:03:59",
+      "n_sub": 14,
+      "members": "befunny"
+    },
+    {
+      "rank": 442,
+      "teamId": "15870429",
+      "team": "LIH.YUN",
+      "score": 6.644,
+      "date": "2026-07-22 09:09:50",
+      "n_sub": 8,
+      "members": "fxlcee"
+    },
+    {
+      "rank": 443,
+      "teamId": "15865086",
+      "team": "Athar Sayed",
+      "score": 6.644,
+      "date": "2026-07-22 07:55:58",
+      "n_sub": 45,
+      "members": "sayedathar11"
+    },
+    {
+      "rank": 444,
+      "teamId": "16347969",
+      "team": "Kazeneko",
+      "score": 6.644,
+      "date": "2026-07-21 22:34:51",
+      "n_sub": 11,
+      "members": "kazeneko77"
+    },
+    {
+      "rank": 445,
+      "teamId": "16572708",
+      "team": "Artem Sharkov",
+      "score": 6.644,
+      "date": "2026-07-21 20:33:43",
+      "n_sub": 8,
+      "members": "aartmoon"
+    },
+    {
+      "rank": 446,
+      "teamId": "16554472",
+      "team": "Mawra Musawar",
+      "score": 6.644,
+      "date": "2026-07-22 11:39:51",
+      "n_sub": 14,
+      "members": "mawramusawwar"
+    },
+    {
+      "rank": 447,
+      "teamId": "15905598",
+      "team": "Muhammad Junaid",
+      "score": 6.645,
+      "date": "2026-07-22 18:16:07",
+      "n_sub": 31,
+      "members": "junaid512"
+    }
+  ],
+  "correction_note": "2026-07-23: fixed mistaken gold=top10%; that band is bronze for large comps"
+}

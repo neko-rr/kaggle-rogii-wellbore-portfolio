@@ -1,0 +1,47 @@
+---
+description: 自作 Kaggle 資産は常に Private。起動はユーザー許可+対象ジョブ指示後のみ。CPU5/GPU2枠の指示済みジョブを管理する。
+alwaysApply: true
+---
+
+# Kaggle 資産 Private · 実行リソース方針
+
+意図しないリーク防止。**自作・自チーム**の Notebook / Dataset / Model は **必ず Private**。
+
+## Agent 必須 — Private
+
+1. **作成・push 前:** `kernel-metadata.json` は `"is_private": true` · `dataset-metadata.json` / `model-metadata.json` は `"isPrivate": true`
+2. **launch / create / version / push:** `scripts/assert-kaggle-private.ps1` を通す（FAIL なら push しない）
+3. **禁止:** `datasets create ... --public` / `-u` · UI·CLI で Public 化 · metadata の `is_private`/`isPrivate` を false で書く
+4. **他者公開資産**（`others-notebook/` · 公式 DS）の `is_private: false` はそのまま · **自フォルダへコピーして push するときは Private に直す**
+
+## Agent 必須 — CPU / GPU / Colab
+
+1. **起動には「ユーザー許可済み」かつ「ユーザーから実行指示あり」の両方が必要。** 許可だけを理由に Agent が次ジョブを選んだり、空き枠を埋めたりしない
+2. **Kaggle GPU と Google Colab の選択はユーザーが決める。** Agent は A/B を勝手に固定しない（Skill `kaggle-kernels-runbook` §実行レーンの承認）
+3. Kaggle 環境は **CPU 最大5枠・GPU 最大2枠を並列実行可能**。これは利用可能な上限であり、全枠を自動起動する命令ではない
+4. 指示されたジョブが複数ある場合だけ、許可された範囲・上限内で並列化する。完了後は直ちに harvest / status 確認を行う
+5. 指示済み候補が acceptance 未達・停止基準該当・実行不能なら **起動しない／停止する**。未指示の代替ジョブで枠を埋めず、ユーザーへ報告する
+6. Kaggle CPU（`enable_gpu: false`）も同じ承認条件。**CPU だから無断起動してよいわけではない**
+7. 長時間 GPU は **pretrain-gate PASS** 後のみ（Kaggle / Colab 共通）
+8. Kaggle 上の自作 Notebook / Dataset / Model は、CPU/GPU を問わず **常に Private**
+
+## 既定
+
+- Kaggle CLI の `datasets create` は **public=False 既定** · 明示 `--public` 禁止（`scripts/kaggle-cli.ps1`）
+- Kernel `kernels push` は **必ず `is_private: true` を書く**
+- CLI 書込操作は `scripts/check-kaggle-cli.ps1` → metadata/path 確認 → `scripts/assert-kaggle-private.ps1` → `scripts/kaggle-cli.ps1` の順。生の `kaggle` は禁止
+
+## コンペ開始時（bootstrap）
+
+- Rule 本ファイルを `new-kaggle-comp` / テンプレから配置
+- `docs-ja/comp-start-checklist.md` の Day 0 に Private チェックを含める
+- `experiment-checklist.md` §実行制約 に **今週の GPU 方針（ユーザー記入）** を置く
+
+## SSOT
+
+- 本 Rule（`alwaysApply: true`）
+- Rule `kaggle-comp-confidentiality`（コンペ中の GitHub Public 禁止 · 終了後の意図的公開）
+- `scripts/assert-kaggle-private.ps1`
+- `scripts/kaggle-cli.ps1`（`--public` / `-u` 拒否）
+- Skill `kaggle-kernels-runbook` · `kaggle-comp-bootstrap` · `cursor-colab-runtime`
+- テンプレ: `%USERPROFILE%\.cursor\kaggle-template\root\.cursor\rules\kaggle-private-assets.mdc`

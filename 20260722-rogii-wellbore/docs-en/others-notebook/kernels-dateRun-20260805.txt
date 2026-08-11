@@ -1,0 +1,42 @@
+﻿ref                                                               title                                               author                        lastRunTime                 totalVotes  
+----------------------------------------------------------------  --------------------------------------------------  ----------------------------  --------------------------  ----------  
+taylorclark637/hellbore-v-6                                       Hellbore V.6                                        Taylor Clark                  2026-08-04 22:45:25.227000           5  
+paulodmayra/rogii-geologia-v92-geographic-restoration             ROGII Geologia V92 - Geographic Restoration         PauloDmayra                   2026-08-04 21:55:24.977000           5  
+anubhavtyagi1212/rogii-wellbore-prediction-challenge              ROGII - Wellbore Prediction Challenge               Anubhav Tyagi1212             2026-08-04 21:34:40.793000           1  
+yaroslavkholmirzayev/reproduce-strongest-reference-aeroridge-v34  Reproduce Strongest Reference: AeroRidge v34        Yaroslav kholmirzayev         2026-08-04 21:02:15.787000          43  
+evgendvorkin/rogii-physics-lb-7-872-v48                           ROGII Physics LB 7.872 v48!                         ﾐ頒ｲﾐｾﾑﾐｺﾐｸﾐｽ ﾐ片ｲﾐｳﾐｵﾐｽﾐｸﾐｹ ﾐ漬ｻﾐｰﾐｴﾐｸﾐｼﾐｸﾑﾐｾﾐｲﾐｸﾑ・ 2026-08-04 15:04:33.307000         688  
+yaroslavkholmirzayev/rogii-contact-and-u-restore                  ROGII Contact and U Restore                         Yaroslav kholmirzayev         2026-08-04 10:05:19.227000          90  
+brianbovell/akiirolabs-tvt-prediction-model                       AkiiroLabs - TVT Prediction Model                   brian bovell                  2026-08-04 08:30:23.410000           1  
+navazshfathi/best-score-roggi                                     best-score-roggi-                                   navazsh fathi                 2026-08-03 16:39:42.020000           9  
+koushikkumardinda/rogii-wellbore-geology-prediction               屬・・ROGII Wellbore Geology Prediction                KOUSHIK KUMAR DINDA           2026-08-03 11:02:40.060000           9  
+itsyoursumit/rogiiv2                                              ROGIIv2                                             Sumit Pandey                  2026-08-03 10:56:17.743000           3  
+raunakdey07/rogii-robust-ensemble-v3                              ROGII Robust Ensemble v3                            Raunak Dey                    2026-08-03 10:19:47.917000          44  
+rokaiyasomapti/fork-of-rogii-pf-contact-gold-calibra-0b19e9       Fork of ROGII : PF + Contact + Gold Calibra 0b19e9  Rokaiya Somapti               2026-08-03 08:36:55.057000          67  
+luffyh04/harshini-submission-f                                    Harshini_submission_F                               Harshini Reddy                2026-08-02 22:30:04.850000          26  
+nikitagajbhiye30/rogii-0001                                       ROGII 0001                                          Nikita                        2026-08-02 21:09:03.237000          55  
+blacklions/rogii-wellbore-geology-prediction-final-hierarch       ROGII Wellbore Geology Prediction 窶・Final Hierarch  Blacklions.                   2026-08-02 15:34:06.857000          11  
+raunakdey07/rogii-physics-informed-stacked-ensemble-v2            ROGII Physics-Informed Stacked Ensemble V2          Raunak Dey                    2026-08-02 12:54:01.170000          24  
+daniilkrasnovvv/rogii-solution-on-6-390-in-lb                     [ROGII] Solution on 6.390 in LB!                    Krasnov Daniil                2026-08-02 08:53:01.903000         199  
+tamerlanomralinov/hahaha-det-agi                                  hahaha det agi                                      Tamerlan Omralinov            2026-08-01 18:10:49.087000         127  
+georgymamarin/measure-your-noise-floor-before-believing-a-lever   Measure your noise floor before believing a lever   Georgy Mamarin                2026-08-01 12:54:32.980000          92  
+ylevan78/rogii-wellbore-geology-prediction-test01                 ROGII - Wellbore Geology Prediction-Test01          Y Le                          2026-07-31 04:10:14.857000           0  
+farhanabidtech786/rogii-best-score-wellbore-geology-prediction    ROGII Best Score - Wellbore Geology Prediction      Farhan Abid                   2026-07-30 12:07:33.737000          34  
+shorooghahmadi/rogii-custom-model                                 rogii_custom_model                                  Shoroogh Ahmadi               2026-07-30 09:24:58.543000           2  
+romanrozen/catboost-baseline                                      CATBOOST baseline櫨                                  Roman Rozen                   2026-07-29 19:02:32.327000          33  
+lucifer19/rogii-geoanchor                                         ｪｨ粋窶坂ｬ・ROGII GeoAnchor                                Krizsﾃｳ Gergely                2026-07-28 22:48:00.580000          79  
+prvsiyan/rogii-public-score-frontier-ii-visuals                   ROGII Public Score Frontier II | VISUALS            prvsiyan                      2026-07-28 12:29:35.390000          14  
+blacklions/well-level-gbdt-gate                                   Well-Level GBDT Gate                                Blacklions.                   2026-07-27 06:52:38.987000          80  
+tmcit22/rogii                                                     rogii                                               tmcit22                       2026-07-27 04:57:40.700000           7  
+mtoshidesu/rogii-test-another-approch-2nd                         ROGII test Another approch 2nd                      m-toshi desu                  2026-07-27 01:40:36.620000           1  
+prvsiyan/rogii-public-frontier-blend-research-visuals             ROGII Public Frontier Blend Research | VISUALS      prvsiyan                      2026-07-26 21:58:19.227000         125  
+tamamfajar/notebooke0b75a04a9                                     notebooke0b75a04a9                                  Tamam Fajar Briliansyah       2026-07-26 16:22:15.703000           3  
+tiktoktrendz/rogii-dip-aware-hmm-gbm                              ROGII: Dip-Aware HMM + GBM                          patchmeifucan.ko              2026-07-26 02:51:11.310000           1  
+romanrozen/rogii-smartest-solution                                ROGII: SMARTEST SOLUTION                            Roman Rozen                   2026-07-25 20:45:59.383000         118  
+raunakdey07/rogii-ultra-sub-6-rmse                                ROGII Ultra || Sub-6 RMSE                           Raunak Dey                    2026-07-25 18:28:48.697000         116  
+blacklions/rogii-contact-gated-stratigraphic-alignment            ROGII Contact-Gated Stratigraphic Alignment         Blacklions.                   2026-07-25 10:51:42.917000          67  
+kaiwalyaatulraut/rogii-public-tvt-baseline                        ROGII Public TVT Baseline                           KAIWALYA RAUT                 2026-07-25 09:37:45.227000          67  
+iaztec/top-pf-config-branch-conservative-visuals                  Top PF-Config | Branch Conservative | Visuals       Gleb (i-aztec)                2026-07-24 13:48:29.843000         256  
+zihengedie/rogii-rebuild-newdataset                               ROGII Rebuild newdataset                            ziheng                        2026-07-23 23:54:39.910000           1  
+abdulrahmansu10/rogii-pfcfg-pj-rg40                               rogii-pfcfg-pj-rg40                                 Abdulrahman.su10              2026-07-23 22:36:24.740000           1  
+hanijezo/rogii-pfcfg-pj-rg20                                      rogii-pfcfg-pj-rg20                                 HaniJezo                      2026-07-23 22:36:20.537000           0  
+sans6262q/rogii-pfcfg-pj-bl85                                     rogii-pfcfg-pj-bl85                                 sans                          2026-07-23 22:36:17.180000           0  

@@ -1,0 +1,561 @@
+[
+  {
+    "slug": "drift-targeting-ncc-tree-based-rogii-wellbore",
+    "title": "Drift Targeting + NCC: Tree-based ROGII Wellbore",
+    "id": "mitchgansemer/drift-targeting-ncc-tree-based-rogii-wellbore",
+    "dataset_sources": [
+      ""
+    ],
+    "competition_sources": [
+      "rogii-wellbore-geology-prediction"
+    ],
+    "language": "python",
+    "is_private": false,
+    "tags_hit": [
+      "particle",
+      "lightgbm",
+      "xgboost",
+      "catboost",
+      "ncc",
+      "savgol",
+      "typewell",
+      "groupkfold",
+      "dtw",
+      "dwt",
+      "submission",
+      "anchor",
+      "azimuth",
+      "neighbor"
+    ],
+    "n_chars": 59616,
+    "head": "# %% [markdown]\n# # ROGII Wellbore Geology Prediction — Solution Writeup\n# **Best LB: 8.905 ft RMSE**\n# This notebook explains every key decision in the solution and runs the full inference pipeline at the end to reproduce\n# ### What each change contributed\n# | Round | Key change | OOF RMSE | LB |\n# |---|---|---|---|\n# | Baseline | Predict `last_anchor_tvt` unchanged | 15.91 ft | — |\n"
+  },
+  {
+    "slug": "eda-starter",
+    "title": "EDA Starter",
+    "id": "cdeotte/eda-starter",
+    "dataset_sources": [],
+    "competition_sources": [
+      "rogii-wellbore-geology-prediction"
+    ],
+    "language": "python",
+    "is_private": false,
+    "tags_hit": [
+      "ncc",
+      "typewell",
+      "submission",
+      "neighbor"
+    ],
+    "n_chars": 24423,
+    "head": "# %% [markdown]\n# # ROGII - Wellbore Geology Prediction EDA\n# This notebook is a starter exploration for the **ROGII - Wellbore Geology Prediction** Kaggle competition.\n# The competition asks us to predict **TVT** (`True Vertical Thickness`) for the hidden/evaluation part of each horizont\n# The main data sources are:\n# - Horizontal well trajectory and log data: `MD`, `X`, `Y`, `Z`, `GR`, `TVT_input`, and in training also `TVT` plus geo\n# - A paired vertical reference log, called a **Typewell**, with `TVT` and `GR` that helps correlate gamma ray signature\n# - Optional PNG visualizations for tra"
+  },
+  {
+    "slug": "experimental-notebook",
+    "title": "Experimental Notebook",
+    "id": "foysalemonshanto/experimental-notebook",
+    "dataset_sources": [],
+    "competition_sources": [
+      "rogii-wellbore-geology-prediction"
+    ],
+    "language": "python",
+    "is_private": false,
+    "tags_hit": [
+      "particle",
+      "lightgbm",
+      "ncc",
+      "typewell",
+      "heel",
+      "bimodal",
+      "midpoint",
+      "physical",
+      "fleongg",
+      "pilkwang",
+      "submission",
+      "anchor"
+    ],
+    "n_chars": 52364,
+    "head": "# %% [markdown]\n# ## Experiment 1: Heel/Affine GR Calibration + Robust `gs` Fix\n# **Base notebook:** [ROGII LB7295 Public Rebuild](https://www.kaggle.com/code/bernubritz/rogii-lb7295-public-rebuild?sc\n# **My experimental notebook:** [ROGII Experimental Notebook](https://www.kaggle.com/code/foysalemonshanto/rogii-experim\n# | Item | Value |\n# |---|---:|\n# | Base LB | **7.153** |\n# | Experiment LB | **9.615** |\n"
+  },
+  {
+    "slug": "fork-the-ruler-not-the-model",
+    "title": "Fork the ruler, not the model",
+    "id": "georgymamarin/fork-the-ruler-not-the-model",
+    "dataset_sources": [
+      "georgymamarin/geosteering-world-cup-2021-expert-interpretations"
+    ],
+    "competition_sources": [
+      "rogii-wellbore-geology-prediction"
+    ],
+    "language": "python",
+    "is_private": false,
+    "tags_hit": [
+      "particle",
+      "lightgbm",
+      "catboost",
+      "ncc",
+      "typewell",
+      "heel",
+      "bimodal",
+      "midpoint",
+      "groupkfold",
+      "dtw",
+      "dwt",
+      "pilkwang",
+      "submission",
+      "oracle",
+      "anchor",
+      "azimuth",
+      "neighbor"
+    ],
+    "n_chars": 266292,
+    "head": "# %% [markdown]\n# # Fork the ruler, not the model\n# *By [Georgy Mamarin](https://www.kaggle.com/georgymamarin)*\n# This notebook used to be called *Where the Wall Is*, then *Stop reforking*. There is no single wall. There is a part o\n# Two things get forked on a leaderboard: the model, and the ruler you measure it with. This notebook is the ruler — a s\n# Start with the numbers that anchor everything. The carry-last-TVT baseline scores **15.883** on the public board. The \n# %% cell 1\n# ---- one real worst-decile train well: the gamma-ray's best fit lands at the WRONG depth ----\n"
+  },
+  {
+    "slug": "gr-features-outlier-detection-rogii-wellbore",
+    "title": "GR Features / Outlier Detection — ROGII Wellbore",
+    "id": "mitchgansemer/gr-features-outlier-detection-rogii-wellbore",
+    "dataset_sources": [
+      ""
+    ],
+    "competition_sources": [
+      "rogii-wellbore-geology-prediction"
+    ],
+    "language": "python",
+    "is_private": false,
+    "tags_hit": [
+      "particle",
+      "lightgbm",
+      "xgboost",
+      "catboost",
+      "ncc",
+      "savgol",
+      "typewell",
+      "groupkfold",
+      "dtw",
+      "dwt",
+      "submission",
+      "anchor",
+      "azimuth",
+      "neighbor"
+    ],
+    "n_chars": 63084,
+    "head": "# %% [markdown]\n# # ROGII Wellbore — GR Feature Engineering & Per-Well Outlier Analysis\n# **Best LB: 8.905 ft RMSE**\n# This notebook covers two interlocking themes: (1) how gamma-ray signal processing drives the feature set, and (2) wher\n# Feature generation and model training run offline (~3 hours on a laptop); those sections show the real implementation \n# ### What each change contributed\n# | Round | Key change | OOF RMSE | LB |\n# |---|---|---|---|\n"
+  },
+  {
+    "slug": "physics-informed-baseline",
+    "title": "Physics-Informed Baseline",
+    "id": "karnakbaevarthur/physics-informed-baseline",
+    "dataset_sources": [
+      "arpitsingh2744/hill-climbing-wheel",
+      "karnakbaevarthur/rogii-code-helper-dataset"
+    ],
+    "competition_sources": [
+      "rogii-wellbore-geology-prediction"
+    ],
+    "language": "python",
+    "is_private": false,
+    "tags_hit": [
+      "particle",
+      "lightgbm",
+      "catboost",
+      "ridge",
+      "ncc",
+      "savgol",
+      "typewell",
+      "heel",
+      "groupkfold",
+      "submission"
+    ],
+    "n_chars": 45794,
+    "head": "# %% [markdown]\n# # Reference \n# https://www.kaggle.com/code/romantamrazov/rogii-better-solution-lb-9-956\n# %% [markdown]\n# # ROGII - Wellbore Geology Prediction (Improved)\n# **Changes vs. original:**\n# 1. `apply_pp` now blends **two** particle-filter signals (`pf_ancc` + `pf_z`)\n# 2. Optuna objective includes `sg_smooth` → train/test consistency\n"
+  },
+  {
+    "slug": "rogii-another-approach",
+    "title": "ROGII Another Approach",
+    "id": "yusuketogashi/rogii-another-approach",
+    "dataset_sources": [
+      "phongnguyn23021656/koolbox-offline",
+      "nina2025/rogii-03",
+      "pilkwang/rogii-model-package",
+      "thbdh5765/rogii-v10-fresh-artifacts",
+      "yuki16/rogii-model-package",
+      "fleongg/rogii-claude-models-pub",
+      "needless090/rogii-tabicl-mirror",
+      "ravaghi/wellbore-geology-prediction-artifacts"
+    ],
+    "competition_sources": [
+      "rogii-wellbore-geology-prediction"
+    ],
+    "language": "python",
+    "is_private": false,
+    "tags_hit": [
+      "particle",
+      "lightgbm",
+      "catboost",
+      "ridge",
+      "ncc",
+      "savgol",
+      "typewell",
+      "heel",
+      "bimodal",
+      "midpoint",
+      "groupkfold",
+      "physical",
+      "fleongg",
+      "koolbox",
+      "ravaghi",
+      "submission",
+      "oracle",
+      "anchor",
+      "neighbor"
+    ],
+    "n_chars": 237586,
+    "head": "# %% [markdown]\n# # A22 — ROGII\n# ## Source and Attribution\n# This notebook is derived from the publicly shared notebook `rogii-testlowest-public-frontier-lab-vi-6df5bd.ipynb`, rep\n# The experiment is identified by the normalized prediction SHA rather than by the reported score:\n# - Expected source file SHA: `7f035f1b633601455e9bab9aea0862a87b414218503cd71f8b77e9fad7a9264c`\n# - Expected source prediction SHA: `9ffd36214febd7c0c9f8dc72019b8ad96ac144d7351ec38eeff2974c4b17e081`\n# ## What Has Worked So Far\n"
+  },
+  {
+    "slug": "rogii-another-approch-2nd",
+    "title": "ROGII Another approch 2nd",
+    "id": "yusuketogashi/rogii-another-approch-2nd",
+    "dataset_sources": [
+      "phongnguyn23021656/koolbox-offline",
+      "nina2025/rogii-03",
+      "pilkwang/rogii-model-package",
+      "thbdh5765/rogii-v10-fresh-artifacts",
+      "yuki16/rogii-model-package",
+      "fleongg/rogii-claude-models-pub",
+      "needless090/rogii-tabicl-mirror",
+      "ravaghi/wellbore-geology-prediction-artifacts"
+    ],
+    "competition_sources": [
+      "rogii-wellbore-geology-prediction"
+    ],
+    "language": "python",
+    "is_private": false,
+    "tags_hit": [
+      "particle",
+      "lightgbm",
+      "xgboost",
+      "catboost",
+      "ridge",
+      "ncc",
+      "savgol",
+      "typewell",
+      "heel",
+      "bimodal",
+      "midpoint",
+      "groupkfold",
+      "physical",
+      "fleongg",
+      "koolbox",
+      "ravaghi",
+      "pilkwang",
+      "submission",
+      "oracle",
+      "anchor",
+      "neighbor"
+    ],
+    "n_chars": 290833,
+    "head": "# %% [markdown]\n# # A31 — Mean-Preserving Toe Tilt on the Qualified PF Branch\n# > **Attribution and scope**  \n# > This notebook is a derived experiment based on the uploaded public 6.451 notebook. The upstream public pipeline is r\n# ## Added essence\n# The original PF seed-branch hedge applies one constant offset across every qualified evaluation row. A31 preserves tha\n# - slightly weaker correction near the beginning of the unknown interval;\n# - slightly stronger correction near the Toe;\n"
+  },
+  {
+    "slug": "rogii-eda-target-free-alignment-for-tvt",
+    "title": "🛢️ ROGII EDA + Target-Free Alignment for TVT",
+    "id": "pilkwang/rogii-eda-target-free-alignment-for-tvt",
+    "dataset_sources": [
+      "pilkwang/pilkwang-public-dataset-for-notebooks-figures",
+      "pilkwang/rogii-model-package",
+      "ravaghi/wellbore-geology-prediction-artifacts"
+    ],
+    "competition_sources": [
+      "rogii-wellbore-geology-prediction"
+    ],
+    "language": "python",
+    "is_private": false,
+    "tags_hit": [
+      "particle",
+      "lightgbm",
+      "xgboost",
+      "catboost",
+      "ridge",
+      "ncc",
+      "savgol",
+      "typewell",
+      "groupkfold",
+      "physical",
+      "dtw",
+      "koolbox",
+      "ravaghi",
+      "pilkwang",
+      "submission",
+      "oracle",
+      "anchor",
+      "azimuth",
+      "neighbor"
+    ],
+    "n_chars": 453017,
+    "head": "# %% [markdown]\n# # 🛢️ Geosteering EDA + Target-Free Stratigraphic Alignment for TVT Recovery\n# This notebook studies how horizontal well logs can be aligned to formation-aware TVT structure without directly observ\n# - Use observed gamma-ray patterns, formation context, and geometric priors to build TVT estimates.\n# - Compare complementary alignment signals: local planes, dense analogs, beam-style paths, PF-style priors, and DTW-lik\n# - Keep the final correction conservative: when two estimates disagree strongly, the blend retreats toward the more sta\n# For a more detailed walkthrough of the n"
+  },
+  {
+    "slug": "rogii-geology-aware-ensembling-lb-7-129",
+    "title": "ROGII: Geology-Aware Ensembling [LB 7.129]",
+    "id": "romanrozen/rogii-geology-aware-ensembling-lb-7-129",
+    "dataset_sources": [
+      "phongnguyn23021656/koolbox-offline",
+      "nina2025/rogii-03",
+      "thbdh5765/rogii-v10-fresh-artifacts",
+      "fleongg/rogii-claude-models-pub",
+      "needless090/rogii-tabicl-mirror",
+      "ravaghi/wellbore-geology-prediction-artifacts"
+    ],
+    "competition_sources": [
+      "rogii-wellbore-geology-prediction"
+    ],
+    "language": "python",
+    "is_private": false,
+    "tags_hit": [
+      "particle",
+      "lightgbm",
+      "catboost",
+      "ridge",
+      "ncc",
+      "savgol",
+      "typewell",
+      "heel",
+      "groupkfold",
+      "physical",
+      "fleongg",
+      "koolbox",
+      "ravaghi",
+      "submission",
+      "anchor"
+    ],
+    "n_chars": 162228,
+    "head": "# %% [markdown]\n# # ROGII Wellbore Geology Prediction — TVT tracking with a physics-informed particle filter + GBM ensemble\n# > First af all, you can follow the original version from this [notebook](https://www.kaggle.com/code/AmgedAlfaqih/7-09\n# **Task.** For each horizontal well we know the trajectory (`MD`, `Z`) and gamma-ray log (`GR`) along a known *visible*\n# **Approach in one sentence.** Don't treat this as a plain tabular regression problem — track the well like a physicist\n# ### Contents\n# 1. [Setup](#1) — environment & imports\n# 2. [Configuration & the physical reference model](#2) —"
+  },
+  {
+    "slug": "rogii-geosteering-for-beginners-7-visuals",
+    "title": "🛢️ ROGII Geosteering for Beginners | 7 Visuals",
+    "id": "n0rollback/rogii-geosteering-for-beginners-7-visuals",
+    "dataset_sources": [],
+    "competition_sources": [
+      "rogii-wellbore-geology-prediction"
+    ],
+    "language": "python",
+    "is_private": false,
+    "tags_hit": [
+      "lightgbm",
+      "ncc",
+      "typewell",
+      "heel",
+      "groupkfold",
+      "submission",
+      "anchor"
+    ],
+    "n_chars": 18248,
+    "head": "# %% [markdown]\n# # 🛢️ ROGII Geosteering, Explained — TVT, GR Correlation & a Clean Baseline\n# > **New to this competition and wondering what on earth a \"TVT\" is?** This notebook is for you.\n# Most notebooks here jump straight to models. This one first **explains the drilling problem in plain language**, then \n# **What we are actually doing:** a drilling company steers a well *horizontally* through a thin, valuable rock layer (t\n# The only sensor we have along the horizontal is the **GR (Gamma Ray)** log. Each rock layer has its own GR \"fingerprin\n# **Roadmap**\n# 1. 🗺️ The whole problem in one"
+  },
+  {
+    "slug": "rogii-honest-carry-forward-baseline-groupkfold",
+    "title": "ROGII: Honest Carry-Forward Baseline + GroupKFold",
+    "id": "n0rollback/rogii-honest-carry-forward-baseline-groupkfold",
+    "dataset_sources": [],
+    "competition_sources": [
+      "rogii-wellbore-geology-prediction"
+    ],
+    "language": "python",
+    "is_private": false,
+    "tags_hit": [
+      "typewell",
+      "groupkfold",
+      "physical",
+      "submission"
+    ],
+    "n_chars": 6906,
+    "head": "# %% [markdown]\n# # ROGII - an honest, cross-validated baseline\n# The task: predict **TVT** (geological position) in the hidden evaluation zone of each horizontal\n# well. This notebook builds a baseline the right way:\n# 1. A **physically-meaningful** baseline - inside a target layer the bit stays put, so **carry the\n#    last known TVT forward**.\n# 2. **Honest validation** with `GroupKFold` *by well* (no well leaks between train and validation).\n# 3. A tested claim you can rely on: a naive gradient-boosting model on trajectory features **does not\n"
+  },
+  {
+    "slug": "rogii-pf-contact-gold-calibration-stack",
+    "title": "ROGII : PF + Contact + Gold Calibration Stack",
+    "id": "foysalemonshanto/rogii-pf-contact-gold-calibration-stack",
+    "dataset_sources": [
+      "phongnguyn23021656/koolbox-offline",
+      "pilkwang/pilkwang-public-dataset-for-notebooks-figures",
+      "pilkwang/rogii-model-package",
+      "fleongg/rogii-claude-models-pub"
+    ],
+    "competition_sources": [
+      "rogii-wellbore-geology-prediction"
+    ],
+    "language": "python",
+    "is_private": false,
+    "tags_hit": [
+      "particle",
+      "lightgbm",
+      "catboost",
+      "ridge",
+      "ncc",
+      "savgol",
+      "typewell",
+      "heel",
+      "groupkfold",
+      "physical",
+      "fleongg",
+      "koolbox",
+      "ravaghi",
+      "submission",
+      "anchor"
+    ],
+    "n_chars": 126294,
+    "head": "# %% [markdown]\n# # ROGII : PF + Contact + Gold Calibration Stack\n# **Goal**  \n# Predict `TVT` in the evaluation zone of each horizontal well using a conservative, physically meaningful stack anchore\n# ## What this notebook does\n# This notebook builds a layered submission pipeline:\n# 1. **Anchor prediction** at the last known `TVT_input`\n# 2. **PF / beam path generation** to follow GR-to-typewell alignment\n"
+  },
+  {
+    "slug": "rogii-visual-eda-the-evaluation-zone",
+    "title": "ROGII: Visual EDA + the Evaluation Zone",
+    "id": "n0rollback/rogii-visual-eda-the-evaluation-zone",
+    "dataset_sources": [],
+    "competition_sources": [
+      "rogii-wellbore-geology-prediction"
+    ],
+    "language": "python",
+    "is_private": false,
+    "tags_hit": [
+      "typewell",
+      "physical"
+    ],
+    "n_chars": 7839,
+    "head": "# %% [markdown]\n# # ROGII Wellbore Geology - a visual EDA\n# Drilling a horizontal well is navigating underground without a map. This competition asks us to\n# predict **TVT** (True Vertical Thickness = the geological position of the bit) along the lateral\n# section of a well, in the **evaluation zone** where it is unknown.\n# This notebook makes the problem concrete and visual:\n# 1. What a single well actually looks like (trajectory, gamma-ray log, TVT).\n# 2. What the **evaluation zone** is and exactly which rows we must predict.\n"
+  },
+  {
+    "slug": "rogii-wellbore-tvt-physical-model",
+    "title": "ROGII Wellbore TVT — Physical Model",
+    "id": "sunnywu27/rogii-wellbore-tvt-physical-model",
+    "dataset_sources": [],
+    "competition_sources": [
+      "rogii-wellbore-geology-prediction"
+    ],
+    "language": "python",
+    "is_private": false,
+    "tags_hit": [
+      "particle",
+      "savgol",
+      "typewell",
+      "bimodal",
+      "physical",
+      "submission"
+    ],
+    "n_chars": 11132,
+    "head": ""
+  },
+  {
+    "slug": "wellbore-geology-prediction-ridge",
+    "title": "Wellbore Geology Prediction | Ridge",
+    "id": "ravaghi/wellbore-geology-prediction-ridge",
+    "dataset_sources": [
+      "ravaghi/wellbore-geology-prediction-artifacts"
+    ],
+    "competition_sources": [
+      "rogii-wellbore-geology-prediction"
+    ],
+    "language": "python",
+    "is_private": false,
+    "tags_hit": [
+      "particle",
+      "lightgbm",
+      "catboost",
+      "ridge",
+      "ncc",
+      "savgol",
+      "typewell",
+      "groupkfold",
+      "physical",
+      "koolbox",
+      "ravaghi",
+      "submission"
+    ],
+    "n_chars": 51615,
+    "head": "# %% [markdown]\n# # ROGII - Wellbore Geology Prediction\n# **Reference:** \n# - [rogii-sel15-rerun](https://www.kaggle.com/code/aidensong123/rogii-sel15-rerun)\n# - [[ROGII] BETTER SOLUTION | LB: 9.956](https://www.kaggle.com/code/romantamrazov/rogii-better-solution-lb-9-956)\n# - [[ROGII] SUPER SOLUTION |LB: TOP 3](https://www.kaggle.com/code/romantamrazov/rogii-super-solution-lb-top-3)\n# - [Top 2 Rank | 10.784 | Physics-Informed Baseline](https://www.kaggle.com/code/karnakbaevarthur/top-2-rank-10-784-phy\n# - [Triple-Signal Beam Search + Dual PF + LightGBM](https://www.kaggle.com/code/shinyanagai"
+  },
+  {
+    "slug": "what-is-the-precision-of-a-manual-interpretation",
+    "title": "What is the precision of a manual interpretation",
+    "id": "georgymamarin/what-is-the-precision-of-a-manual-interpretation",
+    "dataset_sources": [
+      "georgymamarin/geosteering-world-cup-2021-expert-interpretations"
+    ],
+    "competition_sources": [
+      "rogii-wellbore-geology-prediction"
+    ],
+    "language": "python",
+    "is_private": false,
+    "tags_hit": [
+      "ncc",
+      "typewell",
+      "physical"
+    ],
+    "n_chars": 23672,
+    "head": "# %% [markdown]\n# # The label is one geologist's drawing\n# This competition asks for `TVT` — where the geological layers sit along a horizontal well. The\n# organisers' own evaluation slide defines the error as `manualTVT − predictedTVT`, and ROGII's Igor\n# Kuvaev put it plainly in the forum: StarSteer \"manually projects GR onto TVT scale based on human\n# interpretation.\"\n# So the target is not a measurement. It is one professional's reading of ambiguous data.\n# That raises a question the leaderboard cannot answer: **how precisely can a manual interpretation be\n"
+  },
+  {
+    "slug": "working-note-target-free-tvt-geosteering",
+    "title": "📘 Working Note: Target-Free TVT Geosteering",
+    "id": "pilkwang/working-note-target-free-tvt-geosteering",
+    "dataset_sources": [
+      "phongnguyn23021656/koolbox-offline",
+      "nina2025/rogii-03",
+      "pilkwang/rogii-model-package",
+      "thbdh5765/rogii-v10-fresh-artifacts",
+      "fleongg/rogii-claude-models-pub",
+      "needless090/rogii-tabicl-mirror",
+      "ravaghi/wellbore-geology-prediction-artifacts"
+    ],
+    "competition_sources": [
+      "rogii-wellbore-geology-prediction"
+    ],
+    "language": "python",
+    "is_private": false,
+    "tags_hit": [
+      "particle",
+      "lightgbm",
+      "xgboost",
+      "catboost",
+      "ridge",
+      "ncc",
+      "savgol",
+      "typewell",
+      "heel",
+      "bimodal",
+      "midpoint",
+      "groupkfold",
+      "physical",
+      "fleongg",
+      "koolbox",
+      "ravaghi",
+      "pilkwang",
+      "submission",
+      "oracle",
+      "anchor",
+      "neighbor"
+    ],
+    "n_chars": 273365,
+    "head": "# %% [markdown]\n# # ROGII Contact-Gated Stratigraphic Alignment\n# This notebook builds a target-free TVT trajectory from three signals: a ridge/PF anchor, a learned trajectory branch, \n# %% [markdown]\n# ## Prediction Flow\n# The pipeline is ordered from broad fallbacks to highly local self-verification.\n# 1. Build a ridge/PF artifact trajectory and a physical/PF selector trajectory.\n# 2. Blend them into an SP45-style anchor and apply robust projection in normalized MD space.\n"
+  },
+  {
+    "slug": "xgb-starter-cv-15",
+    "title": "XGB Starter - [CV 15]",
+    "id": "cdeotte/xgb-starter-cv-15",
+    "dataset_sources": [],
+    "competition_sources": [
+      "rogii-wellbore-geology-prediction"
+    ],
+    "language": "python",
+    "is_private": false,
+    "tags_hit": [
+      "xgboost",
+      "typewell",
+      "groupkfold",
+      "submission"
+    ],
+    "n_chars": 17712,
+    "head": "# %% [markdown]\n# # XGBoost Starter - ROGII Wellbore Geology Prediction\n# This notebook is a compact XGBoost starter for the **ROGII - Wellbore Geology Prediction** competition. This version 3\n# The task is to predict `tvt` (`True Vertical Thickness`) for the hidden/evaluation interval of each horizontal well. T\n# This starter:\n# - Uses only fields that are available at test time.\n# - Builds per-well context features from the known `TVT_input` segment.\n# - Adds simple Typewell gamma-ray correlation features inspired by the competition task deck.\n"
+  }
+]

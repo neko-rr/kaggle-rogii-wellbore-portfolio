@@ -1,0 +1,45 @@
+﻿Topic #733282: 608th Place: 35 Submissions of One Solution, corr(public, private) = -0.04
+  Author: Sebastian Mateus
+  Posted: 2026-08-06 10:48:12.006000
+  Votes: 5  Comments: 1
+
+Final: 9.155 private, 608/6191 (top 10%). Best public: 6.390. This is not a winner's writeup 窶・it is an autopsy of what the crowded 6.4窶・.6 public band was actually doing, written with our full submission log open.
+
+THE HEADLINE NUMBER
+We made 50 submissions; 43 scored. Within our main pipeline family 窶・35 scored draws of essentially the same solution 窶・the correlation between public and private score was -0.037. Zero. Public mean 6.477 (sd 0.056) became private mean 9.176 (sd 0.123). Our best-public draw (6.390) scored 9.171 private; our best-private draw (9.040) was an unremarkable 6.434 public, and nothing could have identified it in advance.
+Every public-LB "improvement" we found after ~6.5 was sampling noise on a 52-well public set. Michael Timbs predicted this crater in the forum days before the deadline, with an OOF estimate of ~10 for the public notebooks. He was right while it was still unpopular to say so.
+
+WHAT WE BUILT
+We worked the public particle-filter geosteering lineage (credit: pilkwang, ravaghi, nina2025, fleongg, evansussex, evgendvorkin, hjyact, Ayodeji, Krasnov, and the det/M-TOSHI branch). PF over stratigraphic level U = TVT + Z with OU-momentum dip dynamics, GR-vs-typewell likelihood, learned residual branch, robust projection, contact overrides, visible-prefix calibration, bimodal branch hedge. Our contributions were 2x PF compute (500p/128s to 1000p/256s), GR likelihood width gs x 1.4, and full sweeps of the hedge and blend dials. Public best 6.390 窶・which we now know was a -1.5 sd draw, not a better configuration.
+
+THE MOST TRANSFERABLE LESSON: RATES vs LEVELS
+Within-field spatial interpolation was the consensus "legal hole" (hidden wells are in-fill wells inside training fields). We built it: neighbor-well formation-surface plane fits on absolute elevations, LOWO-validated, predicting drift direction at r = 0.966. Three ways to apply it, three failures:
+窶｢ Disagreement-gated LEVEL snap, shift capped ﾂｱ35 ft 窶・public 12.999
+窶｢ Same, wider gate and stronger pull (ﾂｱ50 ft) 窶・public 17.834
+窶｢ TREND replacement (pipeline slope to neighbor-plane slope) 窶・public 115.806
+Correlated is not complementary: the PF already extracts that information from GR (pipeline level RMSE ~8.5 ft vs spatial ~23 ft). A disagreement gate between a strong and a weak estimator does not find wells where the strong one is wrong 窶・it finds wells where the weak one is wrong, then damages them. The monotone dose-response (wider gate, worse score) proves systematic sign error, not mistuning.
+And the general rule: rate errors integrate, level errors do not. The snap's wrong shifts were capped, so its damage was capped. The trend replacement made a slope error, and err(i) = ﾎ敗lope ﾃ・(MD_i 竏・MD_0) grows linearly down a multi-thousand-foot lateral. Same bad estimator, 7x the damage. If you post-process a trajectory model, shift levels; never replace rates unless the new rate estimator is provably better.
+Also: visible-set behaviour is not a safety check. The snap fired on 1 of 3 visible wells and looked surgical. At 200 hidden wells it was a disaster.
+
+OTHER NEGATIVE RESULTS (so you don't have to)
+窶｢ Exact HMM smoothing hurts here. We built 1-D and 2-D (level x dip-rate) forward-backward smoothers matching the PF dynamics. Two independent implementations agreed: smoothing makes it worse. When the GR likelihood is misspecified, the backward pass propagates confident wrongness 窶・the filter's myopia was accidentally protective.
+窶｢ Catastrophic wells are not identifiable in advance. ~20% of wells carry ~46% of squared error and have degenerate PF posteriors (minor-branch mass &lt; 0.07), so every bimodality-triggered hedge misses them. Opening the gates (min-mass 0.25 to 0.05) had no measurable effect.
+窶｢ Persistence routing, prefix-pseudo-holdout model selection and selector-bin remaps were all neutral-to-negative under careful OOF testing.
+
+CODE-COMPETITION ENGINEERING NOTES
+窶｢ The 9-hour rerun is the real environment; your notebook session is not. "COMPLETE with an empty score" 窶・the silent death 窶・took ~20% of our compute-heavy draws, and no log evidence ever reaches you.
+窶｢ Check whether your pipeline actually needs the GPU. Ours, like most of this family, loaded every heavy model from mounted artifact pickles; the GPU was decoration. CPU-only kernels get separate, larger concurrency and cost no GPU quota. We found this in the last 48 hours; it had been true all competition.
+窶｢ But CPU rerun machines are weaker. With 7-8 dataset mounts and 2x PF compute, 4 of our 5 CPU submissions died silently at 200-well scale; the one 3-mount standard-compute kernel survived. Visible runtime (9-19 minutes in every case) predicted nothing.
+窶｢ Byte-identical code does not mean identical score in this family. Deterministic branches exist and are worth keeping purely as exact-measurement platforms.
+
+WHAT WE'D DO DIFFERENTLY
+Trust the 773 training wells. Build a suffix-masked OOF harness on day one, treat the public LB as a smoke test with sigma 0.05-0.12, and never let a single-submission delta drive a decision. The teams that finished 5.6-6.3 said exactly this in public before the deadline 窶・Tucker Arrants reported that single-fold submissions of one CV-5.13 model spanned 5.2-6.3 public. We read those posts, agreed with them, and kept fishing anyway, because our stated objective was the public score. If your objective is the final score, the public LB here was worth almost nothing after ~6.5. Our r = -0.04 across 35 draws of one solution is about as close to a controlled demonstration of that as you will get.
+
+Congratulations to Ruby (5.639), Bilzard, tereka &amp; Takoi, and everyone who trusted their CV. Thanks to ROGII and Kaggle for a genuinely interesting geosteering problem, and to every public-notebook author named above 窶・the ecosystem was a pleasure to dissect even where it misled us collectively.
+
+Full writeup with all tables and the complete experiment ledger is in the linked notebook below.
+
+Comments:
+笏懌楳 Navneet (2026-08-06 11:11:07.220000) [+0]
+笏・ Thank you for the honest autopsy @sebastianmateus @brenorb
+

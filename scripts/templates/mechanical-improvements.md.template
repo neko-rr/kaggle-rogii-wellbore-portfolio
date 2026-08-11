@@ -1,0 +1,98 @@
+# 機械的改善カタログ（戦略前チェック · 共通）
+
+戦略仮説（CHK）に入る**前に**潰せる機械的・一般的な改善点の目的別カタログ。
+
+## 使い方
+
+- このファイルは**読み専用の共通カタログ**。コンペ固有名（tip名・提出番号等）は書かない
+- コンペ開始時に comp-type に応じた節（C + 該当型 + X）の ID を `exp/pre-strategy-gate.md` へコピーし、進捗は**ゲートファイル側だけ**で更新する
+- 書式（1項目1行 · 安価モデルが機械判定できる形）:
+
+```text
+[ID] 確認内容 | PASS条件 | 証拠の置き場 | N/A条件
+```
+
+## comp-type → 節マッピング
+
+| コンペの主目的 | 使う節 |
+|---|---|
+| 全コンペ | **C**（土台）+ **X**（外部・運用） |
+| 精度向上（tabular / image / text の分類・回帰・ランキング） | + **A** |
+| 最適化・コスト最小化（code golf / サイズ・params 最小化） | + **O** |
+| シミュレーション・対戦（agent 提出） | + **S** |
+| 生成・LLM 出力 | + **G** |
+| 実行制約が強い（runtime / memory / internet-off） | + **R**（他節と併用可） |
+
+---
+
+## C: 共通・土台（全コンペ必須）
+
+- [C1] 評価指標のローカル再現 | 公式スコアと自作計算が許容誤差内で一致 | docs-ja/metric-repro.md | なし
+- [C2] 提出形式の機械検証スクリプト | validator が PASS/FAIL を返し提出前に毎回実行できる | scripts/validate-* + docs-ja/submission-rules.md | なし
+- [C3] 最弱ベースラインの提出 | LB スコアが付く（パイプライン疎通確認） | exp/exp-infer.md の SUB-001 | 提出枠が極端に少ない
+- [C4] sample_submission との整合確認 | 行数・ID・列・型が一致 | validator 出力 | sample が提供されない
+- [C5] seed・決定性の固定 | 同入力 2 回実行で同出力 | exp/exp-train.md | 非決定性が本質のコンペ
+- [C6] SSOT の初期化 | exp-index / experiment-checklist / pre-strategy-gate が存在 | exp/ 直下 | なし
+- [C7] 締切・提出回数・フェーズの記録 | comp-timeline.md に記載済み | docs-ja/comp-timeline.md | なし
+- [C8] ルール由来の禁止事項の列挙 | 外部データ・API・公開制約等を submission-rules へ転記 | docs-ja/submission-rules.md | なし
+
+## A: 精度向上型
+
+- [A1] 欠損・重複・型の機械検査 | 全列の欠損率・重複行数・dtype 一覧を出力済み | exp/work/ + exp-train.md | 表形式データが無い
+- [A2] ターゲット分布・不均衡の確認 | クラス比 / 分布要約を記録 | exp/exp-train.md | なし
+- [A3] リーク候補の列挙と判定 | ID・時間・グループ・集計列を確認し判定を記録 | exp/exp-train.md | なし
+- [A4] CV 設計の根拠記録 | **cv_unit**（row/group/time/custom）· fold · shippable 定義を `docs-ja/cv-design.md` に記録。Skill `kaggle-cv-design` · knowledge axis A 参照 | docs-ja/cv-design.md | なし |
+- [A4b] row/random 単独採択の禁止確認 | group/time 構造がありうるのに row KFold だけで GO しない。使うなら根拠段落 | docs-ja/cv-design.md | 行が実証 i.i.d. |
+- [A5] CV-LB 相関の初期確認 | 2 点以上の提出で改善方向が一致 or unknown 明示 | exp/hyperparameter-table.md | 提出枠不足 |
+- [A5b] oracle≠GO | offline ceiling/oracle を primary GO・Final に使わない宣言 | docs-ja/cv-design.md | なし |
+- [A5c] Early shape smoke | id/列/行·短 run を性能実験より前に PASS | validator または CHK-00S | 該当薄い場合 N/A |
+- [A6] 単純後処理の網羅 | threshold / clip / rounding / 正規化を単独検証済み | exp/hyperparameter-table.md | 該当しない metric
+- [A7] 定型特徴量の一括試行 | 集計・頻度・日付分解など定型を 1 回試した | exp/exp-train.md | 特徴量を使わない方針が確定
+- [A8] アンサンブル前の単独検証 | 各モデル単独 CV を記録してから混ぜる | exp/hyperparameter-table.md | 単一モデル方針
+
+## O: 最適化・コスト最小化型
+
+- [O1] コスト計測の自動化 | 1 コマンドで対象全体のコストを集計できる | scripts/ + exp/work/ | なし
+- [O2] 単位別の改善余地 screen | 単位ごとの現コストと理論下限/参考値の差を一覧化 | exp/latest/ | 単位分割が無い
+- [O3] 未使用構造の削除 | dead code / 未使用ノード除去で同スコア | 単位 verify 結果 | なし
+- [O4] 重複計算・重複定数の統合 | 共有化しても同スコア | 単位 verify 結果 | なし
+- [O5] dtype 縮小・量子化 | bit-exact または score-exact を確認して縮小 | 単位 verify 結果 | 精度劣化が許されない
+- [O6] 定数畳み込み | 実行時計算を事前計算に置換して同スコア | 単位 verify 結果 | なし
+- [O7] 合算前の単独検証 | 各縮小を単独 verify → 合算は差分確認 | verify レポート | なし
+- [O8] 縮小前後の公式 validator 実行 | 縮小後も提出制約 PASS | validator 出力 | なし
+
+## S: シミュレーション・対戦型
+
+- [S1] ローカル対戦環境の再現 | 公式 env でセルフプレイが動く | sim-track/ + exp/replay/ | env 非公開
+- [S2] タイムアウト・例外時の fallback | 時間超過/例外でも合法手を返す | agent コード + テスト | なし
+- [S3] 決定性・seed の記録 | 同条件リプレイが再現する | exp/replay/ | 環境が非決定
+- [S4] 相手プールの偏り確認 | 複数の公開 bot と対戦し勝率を記録 | sim-track/ | 公開 bot が無い
+- [S5] 行動時間の実測 | 制限時間に対する余裕を記録 | run-log | なし
+- [S6] 観測パースの単体テスト | 観測→内部状態の変換にテストがある | tests/ | なし
+
+## G: 生成・LLM型
+
+- [G1] 出力形式 validator | 形式違反を提出前に検出できる | scripts/ | なし
+- [G2] プロンプト・テンプレの版管理 | 変更が diff で追える | my-notebook/ + hyperparameter-table.md | なし
+- [G3] トークン/時間予算の実測 | 上限に対する余裕を記録 | run-log | 制限が無い
+- [G4] 失敗時の既定出力 | 生成失敗でも有効な提出を返す | notebook / agent コード | なし
+- [G5] サンプリング条件の固定 | temperature / seed を記録し再現できる | exp/hyperparameter-table.md | なし
+- [G6] 入力切詰めの安全化 | 最大長超過時の切詰め規則を明示 | コード + テスト | なし
+
+## R: 実行制約・効率型
+
+- [R1] 実行時間の実測 | 提出環境相当で制限内に余裕がある | run-log | 時間制限が無い
+- [R2] メモリの実測 | ピークメモリを記録し余裕を確認 | run-log | メモリ制限が無い
+- [R3] 依存の事前パッケージ化 | internet-off で動く（wheel 同梱等） | kernel-metadata + 実行ログ | internet ON 可
+- [R4] バッチ化・ベクトル化 | ループ処理を一括化して時間短縮済み | コード | 既に制限内で十分速い
+- [R5] モデル・アセットサイズの確認 | アップロード/同梱の上限内 | validator 出力 | サイズ制限が無い
+- [R6] 制約超過の自動検知 | 超過時に FAIL を返すチェックがある | scripts/ | なし
+
+## X: 外部成果物・運用（全コンペ必須）
+
+- [X1] 外部成果物の実体確認 | 中身と再現性を確認（スコア表示だけで信じない） | exp/exp-intel.md | 外部物を使わない
+- [X2] license 台帳の記録 | 採用した外部物を Tier R で台帳に記録 | docs-ja/license-ledger.md | 外部物を使わない
+- [X3] prior-knowledge の確認記録 | 該当カードの採用/不採用を判断して記録（読み順: A物差し→C運用→B手法） | exp/prior-knowledge.md + 本ゲート | knowledge が空
+- [X4] Private・実行レーンの遵守確認 | assert-kaggle-private PASS · 許可+実行指示の確認 | scripts/assert-kaggle-private.ps1 | なし
+- [X5] 作業ゴミ掃除の配線 | cleanup / artifact-routing / work-protect が設定済み | exp/work-protect.json + exp/artifact-routing.json | なし
+- [X6] 禁止台帳ゲートの配線 | hypothesis-ban gate が動く（空台帳でも毎回通す） | exp/improvement-loop-failures.json | なし

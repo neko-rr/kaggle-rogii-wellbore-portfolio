@@ -1,0 +1,7 @@
+# public-notebook-catalog — {{COMP_NAME}}
+
+> **上書き前に** `snapshots/catalog/` へ退避必須。  
+> score は **peak-ui**（Kaggle UI 表示）。Skill `kaggle-simulation-tracker`
+
+| # | slug | title | score | score_kind | updated | updated_stale_days | medal | author | notes |
+|---|---|---|---|---|---|---|---|---|---|

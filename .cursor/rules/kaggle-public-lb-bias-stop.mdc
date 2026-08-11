@@ -1,0 +1,32 @@
+---
+description: Public LB は固定偏りスライス — Trust≠Public だけで実験を止めない（全セッション）
+alwaysApply: true
+---
+
+# Public LB 偏り — 実験停止の誤判定禁止
+
+## 前提（短）
+
+Public ≈ **26%** は隠れテストの **固定・非代表スライス**（≈52井）。同一スライス上では精密だが **Private（≈74%）の良い点推定ではない**。shake-up は設計上ありうる。
+
+SSOT: `20260722-rogii-wellbore/docs-ja/cv-lb-private-relation.md` §「Public 26% の正体」· §「実験停止の誤判定禁止」  
+運用: `docs-ja/comp-strategy.md` §Stop · `exp/experiment-checklist.md`「Explicit Stop」
+
+## Agent 必須
+
+1. CHK の GO / NO-GO / 打ち切りの前に **レーン**（Trust 枠1 / Public 枠2 / 診断）を明示する  
+2. **Trust レーン**の主物差しは Trust CV（tip-cv / T2 等）。Public 悪化だけで止めない  
+3. **Public レーン**の主物差しは Public。Trust 悪化だけで止めない  
+4. Public 差 **≲0.08**（σ≈0.03 帯）を改善・悪化の確定根拠にしない  
+
+## 禁止（誤停止）
+
+- ❌ Trust≠Public / CV↔Public 乖離だけで Bet・CHK・Wave を停止する  
+- ❌ 「Public=易しい井だけ」を前提に実験を止める・CHK を設計する（組成は Host 未開示）  
+- ❌ 「514 は Trust≠Public だから実験全体 NO-GO」のようにレーン無視で書く  
+
+## 正しい停止
+
+- ✅ 当該レーンの acceptance 割れ  
+- ✅ Scoring Error · 形壊れ（F015 等）· 閉鎖済み言い換え  
+- ✅ ユーザー明示 Stop（再提出禁止・farvol 触るな 等）

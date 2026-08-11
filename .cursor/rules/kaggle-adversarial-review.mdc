@@ -1,0 +1,31 @@
+---
+description: >-
+  高コスト前の敵対的検証（SA-7）。Bet·Final·本採用·CV固定·harvest。
+  毎 CHK 禁止。GO は親のみ。
+alwaysApply: false
+globs:
+  - exp/**
+  - docs-ja/comp-strategy.md
+  - retro/**
+  - "**/experiment-checklist.md"
+---
+
+# 敵対的検証（Adversarial Review · 詳細）
+
+SSOT: `_shared/ADVERSARIAL-REVIEW.md`  
+常時要約: Rule `kaggle-decision-gates` · 地図 `_shared/DECISION-FLOW.md`  
+Skill `kaggle-adversarial-review` · agent 正本 `scripts/templates/cursor-agents/`（install → SA-7）
+
+## Agent 必須
+
+1. 次の直前に **SA-7** または kill-list 自問:  
+   Bet/Wave 大改訂 · Final 枠 · T1 本採用 · cv_unit 固定 · harvest 直前  
+2. brief に **mode 1 つ**（pre-bet | pre-final | pre-adopt | pre-cv-lock | pre-harvest）  
+3. サブは **readonly · 非裁決**。KILL/CHALLENGE なら親が修正 or ユーザー確認  
+4. 他 lane 小差だけ · oracle だけ で KILL/SUPPORT させない
+
+## 禁止
+
+- ❌ 毎 CHK で SA-7  
+- ❌ SA-7 を ban / validator / pretrain の代替  
+- ❌ コンペ固有 tip 名・F 本文を generic agent にハードコード  

@@ -1,0 +1,354 @@
+﻿Topic #733145: 158th Place Solution (2.6%) 窶・Physics PF + Decorrelated Full-Well Decoders
+  Author: stevenleehans
+  Posted: 2026-08-06 01:11:44.706000
+  Votes: 2  Comments: 0
+
+Thanks to ROGII and Kaggle for a genuinely unusual problem, and to everyone who posted analysis
+during the competition 窶・the discussion board on this one was better than the leaderboard.
+
+I finished 158 / 6,191 (private 7.989) from public rank 2,055. That +1,897 place move is the
+whole story of this writeup: the model is ordinary, but the selection discipline was not, and on
+this competition that was worth more than any modelling idea I had.
+
+
+
+
+
+grouped CV (773 wells)
+public (52 wells)
+private
+
+
+
+
+flat baseline (hold last TVT)
+15.91
+窶・
+窶・
+
+
+v40 窶・3-axis decorrelated legs
+7.6421
+6.961
+8.012
+
+
+v42 窶・v40 + winsorised blend
+7.5803
+7.004
+7.989
+
+
+
+
+Both were selected. The one with the worse public score won.
+
+TLDR
+
+Two channels with deliberately different failure modes, combined with frozen weights:
+
+
+
+A physics/tabular channel 窶・structure-surface transfer + a momentum particle filter with a
+deliberately weak GR likelihood, feeding a gradient-boosted ensemble.
+
+A full-well neural channel 窶・three decoders over the complete well (a cost-volume CNN with
+Viterbi decode, a GRU sequence decoder, an attention decoder), pre-blended 0.65/0.15/0.20.
+
+
+final = 0.6658ﾂｷv31 + 0.4929ﾂｷleg40, then a per-row winsorisation of each leg to the blend ﾂｱ12 ft,
+then a robust low-order polynomial projection per well.
+
+Nothing here is exotic. What mattered was refusing to ship anything that couldn't clear a fold-safe
+gate on 773 wells, for the six weeks that the public leaderboard said I was wrong.
+
+Framing
+
+Target is drift = TVT 竏・TVT_at_anchor, so predicting zero reproduces the flat baseline and
+every model is measured against a meaningful zero.
+
+The load-bearing identity is TVT = surface 竏・Z. Z is measured and therefore known everywhere,
+including the eval zone 窶・so the entire high-frequency wiggle of TVT is free. The only hard part
+is the smooth per-well surface trend. Any effort spent on per-station detail is spent in the wrong
+place; I confirmed this on my own residuals before believing it (below).
+
+Channel 1 窶・physics + tabular (CV 8.62)
+
+
+
+Structure frames. Cluster the typewell master log, then transfer the marker-elevation surface
+T = Z + TVT from neighbouring wells by anisotropic IDW and a kriging-lite fit.
+
+Particle filter family. State is pos = TVT + Z, evolving as a momentum random walk under a
+pointwise GR likelihood that is deliberately weak.
+
+44 multi-scale log/trajectory features, into a LightGBM 5-seed bag + XGBoost + CatBoost.
+
+
+The weak-GR choice is the single most counter-intuitive thing in the build. Every attempt to make
+GR lead the estimate lost to a plain continuity prior 窶・nine separate experiments. Two other
+teams reported the same result independently. The physical reason is in the acquisition: GR
+coherence between the lateral and the typewell is usable at the heel (0.16窶・.50) and collapses to
+0.02窶・.04 at the toe, which is exactly where the scored rows are. The exploitable signal is
+continuity, not GR matching.
+
+Channel 2 窶・full-well decoders (CV 7.64 blended)
+
+Three decoders that consume the whole well as one sample rather than row-wise:
+
+
+
+cost-volume CNN + Viterbi decode (weight 0.65) 窶・squared difference between the typewell GR
+interpolated onto a TVT grid and the lateral GR per MD column, giving the classical geosteering
+correlation panel; a CNN reads it and a Viterbi pass decodes a continuous track through it.
+
+GRU sequence decoder (0.15), trained with an alignment/sharpness loss.
+
+attention decoder (0.20).
+
+
+They were chosen for disagreement, not accuracy. The seqdecode leg scores 8.85 standalone against
+the CNN's 8.60, but it is more decorrelated (0.747) and beats the CNN on the big-drift wells, which
+is where pooled RMSE is actually decided.
+
+Frozen coefficients beat refitting. The frozen blend scores 7.6421; refitting the coefficients
+per fold scores 7.6854. Refitting overfits the folds 窶・I left the v37-era weights untouched through
+three subsequent leg changes.
+
+The winsorisation (v42, and the one that scored)
+
+Clip each leg to the blend ﾂｱ12 ft and recombine with the frozen coefficients. That's it 窶・no
+selector (seven selector attempts had already failed). It fires on 8.6% of rows across 45 of 773
+wells, de-shrinks the drift slope 0.598 竊・0.614, and improves the big-drift wells 22.71 竊・22.24.
+
+Measured 竏・.062 on CV, 竏・.096 on public LB, 竏・.038 on a 200-well pseudo-test. Three independent
+measurements, same sign 窶・which is why I trusted it despite it lowering my public score relative
+to v40. It was worth 0.023 ft on private.
+
+Where the error actually lives
+
+This was the most useful analysis I did, and I'd recommend it to anyone starting a problem like
+this. Split each well's residual into a constant, a linear-in-distance term, and the remainder:
+
+
+
+
+component
+share of squared error
+RMSE if an oracle fixed it
+
+
+
+
+datum (constant)
+57.6%
+4.98
+
+
+dip (linear)
+22.0%
+6.75
+
+
+shape (residual)
+20.5%
+窶・
+
+
+both scalars
+79.6%
+3.46
+
+
+
+
+~80% of the squared error is two numbers per well. Per-station shape is not the problem 窶・the
+track is placed slightly wrong and tilted slightly wrong. Error is also tail-concentrated: the
+worst 1% of wells carry 20.1% of pooled squared error, the worst 10% carry 55.6%.
+
+Then I spent three weeks failing to predict either scalar:
+
+
+
+
+target
+probe
+result
+
+
+
+
+datum
+192 legal per-well aggregates
+corr 竏・.013, sign acc 0.511
+
+
+datum
+raw full-well GR, from scratch
+corr 0.377
+
+
+datum
++ synthetic pretraining
+corr 0.267 窶・worse
+
+
+datum
++ masked-autoencoder SSL pretraining
+corr 0.347 窶・also worse
+
+
+dip
+138 legal features, grouped CV
+corr 0.03, sign acc 0.49
+
+
+
+
+Three encoders agreeing that the per-well datum is not in the GR is not a modelling failure, it's
+a measurement: gamma ray reports increments of rock character, not absolute depth, so the datum
+is structurally a constant of integration. Dead reckoning cannot recover an unknown starting
+position without an external reference.
+
+I could always detect trouble 窶・model disagreement, particle spread, eval-zone length all rank
+wells by expected error 窶・and never predict the direction of the correction. Seven selector
+experiments died on exactly that gap.
+
+What did not work
+
+Kept deliberately, because most of the value of my log is in what's ruled out:
+
+
+
+Per-well routing / selectors 窶・7 attempts, all negative. Including a self-limiting weight on
+the weakest channel using its own evidence signals (竏・.019 against a 竏・.05 gate); explicit
+monotone shrinkage preferred zero shrinkage.
+
+Synthetic pretraining 窶・5 attempts. I built progressively more faithful forward simulators,
+ending with a true 2D bedding field with an independent lateral facies component, calibrated to
+reproduce the real heel竊稚oe coherence collapse (0.83竊・.37 against a real 0.81竊・.44). It landed at
+the same wall. See "what I got wrong" below 窶・this is the one I misread.
+
+Bigger models on the same inputs. A scaled full-well attention model decoded 9.70, worse
+than the small attention leg (9.23) and the CNN (8.60).
+
+Formation/geology sequence labelling. Dead on arrival: 54 of 60 eval zones never leave a
+single formation, median 0 contact crossings, median 26 ft TVT span. This task is fine
+positioning within one bed 窶・which rules out anything keyed to formation identity or facies.
+
+Neighbour-well set encoders. The oracle looked like 竏・.98 ft until I ran the null: a random
+single neighbour scores 33.51 against a truth-picked 9.46. The oracle was 24 ft of pure picking.
+Never report an oracle without its random-choice null.
+
+Transductive/online training on held-out wells' visible rows. Legal, and it worked on fold 0
+(竏・.0506) 窶・then priced fold-safe across 5ﾃ・ runs at 竏・.0262, below gate.
+
+Distilling the strongest public pipeline into a cheap leg: +0.0015. The student learns the
+teacher's reproducible nuisance; residual correlation with truth 竏・.003.
+
+L1-objective model diversity, heel-blended pseudo-typewell, adaptive blend weights,
+leg-level winsorisation, per-well bias calibration. All sub-gate.
+
+
+The part that actually earned the medal
+
+My public rank went 125 竊・2,055 over fourteen days without my score changing. A public fork
+plateau formed at ~6.44 and roughly 1,300 teams sat inside a 0.05-wide band. I never chased it.
+
+The gate every candidate had to clear:
+
+
+
+
+gate
+requirement
+why
+
+
+
+
+error correlation
+&lt; 0.60 vs the existing blend
+a leg's value is its difference, not its accuracy
+
+
+fold-safe gain
+竕､ 竏・.05 on full 773-well grouped CV
+single-model screens overstate stack effects ~10ﾃ・
+
+
+fold-map stability
+improves on 竕･ 8 of 10 fold maps
+pooled gains often hide in one fold
+
+
+duplicate-column control
+adding a copy of an existing leg must move ~0.000
+detects harness artifacts
+
+
+shuffled-evidence control
+gain must vanish under permutation across wells
+separates signal from instability
+
+
+constructibility
+buildable from legal inputs at test time
+added after a candidate passed every statistical test while being label-conditional in its construction
+
+
+resample stability
+survives an independent well sample
+added after a parameter sweep read as a real optimum when it was noise
+
+
+
+
+Two measurements made this concrete. First, my pipeline is not run-to-run reproducible 窶・
+threaded GBM reductions give a reseed RMS of 0.306 ft, with one bistable well at 5.86 ft. Any
+"improvement" smaller than that is not measurable, so the submit gate has to sit above the noise
+floor, not above zero. Second, on a single day in July I evaluated six candidates, rejected all
+six, and spent no submission. That is the process working.
+
+The private leaderboard settled it. The public 6.40窶・.55 fork cluster (1,152 teams) landed at a
+median private 9.458 and median rank 1,468; 10.6% of them medalled. Of the public top 500, 38%
+kept any medal. Spearman(public, private) was 0.873 overall, but with a brutal tail 窶・one team went
+public 5.406 竊・private 10.108.
+
+If your CV is built on 773 wells and your public score is built on 52, the arithmetic is not
+subtle. I still nearly talked myself out of it, and the thing that stopped me was
+Tucker Arrants' post
+showing single fold-models of one CV-5.13 ensemble scoring anywhere from 5.2 to 6.3 on public.
+
+What I got wrong
+
+Reading Tucker's 26th place solution
+after the close: he had essentially the same representation I did 窶・well-as-image, TVT rows ﾃ・MD
+columns, cost volume as an input channel, per-column softmax over depth with a soft-argmax readout.
+The gap was not the idea. It was:
+
+
+
+Scale. He hit "a wall around 7.5 CV" on a ResNet34 窶・my wall, the same number 窶・and broke it
+with ImageNet-pretrained EffNetV2-XL/L2 backbones and 5 folds ﾃ・7 seeds. I measured
+"more capacity doesn't help" at a few million parameters from scratch and generalised it upward.
+That generalisation was wrong.
+
+Synthetic pretraining, inverted. We both found that closing the synthetic竊排eal statistical
+gap made things worse. I concluded the lever was dead and killed it. He concluded the knob
+pointed the other way 窶・harder-than-real geology, cleaner-than-real GR correspondence, because
+the synthetic world's job is to teach the skill, not to pass a statistical test against reality.
+Same observation, opposite move, and his was right.
+
+
+Two teams can reach identical negative results and only one of them has found the exit. Worth
+remembering.
+
+Thanks
+
+To @dedquoc for helping me to understand the problem, to @malyshevdanil, whose Working Note framing of why a single well's gamma cannot recover the datum saved me from a multi-week build; to @TuckerArrants for the pointers and @tennogh for arguing publicly for CV
+over LB when the leaderboard said otherwise; and to the hosts for a problem where the physics
+actually constrains the answer.
+
+No comments
+

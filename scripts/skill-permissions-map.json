@@ -1,0 +1,298 @@
+{
+  "kaggle-cli-ops": {
+    "shell": "setup-kaggle-venv.ps1 · setup-comp-venv.ps1 · check-kaggle-cli.ps1 · kaggle-cli.ps1",
+    "network": "Kaggle HTTPS · PyPI（setup 時）",
+    "env": "読取のみ。token/.env をログ・Git 禁止",
+    "file_read": "repo · requirements-*.txt · requirements-local.txt",
+    "file_write": ".venv/（setup 経由のみ）",
+    "user_ok": "—"
+  },
+  "kaggle-comp-deps": {
+    "shell": "setup-comp-venv.ps1 · setup-kaggle-venv.ps1 · .venv\\Scripts\\pip.exe install -r",
+    "network": "PyPI HTTPS",
+    "env": "—",
+    "file_read": "requirements-local.txt",
+    "file_write": "requirements-local.txt · .venv/",
+    "user_ok": "—"
+  },
+  "kaggle-cli-fetch": {
+    "shell": "kaggle-cli.ps1 · check-kaggle-cli.ps1",
+    "network": "Kaggle HTTPS（読取）",
+    "env": "読取のみ。token/.env をログ・Git 禁止",
+    "file_read": "repo · comp-root",
+    "file_write": "docs-en/discussion/ · exp/（dataset/ 上書き禁止）",
+    "user_ok": "competitions download · datasets download · models 重 DL"
+  },
+  "kaggle-solution-intel": {
+    "shell": "fetch-solution-intel.ps1 · kaggle-cli.ps1",
+    "network": "Kaggle HTTPS",
+    "env": "読取のみ。KAGGLE_API_TOKEN 任意（post-comp）— ログ禁止",
+    "file_read": "comp-root · exp/",
+    "file_write": "intel/solution-writeups/ · docs-en/solution-intel/",
+    "user_ok": "—"
+  },
+  "kaggle-kernel-repro": {
+    "shell": "setup-kernel-workspace.ps1 · kaggle-cli.ps1",
+    "network": "Kaggle HTTPS · kernels pull",
+    "env": "読取のみ。token/.env をログ・Git 禁止",
+    "file_read": "comp-root",
+    "file_write": "others-notebook/workspaces/（編集は my-notebook/ へコピー後）",
+    "user_ok": "-DownloadInputs · competition/dataset 一括 DL"
+  },
+  "kaggle-submission-validator": {
+    "shell": "validate-submission.ps1 · check-codecomp-submit-kernel.py · check-staged-secrets.ps1",
+    "network": "—",
+    "env": "—",
+    "file_read": "my-submitted-notebook/ · lifecycle-manifest.md · docs-ja/submission-rules.md · my-notebook/",
+    "file_write": "submission-validations/ · my-submitted-notebook/（PASS 凍結） · lifecycle-manifest.md",
+    "user_ok": "competitions submit（本 Skill では実行禁止）"
+  },
+  "kaggle-submission-strength-gate": {
+    "shell": "check-submission-strength-gate.py · 関連 replay 脚本",
+    "network": "—（replay DL は kaggle-cli-fetch 経由）",
+    "env": "—",
+    "file_read": "exp/ · strength-gate-profile.json",
+    "file_write": "exp/ レポート · ゲートログ",
+    "user_ok": "LB 提出は validator + ユーザー OK 後"
+  },
+  "kaggle-pretrain-gate": {
+    "shell": "pretrain 系スモーク · check-kaggle-cli.ps1",
+    "network": "—（長時間 GPU は Colab 方針）",
+    "env": "—",
+    "file_read": "docs-ja/pretrain-acceptance.md",
+    "file_write": "exp/exp-train.md · run-log.md",
+    "user_ok": "長時間学習開始（ユーザー OK）"
+  },
+  "kaggle-comp-router": {
+    "shell": "—",
+    "network": "—",
+    "env": "—",
+    "file_read": "docs-ja/comp-profile.md · AGENTS.md · _shared/SUBAGENT-BRIEF.md",
+    "file_write": "—（ルーティング提案のみ）",
+    "user_ok": "—"
+  },
+  "kaggle-subagent-delegate": {
+    "shell": "Task 起動（SA-4 本体は subagent shell）",
+    "network": "サブに委譲",
+    "env": "—",
+    "file_read": "_shared/SUBAGENT-BRIEF.md · AGENTS.md · exp-index",
+    "file_write": "—（follow-up Skill が記録）",
+    "user_ok": "bugbot · 長時間 shell/GPU · submit（親のみ）"
+  },
+  "kaggle-adversarial-review": {
+    "shell": "Task / カスタム agent 起動のみ",
+    "network": "—",
+    "env": "—",
+    "file_read": "exp/ · docs-ja/ · failures · strategy · cv-design · ADVERSARIAL-REVIEW.md",
+    "file_write": "—（親だけ記録）",
+    "user_ok": "—"
+  },
+  "kaggle-comp-bootstrap": {
+    "shell": "new-kaggle-comp.ps1 · init-comp-layout.ps1 · sync 系（ユーザー指示時）",
+    "network": "—",
+    "env": "—",
+    "file_read": "kaggle-template/ · scripts/templates/",
+    "file_write": "comp-root 初期 tree · docs-ja/ テンプレ",
+    "user_ok": "git init · GitHub 公開"
+  },
+  "kaggle-comp-timeline": {
+    "shell": "—",
+    "network": "—（任意 kaggle-cli-fetch）",
+    "env": "—",
+    "file_read": "docs-ja/comp-timeline.md",
+    "file_write": "docs-ja/comp-timeline.md",
+    "user_ok": "—"
+  },
+  "kaggle-experiment-checklist": {
+    "shell": "checklist 関連脚本（短時間）",
+    "network": "—",
+    "env": "—",
+    "file_read": "exp/ · hyperparameter-table.md",
+    "file_write": "exp/experiment-checklist.md · exp-index.md",
+    "user_ok": "—"
+  },
+  "kaggle-kernels-runbook": {
+    "shell": "短時間 smokes · kaggle-cli（読取）",
+    "network": "Kaggle / Colab（ユーザー実行中心）",
+    "env": "—",
+    "file_read": "docs-ja/kernels-runbook.md · my-ran-notebook/ · lifecycle-manifest.md",
+    "file_write": "my-ran-notebook/ · run-log.md · lifecycle-manifest.md",
+    "user_ok": "長時間 Notebook · GPU 学習"
+  },
+  "kaggle-simulation-tracker": {
+    "shell": "—（手動キャプチャ + 任意 CLI）",
+    "network": "—",
+    "env": "—",
+    "file_read": "sim-track/ · Kaggle Web",
+    "file_write": "sim-track/（append 規約遵守）",
+    "user_ok": "—"
+  },
+  "kaggle-license-compliance": {
+    "shell": "—",
+    "network": "—（ライセンスカード確認はブラウザ）",
+    "env": "—",
+    "file_read": "docs-ja/license-ledger.md",
+    "file_write": "docs-ja/license-ledger.md · license-audits/",
+    "user_ok": "外部モデル/API 追加（Tier R 記録）"
+  },
+  "kaggle-git-security": {
+    "shell": "check-staged-secrets.ps1 · git（読取中心）",
+    "network": "—",
+    "env": "—",
+    "file_read": ".gitignore · hooks",
+    "file_write": "—（ルール提案。commit はユーザー）",
+    "user_ok": "git push · 公開"
+  },
+  "kaggle-workflow-maintainer": {
+    "shell": "scripts/* · sync-project-infra-from-template.ps1",
+    "network": "—",
+    "env": "—",
+    "file_read": "kaggle-template/ · .cursor/",
+    "file_write": ".cursor/skills/ · rules · scripts テンプレ",
+    "user_ok": "新 Skill 追加 · テンプレ同期（ユーザー承認）"
+  },
+  "cursor-agent-infra": {
+    "shell": "install-cursor-hooks.ps1 · install-cursor-agents.ps1 · test-cursor-hooks.ps1 · sync-skill-permissions.ps1",
+    "network": "cursor.com docs HTTPS（改善前必須 WebFetch）",
+    "env": "—",
+    "file_read": ".cursor/ · scripts/templates/cursor-* · reference.md",
+    "file_write": ".cursor/skills/ · rules · hooks · agents · templates · skill-permissions-map.json",
+    "user_ok": "新 Skill 大量追加 · failClosed hook 追加 · kaggle-template 同期"
+  },
+  "kaggle-notebook-folders": {
+    "shell": "—",
+    "network": "—",
+    "env": "—",
+    "file_read": "my-*-notebook/ · others-notebook/ · lifecycle-manifest.md",
+    "file_write": "lifecycle-manifest.md · my-*-notebook/ 移動（各 Skill Step 連携）",
+    "user_ok": "—"
+  },
+  "competition-conditions": {
+    "shell": "—",
+    "network": "—",
+    "env": "—",
+    "file_read": "Kaggle Overview（ユーザー貼付/Web）",
+    "file_write": "docs-ja/conditions.md · comp-timeline.md",
+    "user_ok": "—"
+  },
+  "dataset-summary": {
+    "shell": "—",
+    "network": "—",
+    "env": "—",
+    "file_read": "dataset/README.md（Git 外）",
+    "file_write": "docs-ja/dataset.md",
+    "user_ok": "dataset/ への Agent DL"
+  },
+  "discussion-summary": {
+    "shell": "—",
+    "network": "—",
+    "env": "—",
+    "file_read": "docs-en/discussion/",
+    "file_write": "docs-ja/discussion/",
+    "user_ok": "—"
+  },
+  "notebook-analysis": {
+    "shell": "—",
+    "network": "—",
+    "env": "—",
+    "file_read": "others-notebook/ · docs-en/others-notebook/",
+    "file_write": "docs-ja/others-notebook/ · docs-en/others-notebook/",
+    "user_ok": "—"
+  },
+  "solution-analysis": {
+    "shell": "—",
+    "network": "—",
+    "env": "—",
+    "file_read": "intel/ · retro/ · 公開 writeup",
+    "file_write": "docs-ja/solution/ · retro/",
+    "user_ok": "—"
+  },
+  "solution-code-summary": {
+    "shell": "—",
+    "network": "—",
+    "env": "—",
+    "file_read": "公開 repo · notebook コード",
+    "file_write": "docs-ja/solution/",
+    "user_ok": "—"
+  },
+  "leaderboard-analysis": {
+    "shell": "—",
+    "network": "—",
+    "env": "—",
+    "file_read": "LB CSV/スクショ · retro/",
+    "file_write": "retro/ · docs-ja/",
+    "user_ok": "—"
+  },
+  "experiment-management": {
+    "shell": "reorganize-exp-layout.ps1（ユーザー指示時）",
+    "network": "—",
+    "env": "—",
+    "file_read": "exp/ · README.md",
+    "file_write": "exp/ root SSOT · latest/ · work/ · archive/ · protocol/",
+    "user_ok": "—"
+  },
+  "experiment-result-management": {
+    "shell": "—",
+    "network": "—",
+    "env": "—",
+    "file_read": "exp-index · latest/manifest · lifecycle-manifest.md · archive/",
+    "file_write": "root SSOT · latest/ · work/ · exp/latest/manifest.md · lifecycle-manifest.md（root 分析 MD 禁止）",
+    "user_ok": "—"
+  },
+  "local-eval-from-submit-notebook": {
+    "shell": "—（fork 編集中心）",
+    "network": "Kaggle Notebook 実行（ユーザー）",
+    "env": "—",
+    "file_read": "my-submitted-notebook/ · my-local-eval-notebook/ · lifecycle-manifest.md",
+    "file_write": "my-local-eval-notebook/ · lifecycle-manifest.md · local_eval_preds manifest",
+    "user_ok": "Kaggle 上 Dataset 公開"
+  },
+  "local-eval-improvement-orchestrator": {
+    "shell": "orchestrator 連携脚本",
+    "network": "—",
+    "env": "—",
+    "file_read": "exp/ · eval 成果物",
+    "file_write": "exp/ · checklist",
+    "user_ok": "—"
+  },
+  "local-eval-log-strategy": {
+    "shell": "—",
+    "network": "—",
+    "env": "—",
+    "file_read": "exp/ · eval ログ",
+    "file_write": "exp/ 分析メモ",
+    "user_ok": "—"
+  },
+  "post-comp-retro-setup": {
+    "shell": "—",
+    "network": "—",
+    "env": "—",
+    "file_read": "exp/",
+    "file_write": "retro/ 初期 tree",
+    "user_ok": "—"
+  },
+  "post-comp-private-retrospective": {
+    "shell": "—",
+    "network": "—",
+    "env": "—",
+    "file_read": "exp/ · Private LB（ユーザー提供）",
+    "file_write": "retro/",
+    "user_ok": "—"
+  },
+  "create-agent-file": {
+    "shell": "—",
+    "network": "—",
+    "env": "—",
+    "file_read": "AGENTS.md テンプレ",
+    "file_write": "AGENTS.md",
+    "user_ok": "—"
+  },
+  "cursor-colab-runtime": {
+    "shell": "—",
+    "network": "—（Colab 実行はユーザー UI）",
+    "env": "—",
+    "file_read": ".ipynb · docs-ja/colab-cursor-runbook.md · my-*-notebook/",
+    "file_write": "my-notebook/ · my-ran-notebook/run-log.md · lifecycle-manifest.md（実行記録時）",
+    "user_ok": "長時間 GPU/TPU Colab 実行"
+  }
+}

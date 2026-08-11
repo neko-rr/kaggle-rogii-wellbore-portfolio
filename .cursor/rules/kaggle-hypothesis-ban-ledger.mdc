@@ -1,0 +1,48 @@
+---
+description: 抽象仮説の禁止台帳 — 同じ失敗を言い換えて繰り返さない（汎用）
+alwaysApply: true
+---
+
+# 仮説禁止台帳（Agent 必須）
+
+コンペ固有の手法名は書かない。**手続きだけ**を守る。
+
+**ID 名前空間（固定）:** `_shared/EXPERIMENT-ID-NAMESPACES.md`  
+- **CHK-** = 検証チケット · **Fnnn** = **禁止確定のみ**（知見・Finding ではない）  
+- 学び → **LES-** / harvest 後 **KGL-** · 台帳の F と混ぜない
+
+## なにをするか
+
+1. `exp/improvement-loop-failures.json` を読む（開始時は **failures: []**）
+2. 重い実験・フル評価の前に gate を通す:
+   `.\scripts\run-hypothesis-ban-gate.ps1 -ChkId CHK-xxx -ActionType T0|T1|T2|T3|T4 -Hypothesis "..." -Phase pre`
+   （T3 は `-Mechanism` 必須）
+3. **exit 0 のときだけ** 本実験へ進む。FAIL なら仮説または action_type を変える  
+   （pre の **warnings** に `soft: …` があれば lane · `cv-design` を直す · **FAIL ではない** · `DECISION-FLOW.md`）
+4. 結果後: `-Phase post -Verdict GO` または `NOGO`（連続 NO-GO の streak 更新）
+5. 型として失敗が確定したら `failures` に **`id: Fnnn`** + keywords + reason + `source_chk` を1件追記
+
+## action_type（汎用ラベル）
+
+| 型 | 意味（例） |
+|---|---|
+| T0 | 新しいベースライン確立 |
+| T1 | 外部成果物の取り込み・差し替え |
+| T2 | ブレンド / 寄せ集め |
+| T3 | 自前の書き換え・再学習・再設計 |
+| T4 | 調査・screen のみ（本実験にしない） |
+
+## NO-GO 後
+
+- 同じ action_type が連続 NO-GO（既定 2）→ **型を変える**（多くの場合 T3 へ）
+- 「型として失敗」が確定したら `failures` に **keywords + reason** を1件追記（言い換え再実行を止める）。**ID は Fnnn（知見ではない）**
+- 例外が必要なら `exp/improvement-loop-allowlist.json`（通常は空）またはユーザー明示の `-Force`
+
+## 禁止
+
+- 台帳に載った抽象仮説を、単語だけ変えて再実行する
+- gate FAIL のままフル評価を回す
+- 空の台帳を「何も禁止されないから検証不要」と解釈する（gate 自体は毎回通す）
+- **F を Finding / 知見 ID として使う**
+
+SSOT: `exp/improvement-loop-failures.json` · Skill `kaggle-experiment-checklist` · `_shared/EXPERIMENT-ID-NAMESPACES.md`

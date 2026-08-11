@@ -1,0 +1,109 @@
+# 提出ルール — {{COMP_SLUG}}
+
+> skill: kaggle-submission-validator  
+> submission-profile: **notebook-output**（要 `AGENTS.md` で確定）  
+> comp-url: {{COMP_URL}}  
+> last-updated: {{COMP_DATE}} UTC
+
+LB 提出直前の検証ルール **SSOT**。`comp-timeline.md` · `conditions.md` と併読。  
+**提出方式 SSOT:** `.cursor/skills/_shared/NOTEBOOK-LINKED-SUBMIT.md`
+
+---
+
+## 提出形式
+
+| 項目 | 内容 |
+|---|---|
+| 成果物 | コンペ Overview / Evaluation に従う（例: `submission.zip` · `submission.csv`） |
+| **変更禁止** | Agent が列名・ファイル名・ID 規則を勝手に変えない |
+| **標準提出** | **Notebook 紐づけ**（Kaggle UI または CLI `-k` / `-v`） |
+| 非推奨 | ローカル zip/csv の **`-f` のみ**（採点は通っても NB 非表示） |
+
+---
+
+## 提出手順（notebook-output · 標準）
+
+> 詳細 SSOT: `.cursor/skills/_shared/NOTEBOOK-LINKED-SUBMIT.md`  
+> 公式 CLI: [Kaggle CLI tutorials](https://github.com/Kaggle/kaggle-cli/blob/main/docs/tutorials.md)
+
+### A. Kaggle UI（推奨）
+
+1. Notebook **Run All** → 出力生成
+2. **Save Version**（Version N）— または Submit フロー内で実行
+3. validator **PASS**
+4. **Submit to Competition** → 出力ファイル選択
+
+### B. CLI（notebook 紐づけ · Version 済み）
+
+```powershell
+.\scripts\kaggle-cli.ps1 competitions submit {{COMP_SLUG}} `
+  -f submission.zip `
+  -k <USERNAME>/<KERNEL_SLUG> `
+  -v <VERSION> `
+  -m "<説明>"
+```
+
+`-f` は **出力ファイル名**（ローカルパスではない）。`-k` / `-v` 省略時は zip 直提出（非推奨）。
+
+### C. CLI 完結（`kernels push` → 提出）
+
+```powershell
+.\scripts\kaggle-cli.ps1 kernels push -p my-notebook/<name>/
+.\scripts\kaggle-cli.ps1 kernels status <USERNAME>/<KERNEL_SLUG>
+.\scripts\kaggle-cli.ps1 competitions submit {{COMP_SLUG}} `
+  -k <USERNAME>/<KERNEL_SLUG> -v <N> -f submission.zip -m "<説明>"
+```
+
+Version N は push 成功メッセージまたは `run-log.md` 参照。metadata: [kernels_metadata.md](https://github.com/Kaggle/kaggle-cli/blob/main/docs/kernels_metadata.md)
+
+### `-k` 制約（必読）
+
+| ルール | 内容 |
+|---|---|
+| **`-k`** | **`<YOUR_USERNAME>/<KERNEL_SLUG>` のみ**（自 kernel） |
+| **他者 slug** | API **403 Forbidden** |
+| **403 時** | **zip-only 禁止** — 自 fork に embedded zip を載せて Version 作成（UI または `kernels push`）→ 再提出 |
+| 詳細 | `.cursor/skills/_shared/NOTEBOOK-LINKED-SUBMIT.md` |
+
+---
+
+## L1 profile チェック（notebook-output）
+
+- [ ] 成果物形式が Overview と一致
+- [ ] Notebook Version が `run-log.md` に記録済み
+- [ ] ローカル validator **PASS**（該当スクリプト）
+
+---
+
+## L0-L1 自動検証（提出前必須）
+
+コンペ固有スクリプトを `docs-ja/comp-profile.md` に従い実行。
+
+### ログ
+
+`docs-ja/submission-validations/YYYY-MM-DD-submit-NNN.md` に PASS/FAIL · **`submit_mode`** を記録。
+
+---
+
+## 禁止事項
+
+- 秘匿情報混入
+- 締切・1日提出上限超過（`comp-timeline.md`）
+- pretrain-gate FAIL 成果物の無断提出
+- **L0-L1 未実行の凍結**（`my-submitted-notebook/`）
+- **提出形式の独自変更**（Overview / 本ファイルの列・ファイル名から外す）
+- **固定提出物コピー専用 Notebook の提出**（Code Competition · Scoring Error）— `scripts/check-codecomp-submit-kernel.py` FAIL なら提出禁止
+- **zip 直 `-f` のみを標準フローにしない**（NB 紐づけ可能なとき）
+- **他者 kernel を `-k` に指定しない**（403 → zip-only フォールバック禁止 · 自 fork 更新を先に）
+- Agent による `competitions submit`（**ユーザー明示 OK 時のみ** · OK でも **自 kernel** `-k` / `-v` 優先）
+
+---
+
+## 関連
+
+| ファイル | 役割 |
+|---|---|
+| `NOTEBOOK-LINKED-SUBMIT.md` | 提出方式 SSOT |
+| `kernels-runbook.md` | Run All · Version 記録 |
+| `submission-validations/` | 1提出1検証ログ |
+| `my-submitted-notebook/` | PASS 後凍結 · kernel slug 記録 |

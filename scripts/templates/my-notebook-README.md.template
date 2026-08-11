@@ -1,0 +1,21 @@
+# my-notebook/
+
+**編集中・実行直前の WIP。** Cursor が触る成果物はここ（または `planned/`）。
+
+- 索引: [`../lifecycle-manifest.md`](../lifecycle-manifest.md)
+- Skill: `kaggle-notebook-folders` · SSOT: `.cursor/skills/_shared/ARTIFACT-LIFECYCLE.md`
+
+## comp-type 別
+
+| comp-type | 置くもの |
+|---|---|
+| tabular | `.ipynb` |
+| simulation | `main.py` を含む **ディレクトリ**（例: `my-bot-v3/`） |
+
+## 実行後
+
+- **移動必須:** `my-ran-notebook/{name}/` へ移し、`lifecycle-manifest.md` を `ran` に更新（Skill `kaggle-kernels-runbook`）
+
+## local-eval
+
+fork は **`my-local-eval-notebook/` のみ**。本フォルダに `-local-eval` を残さない。

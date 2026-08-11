@@ -1,0 +1,37 @@
+---
+description: Kaggle横断知見をWeb開発から隔離し、Private knowledge-store / 承認制 / store_id で管理する
+alwaysApply: true
+---
+
+# Kaggle Knowledge Isolation
+
+## SSOT
+
+- 作業ツリー上の知見はコンペ repo 直下 **`knowledge/`**（相対パスのみ。Skill・カード・`source_refs` に絶対パスを書かない）
+- **正本のバックアップ / 並行コンペ共有:** Private GitHub  
+  **`https://github.com/neko-rr/kaggle-knowledge-store`**（nested git · outer repo の `.gitignore` で除外）
+- **インフラ（Skills / scripts / 雛形）の正本:** Private GitHub  
+  **`https://github.com/neko-rr/kaggle-infra`** → ローカル `%USERPROFILE%\.cursor\kaggle-template\`
+- 詳細手順: `.cursor/skills/_shared/PRIVATE-KNOWLEDGE-AND-INFRA.md`
+
+## Agent 必須
+
+1. 新コンペで `knowledge/store.json` が無いときは **`git clone` knowledge-store を優先**（空の `init` で **新 store_id を作らない**）
+2. harvest / 重要更新の後は **`knowledge/` で commit + push**（他コンペが古い候補を見ないように）
+3. Git 無しピア同期は `kaggle-knowledge-sync`（`store_id` 確認 · 既定ドライラン · 削除/上書きなし）
+4. sync / push 前に audit（秘密情報・絶対パス・provenance）。FAIL なら送らない
+5. harvest は `candidate / L0 / conditional`。自動で Rule・CHK・標準方針へ昇格しない
+6. 別コンペ GO/NO-GO は `knowledge/evidence/`。同一コンペ2回=L1 · 異なる2コンペ=L2 上限（機械判定）
+7. promote は根拠 + **ユーザー明示承認**のみ。`L2/L3` だけ標準方針候補
+8. 教訓カードは **apply / avoid / origin / domain**（`retro-lessons` 構造化）。retrieve は domain フィルタ → **A→C→B** → conditions 確認
+9. AHC 併存は `knowledge/personal/domain-policy.md`（**shared のみ**手法抽象を共有。固有は domain 分離）
+10. 新コンペ: retrieve → `exp/prior-knowledge.md` → 採用分だけ CHK（自動 CHK 化禁止）
+11. 変更後 `scripts/run-kaggle-knowledge.ps1 -Action validate`
+12. Kaggle Skill / Rule は `<repo>/.cursor/` と template のみ。グローバル `~/.cursor/skills` や Web プロジェクトへコピーしない
+
+## 禁止
+
+- knowledge-store / infra を **Public** にする  
+- 外側コンペ Git に `knowledge/` を載せる（除外を外す）  
+- 共有 store 利用中に `init` で store_id を載せ替える  
+- Skill 内に PC 絶対パスや token を書く  

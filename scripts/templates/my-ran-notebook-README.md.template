@@ -1,0 +1,15 @@
+# my-ran-notebook/
+
+**実行済み・未提出**（または提出前保留）。
+
+- 索引: [`../lifecycle-manifest.md`](../lifecycle-manifest.md)
+- 各 `{name}/run-log.md` — Skill `kaggle-kernels-runbook`
+
+## 入れるもの
+
+| comp-type | 内容 |
+|---|---|
+| tabular | 実行した `.ipynb` + `run-log.md` |
+| simulation | 実行・検証した bot ディレクトリ + `run-log.md` |
+
+実行完了時 **移動必須**（runbook After チェックリスト）。`planned/` に戻さない。

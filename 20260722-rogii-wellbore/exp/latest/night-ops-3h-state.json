@@ -1,0 +1,201 @@
+{
+  "started": "2026-08-02T19:11:55.871166+00:00",
+  "harvested": {
+    "CHK-492": {
+      "status": "ERROR",
+      "at": "2026-08-02T20:05:10.321187+00:00"
+    },
+    "CHK-504": {
+      "status": "ERROR",
+      "at": "2026-08-02T20:04:11.715323+00:00"
+    },
+    "CHK-492b": {
+      "status": "COMPLETE",
+      "harvest_ok": true,
+      "tipdist": null,
+      "at": "2026-08-02T19:35:03.148367+00:00"
+    },
+    "CHK-514": {
+      "status": "COMPLETE",
+      "harvest_ok": true,
+      "tipdist": 0.7273250441409341,
+      "at": "2026-08-02T19:47:38.609372+00:00"
+    },
+    "CHK-515": {
+      "status": "COMPLETE",
+      "harvest_ok": true,
+      "tipdist": 2.120600162063493,
+      "at": "2026-08-02T20:03:43.350452+00:00"
+    }
+  },
+  "pushed": {
+    "CHK-514": {
+      "ok": true,
+      "slug": "tip-submit-chk514-hd-fracSpos07",
+      "at": "2026-08-02T19:28:57.387401+00:00"
+    },
+    "CHK-515": {
+      "ok": true,
+      "slug": "tip-submit-chk515-row-signed-or-absd2",
+      "at": "2026-08-02T19:48:08.947816+00:00"
+    }
+  },
+  "submit_ready": [
+    {
+      "chk": "CHK-514",
+      "slug": "tip-submit-chk514-hd-fracSpos07",
+      "status": "COMPLETE",
+      "tipdist": 0.7273250441409341,
+      "out": "20260722-rogii-wellbore\\exp\\work\\wave31-neural-proposal\\out-514-submit"
+    },
+    {
+      "chk": "CHK-515",
+      "slug": "tip-submit-chk515-row-signed-or-absd2",
+      "status": "COMPLETE",
+      "tipdist": 2.120600162063493,
+      "out": "20260722-rogii-wellbore\\exp\\work\\wave31-neural-proposal\\out-515-submit"
+    }
+  ],
+  "errors": [
+    {
+      "chk": "CHK-492",
+      "status": "ERROR"
+    },
+    {
+      "chk": "CHK-492",
+      "status": "ERROR"
+    },
+    {
+      "chk": "CHK-492",
+      "status": "ERROR"
+    },
+    {
+      "chk": "CHK-492",
+      "status": "ERROR"
+    },
+    {
+      "chk": "CHK-492",
+      "status": "ERROR"
+    },
+    {
+      "chk": "CHK-492",
+      "status": "ERROR"
+    },
+    {
+      "chk": "CHK-504",
+      "status": "ERROR"
+    },
+    {
+      "chk": "CHK-492",
+      "status": "ERROR"
+    },
+    {
+      "chk": "CHK-504",
+      "status": "ERROR"
+    },
+    {
+      "chk": "CHK-492",
+      "status": "ERROR"
+    },
+    {
+      "chk": "CHK-504",
+      "status": "ERROR"
+    },
+    {
+      "chk": "CHK-492",
+      "status": "ERROR"
+    },
+    {
+      "chk": "CHK-504",
+      "status": "ERROR"
+    },
+    {
+      "chk": "CHK-492",
+      "status": "ERROR"
+    },
+    {
+      "chk": "CHK-504",
+      "status": "ERROR"
+    },
+    {
+      "chk": "CHK-492",
+      "status": "ERROR"
+    },
+    {
+      "chk": "CHK-504",
+      "status": "ERROR"
+    },
+    {
+      "chk": "CHK-492",
+      "status": "ERROR"
+    },
+    {
+      "chk": "CHK-504",
+      "status": "ERROR"
+    },
+    {
+      "chk": "CHK-492",
+      "status": "ERROR"
+    },
+    {
+      "chk": "CHK-492",
+      "err": "ban-gate"
+    },
+    {
+      "chk": "CHK-504",
+      "status": "ERROR"
+    },
+    {
+      "chk": "CHK-492",
+      "status": "ERROR"
+    },
+    {
+      "chk": "CHK-492",
+      "err": "ban-gate"
+    },
+    {
+      "chk": "CHK-504",
+      "status": "ERROR"
+    },
+    {
+      "chk": "CHK-492",
+      "status": "ERROR"
+    },
+    {
+      "chk": "CHK-492",
+      "err": "ban-gate"
+    },
+    {
+      "chk": "CHK-504",
+      "status": "ERROR"
+    },
+    {
+      "chk": "CHK-492",
+      "status": "ERROR"
+    },
+    {
+      "chk": "CHK-492",
+      "err": "ban-gate"
+    },
+    {
+      "chk": "CHK-504",
+      "status": "ERROR"
+    },
+    {
+      "chk": "CHK-492",
+      "status": "ERROR"
+    },
+    {
+      "chk": "CHK-492",
+      "err": "ban-gate"
+    },
+    {
+      "chk": "CHK-504",
+      "status": "ERROR"
+    },
+    {
+      "chk": "CHK-492",
+      "status": "ERROR"
+    }
+  ]
+}

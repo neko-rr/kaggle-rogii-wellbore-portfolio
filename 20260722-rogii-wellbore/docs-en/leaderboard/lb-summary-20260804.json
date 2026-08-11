@@ -1,0 +1,21 @@
+{
+  "fetched": "2026-08-04T13:44:25",
+  "n_teams": 6118,
+  "p1": 4.608,
+  "p1_team": "shu01",
+  "top5": 5.087,
+  "top10": 5.205,
+  "top25": 5.614,
+  "top50": 5.865,
+  "top100": 6.11,
+  "median_all": 8.1025,
+  "median_lt100": 7.819,
+  "gold_score": 5.205,
+  "silver_rank": 305,
+  "silver_score": 6.356,
+  "bronze_rank": 611,
+  "bronze_score": 6.408,
+  "kazeneko_best": 6.19,
+  "kazeneko_rank": 122,
+  "kazeneko_team": "Kazeneko"
+}

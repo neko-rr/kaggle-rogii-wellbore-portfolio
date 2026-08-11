@@ -1,0 +1,435 @@
+﻿Topic #733895: 3581st 竊・429th: A 3,152-Place Shakeup
+  Author: matcha110
+  Posted: 2026-08-08 22:57:47.756000
+  Votes: 2  Comments: 0
+
+Introduction
+
+My final submission moved from 3581st place on the public leaderboard to 429th place on the final private leaderboard. Because the public and final evaluations differed substantially, I summarize the scores below.
+
+
+
+
+
+Score
+Rank
+
+
+
+
+Final (private leaderboard)
+8.861
+429 / 6125
+
+
+At final submission (public leaderboard)
+10.021
+3581 / 6125
+
+
+
+
+
+This writeup focuses on my final submission, ROGII v16 窶・Fold-Safe Geology Delta Blend: what I tried, what I discarded, and why I submitted this particular solution.
+
+This is my first writeup, so please forgive any awkward wording or imperfect explanations.
+
+Many detailed notebooks were published by high-ranking participants, so rather than attempting to cover every method, I focus on the experiments and decision criteria in a way that is approachable for beginners.
+
+1. Competition overview
+
+The task is to predict TVT beyond the known section of a horizontal well. The inputs include the well trajectory, GR log, known-section TVT, and a corresponding typewell.
+
+At first glance, this looks like a direct regression problem. In practice, TVT combines a known component caused by the well trajectory with an unknown component caused by the geological structure.
+
+Instead of predicting TVT as a black-box target from the beginning, I decomposed the problem as follows:
+
+
+
+Remove the component explained by the well trajectory.
+
+Estimate the current geological position from the known prefix and the typewell.
+
+Apply a conservative correction for the remaining geological difference using nearby wells.
+
+
+This decomposition became the foundation of the final improvement.
+
+2. The early approach
+
+Early in the competition, I mainly tried simple features and standard gradient-boosting models. Row-wise features did not capture the long-range dependencies within each well sufficiently, and the error grew substantially in the future section.
+
+The main difficulties were:
+
+
+
+The number of samples differs substantially between wells.
+
+Wells passing through similar geological structures can look different in coordinates, trajectories, and logs.
+
+Using neighboring wells can easily introduce validation leakage.
+
+
+Corrections based on nearby wells or the public-test structure looked attractive, but there was no guarantee that the same information would be available for the private test. I therefore excluded corrections specific to the public test and any dependence on fixed public IDs from the final candidate.
+
+3. The change in direction about two weeks before the end
+
+About two weeks before the competition ended, I stopped following newly published notebooks. From that point onward, I focused exclusively on locally reproducible CV and OOF results rather than public leaderboard positions or the latest models from other participants.
+
+This was a deliberate decision to avoid overfitting to the public leaderboard. Before trying a new candidate, I required it to satisfy the following conditions:
+
+
+
+It improved well-level OOF/CV.
+
+The direction of improvement remained stable across fold assignments.
+
+It did not substantially worsen spatial blocks or difficult-well groups.
+
+It could be computed using the same information available in the private test.
+
+
+After changing direction, I was able to prioritize candidates likely to transfer to the final evaluation over ideas that merely looked good on the public leaderboard.
+
+How I used Codex and the Kaggle CLI
+
+I primarily used Codex 5.6 Sol Low during development. Since I allowed Codex to use the Kaggle CLI, there were occasions when it tried to incorporate methods from public notebooks that appeared to be adapted to the public leaderboard, contrary to my intended policy.
+
+Whenever that happened, I required the method to be re-evaluated locally. Even if a method had a strong public score, its CV had to be recomputed and compared with the current baseline before it could be considered.
+
+In particular, I had already confirmed that some methods with excellent public scores immediately before submission had barely changed the underlying CV from the beginning of the competition. I therefore expected some improvement in the final ranking, but I was still very happy to reach the medal zone at 429th place.
+
+Reflections and lessons from writeups
+
+One regret is that, although I was not misled by the public scores of public notebooks, I also failed to incorporate some useful ideas contained in them. By being cautious about public-leaderboard overfitting, I sometimes rejected valuable ideas along with the risky ones.
+
+On the other hand, I was fortunate to have an opportunity to read useful writeups during the competition, including during the Working Note Award period. Rather than following notebook code directly, I extracted the ideas and validation results described in the writeups and adopted only what could be integrated into my own pipeline.
+
+Going forward, I would like to improve my ability to extract generalizable hypotheses from public information and validate them with my own CV/OOF, instead of blindly following public scores or implementations.
+
+4. The first strong baseline
+
+Instead of predicting TVT directly, I predicted a residual-like quantity after removing the effect of the well trajectory. The TVT at the end of the known section was used as an anchor, while the vertical change in the future section was treated as known.
+
+This meant that the model did not need to relearn the basic trend caused by the well trajectory. It could focus primarily on how the geological structure continued.
+
+On top of this, I built a convex posterior blend combining several sequence models and row-wise models. I reduced redundant candidates by examining not only their individual scores but also their OOF residual correlations.
+
+5. The Fold-Safe Geology Delta idea
+
+The central idea in the final submission is a small correction that transfers geological differences from nearby wells.
+
+Transferring absolute EGFDU values is dangerous because well-specific offsets are transferred directly into the prediction. Instead, I used the following difference for each reference well:
+
+EGFDU(query position) - EGFDU(anchor position)
+
+
+This anchor delta cancels the reference well's constant offset and retains only the geological change toward the future section.
+
+More importantly, I excluded reference wells belonging to the same validation fold as the evaluated well. This imposes the same information constraint in OOF evaluation and in production inference. That is what 窶廡old-Safe窶・means here.
+
+Reference wells were limited to those close to both the query position and the anchor position. A well that was close to the query but far from the anchor was not necessarily sharing the same structure, so it was excluded.
+
+The deltas were aggregated with distance-based weighted averaging. To avoid extreme corrections, I selected from a small fixed grid of blend weights and did not perform per-well hard routing.
+
+6. Progress from v8 onward
+
+From v8 onward, I did not add complex candidates without checking whether they contributed an independent signal relative to the baseline. The table below shows representative results that were locally comparable. Lower RMSE is better; values from different evaluation environments or fold configurations should not be treated as perfectly comparable.
+
+
+
+
+Stage
+Main change
+Local OOF/CV RMSE
+Public LB
+Private LB
+Decision
+
+
+
+
+v8
+Convex posterior baseline
+9.9775
+9.648
+窶・
+Adopted as a strong baseline
+
+
+v10
+Datum/slope/endpoint decomposition and outlier rescue
+9.7436
+9.648
+9.122
+Retained as a reference candidate
+
+
+v15
+Fold-aware trellis blending
+9.9247
+窶・
+窶・
+Rejected because it did not beat v10
+
+
+v16
+Fold-safe EGFDU anchor-delta blend
+9.7080
+10.021
+8.861
+Final submission
+
+
+
+
+
+The trellis looked like an independent candidate in v15, but blending it did not beat the baseline. In v16, the anchor delta canceled well-specific offsets, while same-fold references were excluded. Together, these changes improved the OOF RMSE by 0.2695 relative to the v8 baseline.
+
+This local OOF improvement did not appear directly on the public leaderboard, but the final submission achieved a private score of 8.861.
+
+Submission leaderboard ladder
+
+The following table is a selection of the main submissions from the history retrieved with the Kaggle CLI. Submissions without returned scores are omitted. The public score is an external observation at submission time; the private score became available after the competition ended.
+
+
+
+
+Date
+Submission
+Public LB
+Private LB
+Decision at the time
+
+
+
+
+2026-07-15
+CV baseline candidate
+15.883
+14.488
+Initial development baseline
+
+
+2026-07-19
+v6 residual anchor
+10.248
+9.729
+Large improvement
+
+
+2026-07-19
+v7 medal-bias meta
+10.050
+9.341
+Improvement confirmed
+
+
+2026-07-20
+v8 control-first trend wall
+9.989
+9.434
+Strong baseline
+
+
+2026-07-21
+v12 direct
+10.022
+9.710
+Did not beat v8
+
+
+2026-07-21
+v13 neural spline
+10.098
+9.576
+Not adopted
+
+
+2026-07-21
+v14 DTW/NCC/PF/GBDT
+10.590
+9.594
+Not adopted
+
+
+2026-07-25
+v9 pseudo-typewell PF
+10.106
+9.149
+Improved private score
+
+
+2026-07-25
+v10 datum/slope/rescue
+9.648
+9.122
+Important reference candidate
+
+
+2026-07-25
+v11 datum feature
+9.977
+9.422
+Did not beat v10
+
+
+2026-08-01
+v16 Fold-Safe Delta Blend
+10.021
+8.861
+Final submission; 429th
+
+
+
+
+
+The ladder shows that v10 had the best public score at 9.648, while the final v16 submission had the best private score at 8.861. On the public leaderboard alone, v16 looked worse than v10, but I prioritized locally validated fold safety and production compatibility. The final result confirmed that this choice transferred better to the private test.
+
+7. Cross-validation selection
+
+v16 used five well-level folds. During evaluation of each fold, reference wells from that same fold were excluded.
+
+
+
+
+Fold
+Delta weight
+Delta coverage
+Baseline RMSE
+Blended RMSE
+
+
+
+
+0
+0.20
+94.45%
+9.4786
+9.7967
+
+
+1
+0.10
+99.58%
+9.9697
+9.3832
+
+
+2
+0.20
+97.02%
+10.5729
+10.2768
+
+
+3
+0.20
+100.00%
+10.3808
+9.9933
+
+
+4
+0.20
+99.61%
+9.4331
+9.0397
+
+
+Pooled
+0.20
+98.13%
+9.9775
+9.7080
+
+
+
+
+
+Overall, OOF RMSE improved from 9.9775 to 9.7080. The delta did not improve every fold, but restricting the blend weight to 0.1窶・.2 helped avoid failures where the geological correction was uncertain.
+
+The key evidence was not the best single fold. I checked whether the effect remained directionally consistent across fold assignments, whether reference coverage was sufficient, and whether the real delta beat a negative control using shuffled neighboring information.
+
+8. Final submission pipeline
+
+The final submission was built around the following steps:
+
+
+
+Estimate the well's geological position from the known prefix and typewell.
+
+Combine several sequence and row-wise models with a convex blend.
+
+Compute the nearby-well EGFDU anchor delta in a fold-safe manner.
+
+Add the delta candidate with a small blend weight.
+
+Validate anchor consistency, ID order, row count, and finite values before writing submission.csv.
+
+
+The future output is reconstructed from the estimated geological position back to TVT. This helps preserve the physical relationship between the model output and the well trajectory.
+
+9. What did not work
+
+Many candidates looked good in OOF but were not adopted.
+
+Public-test-specific fixed correction
+
+A correction using public IDs and overlapping public-test labels produced very strong diagnostic numbers. However, the same labels were not guaranteed to be available in the private test, so this correction was not used in the final submission.
+
+Per-well model selection
+
+I also tried selecting the best candidate separately for each well. This looked attractive inside the training data but was unstable when parent wells were separated by fold. The final version used only a small blend shared across all wells.
+
+Strong trellis blending
+
+The trellis candidate based on GR/typewell alignment had a physical interpretation, but strong blending increased the error. I therefore checked residual correlations and fold-wise behavior instead of assigning it a large weight based only on interpretability.
+
+Multiple related delta corrections
+
+Constructing deltas from several formation surfaces appeared to increase the number of candidates, but some were nearly perfectly correlated and therefore did not provide independent information. I checked candidate redundancy before stacking additional corrections.
+
+10. What I learned
+
+The biggest lesson was that deciding how and under which fold constraints to use neighboring information mattered more than simply using neighboring information.
+
+Nearby geological wells can be useful, but transferring absolute values carries offsets, and using wells from the same fold makes validation optimistic. I therefore adopted the anchor delta and fold separation described in Section 5.
+
+Rather than submitting the candidate with the best OOF score automatically, I checked all of the following:
+
+
+
+Whether the candidate improved multiple folds.
+
+Whether the improvement survived different spatial blocks.
+
+Whether difficult wells were substantially worsened.
+
+Whether real information beat shuffled information.
+
+Whether the same computation was reproducible on the private test.
+
+
+This validation policy became the basis for deciding whether a public-leaderboard improvement was likely to transfer to the final evaluation.
+
+11. Conclusion
+
+In this competition, the final improvement came less from a single flashy model than from decomposing the problem physically and using geological information in a fold-safe way.
+
+The three main points were:
+
+
+
+Separate the known trajectory component of TVT from the unknown geological component.
+
+Use nearby wells through anchor deltas rather than absolute values.
+
+Make decisions using OOF, spatial blocks, negative controls, and production compatibility rather than the public leaderboard alone.
+
+
+I believe the 3,152-place climb from 3581st on the public leaderboard to 429th on the private leaderboard came from discarding failed candidates and accumulating small, verifiable improvements.
+
+Finally, I would like to thank the organizers for providing such an interesting dataset and competition, and the participants who shared valuable insights with the community.
+
+No comments

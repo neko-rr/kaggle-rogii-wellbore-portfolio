@@ -1,0 +1,131 @@
+{
+  "slug": "rogii-det-mha180sep3",
+  "title": "rogii-det-mha180sep3",
+  "gpu": true,
+  "internet": false,
+  "datasets": [
+    "phongnguyn23021656/koolbox-offline",
+    "fleongg/rogii-claude-models-pub",
+    "ravaghi/wellbore-geology-prediction-artifacts"
+  ],
+  "kernels": [],
+  "n_cells": 49,
+  "imports": [
+    "catboost",
+    "glob",
+    "hashlib",
+    "joblib",
+    "json",
+    "koolbox",
+    "lightgbm",
+    "matplotlib",
+    "multiprocessing",
+    "numba",
+    "numpy",
+    "os",
+    "os,",
+    "pandas",
+    "pathlib",
+    "scipy",
+    "seaborn",
+    "sklearn",
+    "sys,",
+    "time",
+    "warnings"
+  ],
+  "defs": [
+    "CFG",
+    "tvt_from_contacts",
+    "load_well",
+    "run_particle_filter",
+    "run_pf_lik_ensemble",
+    "run_pf_lik_ensemble_scales",
+    "beam_search",
+    "run_beam_ensemble",
+    "selector_well_code",
+    "parse_selector_variant",
+    "apply_selector_variant",
+    "_seed_nb",
+    "_well_seed",
+    "_interp1",
+    "_resamp",
+    "_beam_jit",
+    "_pf_ancc",
+    "_pf_z",
+    "_grid",
+    "_gr_sig",
+    "_nn",
+    "_smooth",
+    "beam_search",
+    "run_pf_ancc",
+    "run_pf_z",
+    "robust_slope",
+    "affine_cal",
+    "seg_b_well",
+    "multi_scale_ncc",
+    "FormationPlaneKNN",
+    "DenseANCCImputer",
+    "build_well",
+    "build_dataset",
+    "apply_pp",
+    "sg_smooth",
+    "_robfit",
+    "_find_data",
+    "CFG",
+    "_demo_well",
+    "load_well"
+  ],
+  "md_heads": [
+    [
+      0,
+      "# det-base + midpoint hedge alpha 1.8, seplo 3 (variant `mha180sep3`)"
+    ],
+    [
+      0,
+      "## Pipeline overview"
+    ],
+    [
+      0,
+      "## The single controlled change in this variant"
+    ],
+    [
+      0,
+      "## Hypothesis"
+    ]
+  ],
+  "first_md": "# det-base + midpoint hedge alpha 1.8, seplo 3 (variant `mha180sep3`)\n\n## Pipeline overview\nDeterministic dual-track geosteering ensemble for **ROGII Wellbore Geology Prediction**\n(predict TVT after the projection start by correlating lateral GR to a typewell):\n\n1. **Track A (learned)**: LightGBM/CatBoost per-row delta models + grouped Ridge stack,\n   warm-started projection post-processing (all seeds fixed — the whole notebook is\n   rerun-deterministic).\n2. **Track B (trajectory)**: 128-seed likelihood-weighted particle filter over the\n   typewell GR signature + beam-search correlation, robust low-order projection,\n   guarded contact override, visible-prefix calibration.\n3. **Post cells**: measured global bias correction; **bimodal-datum midpoint hedge**\n   (when the PF mass splits into two level branches `seplo`-40 ft apart with minor\n   mass >= 0.22, shift that well `alpha` toward the branch midpoint, cap +-4 ft —\n   direction-free variance reduction on coin-flip branch choices).\n\n## The single controlled change in this variant\nHedge amplitude `alpha` **1.6 -> 1.8** on the `seplo=3` base (everything else\nidentical to `mha160sep3`, public LB 6.927).\n\n## Hypothesis\nPure compose of the two measured winning directions. The same alpha step measured\n-0.017 on the seplo=4 base (6.958 -> 6.941, variant `mha180sep4`), and the\nalpha x seplo interaction has proven additive-to-slightly-super-additive\n(additive estimate 6.930 for `mha160sep3` -> actual 6.927). Alpha response is\nlinear through TEN rungs with EIGHT consecutive extrapolation hits within +-0.01.\nAdditive expectation: 6.927 - 0.017 ~= **6.910**.\n",
+  "code_hits": [
+    [
+      1,
+      "import os | os.environ[\"ROGII_GOLD_PROFILE\"] = \"conservative\"  # balanced measured 7.549 vs conservative 7.178 (2026-07-08): conservative gates are load-bearing | # os.environ[\"ROGII_PROBE\"] = \"1\"   # uncomment ONLY for a probe submission | "
+    ],
+    [
+      3,
+      "from lightgbm import LGBMRegressor, log_evaluation, early_stopping | from sklearn.metrics import root_mean_squared_error | from sklearn.model_selection import GroupKFold | from sklearn.linear_model import Ridge | from catboost import CatBoostRegressor | from scipy.spatial import cKDTree | from scipy.signal import savgol_filter | from joblib import Parallel, delayed | from koolbox import Trainer | from pathlib import Path | from numba import njit | import matplotlib.pyplot as plt | import multiprocessing | import seaborn "
+    ],
+    [
+      5,
+      "SELECTOR_N_EVAL_THRESHOLD = 4840.0 | SELECTOR_Z_SPAN_THRESHOLDS = (136.73000000000016, 185.5133333333342) |  | SELECTOR_BIN_VARIANTS = { |     0: 'pf_scale_5_hold_0.2', |     1: 'pf_scale_3_hold_0.15', |     2: 'pf_scale_12_beam_0.2_hold_0.15', |     3: 'pf_scale_5_hold_0.15', |     4: 'pf_scale_5_beam_0.05_hold_0.05', |     5: 'pf_scale_12_beam_0.2_hold_0.05', | } |  | SELECTOR_GLOBAL_VARIANT = 'pf_scale_8_hold_0.2' | SELECTOR_SCALES = (3.0, 5.0, 8.0, 12.0) |  | FORMATION_COLS = ['ANCC', 'ASTNU', 'ASTNL', 'EGFDU', 'EGFDL', "
+    ],
+    [
+      10,
+      "for i, params in enumerate(lgb_params):    |     save_path = f\"models/lightgbm-{i+1}\" |      |     if (CFG.artifacts_path / save_path).exists(): |         print(f\"Loading lightgbm-{i+1} from disk...\") |          |         trainer_paths = (CFG.artifacts_path / save_path).glob('*.pkl') |         trainer = joblib.load(list(trainer_paths)[0]) |          |         print(f\"Loaded lightgbm-{i+1} with overall RMSE: {trainer.overall_score:.4f}\\n\") |     else: |       |         trainer = Trainer( |             estimator=LGBMRegres"
+    ],
+    [
+      11,
+      "for i, params in enumerate(cb_params):     |     save_path = f\"models/catboost-{i+1}\" |     if (CFG.artifacts_path / save_path).exists(): |         print(f\"Loading catboost-{i+1} from disk...\") |          |         trainer_paths = (CFG.artifacts_path / save_path).glob('*.pkl') |         trainer = joblib.load(list(trainer_paths)[0]) |          |         print(f\"Loaded catboost-{i+1} with overall RMSE: {trainer.overall_score:.4f}\\n\") |     else: |         trainer = Trainer( |             estimator=CatBoostRegressor(**p"
+    ],
+    [
+      17,
+      "sample_sub = pd.read_csv(CFG.dataset_path / \"sample_submission.csv\") | sub_1 = (sample_sub[['id']].merge( |     test_df2[['id', 'pred']].rename(columns={'pred':'tvt'}), |     on='id',  |     how='left' | )) |  | sub_1['tvt']=sub_1['tvt'].fillna(float(train_df['last_known_tvt'].mean()+train_df['target'].mean())) | sub_1"
+    ],
+    [
+      18,
+      "sample = pd.read_csv(CFG.dataset_path / 'sample_submission.csv') | sample['well']    = sample['id'].str[:8] | sample['row_idx'] = sample['id'].str[9:].astype(int) |  | train_hw_files = sorted(glob.glob(str(CFG.dataset_path / 'train' / '*__horizontal_well.csv'))) | train_wells = [os.path.basename(f).split('__')[0] for f in train_hw_files] |  | test_hw_files = sorted(glob.glob(str(CFG.dataset_path / 'test' / '*__horizontal_well.csv'))) | test_wells = [os.path.basename(f).split('__')[0] for f in test_hw_files] |  | ro"
+    ],
+    [
+      20,
+      "sub = ( |     sub_1.merge(sub_2, on='id', suffixes=('_1', '_2')) |        .assign(tvt=lambda x: 0.3 * x['tvt_1'] + 0.7 * x['tvt_2']) |        [['id', 'tvt']] | ) | sub.to_csv(\"submission.csv\", index=False) | sub"
+    ]
+  ]
+}

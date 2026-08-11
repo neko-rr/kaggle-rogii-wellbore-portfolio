@@ -1,0 +1,454 @@
+﻿Topic #733146: 52nd Place Solution 窶・Physics Bank + Typed Crossformer
+  Author: Dylan Xue
+  Posted: 2026-08-06 01:14:43.848000
+  Votes: 3  Comments: 0
+
+Thanks to the hosts for this interesting competition, and congratulations to all the winners!
+
+TL;DR
+
+Physics-based candidate trajectories + Typed Crossformer + conservative frequency/residual correction
+
+Our solution had four main parts:
+
+
+
+Build a 65-channel Bank containing many plausible TVT trajectories from DTW, particle filters, RAFT-1D, HMM, surface models, and geometry features.
+
+Use a Typed Crossformer to process candidate trajectories, context features, and strong anchors differently.
+
+Build a stable parent prediction with frequency-aware model fusion and small bounded corrections.
+
+Inject only 10% of the residual between two Typed models with different regularization.
+
+
+Final result:
+
+
+
+
+Local OOF
+Public LB
+Private LB
+Final rank
+
+
+
+
+6.115
+6.883
+7.087
+52
+
+
+
+
+1. Problem and validation
+
+For every well, we were given the trajectory, GR log, and a known TVT prefix. We needed to predict TVT for the remaining interval.
+
+The metric was pooled row-wise RMSE:
+
+$$
+RMSE=\sqrt{\frac{1}{N}\sum_{i=1}^{N}(\hat y_i-y_i)^2}.
+$$
+
+This meant that a few long and difficult wells could dominate the score. In one of our OOF audits, the hardest 10% of wells contributed 57.8% of total SSE. We therefore cared about hard-well improvement, but rejected methods that achieved it by making ordinary wells noticeably worse.
+
+We used 5-fold GroupKFold by well. All rows from one well stayed in the same fold. We also tried to keep upstream candidate models and secondary corrections nested inside the same well-level validation contract.
+
+Instead of predicting absolute TVT, we predicted the difference from the last known value:
+
+$$
+\Delta TVT_t=TVT_t-TVT_{last\ known}.
+$$
+
+We also used the absolute stratigraphic coordinate
+
+$$
+U_t=TVT_t+Z_t.
+$$
+
+The U representation separates geological surface movement from the vertical movement of the well trajectory. Most smoothing and physical correction was therefore performed in U space.
+
+2. Candidate trajectory Bank
+
+Instead of asking one neural network to solve the full problem from raw GR alone, we generated plausible TVT trajectories using different mechanisms:
+
+
+
+multi-scale GR correlation and self-log matching;
+
+DTW and beam-search paths;
+
+particle filters with position/rate states;
+
+uncertainty and disagreement statistics;
+
+RAFT-1D learned sequence alignment;
+
+tree and polynomial surface estimators;
+
+an absolute HMM trajectory;
+
+well geometry and positional context.
+
+
+The final Bank contained 65 channels.
+
+The Bank converted the original regression task into a more structured problem:
+
+
+  
+Several models have proposed plausible trajectories. Which trajectory, or which combination of trajectories, should be trusted at each location?
+
+
+The value of expanding the Bank is shown below:
+
+
+
+
+Input Bank
+OOF RMSE
+
+
+
+
+Base 56-channel Bank
+9.147
+
+
++ STRIDE particle filter
+8.107
+
+
++ RAFT-1D alignment
+7.913
+
+
+
+
+Improving the candidate trajectories was more valuable than simply increasing backbone size.
+
+The candidates were also complementary rather than individually optimal:
+
+
+
+
+Neural input/model
+OOF RMSE
+
+
+
+
+Raw 65-channel Crossformer
+6.4720
+
+
+TypedBank model
+6.4897
+
+
+50/50 Raw + Typed prediction
+6.3603
+
+
+
+
+TypedBank was not stronger by itself, but it learned a different error pattern. Most Bank channels already represented complete TVT hypotheses, so the network compared and corrected them using GR and geometry as evidence.
+
+3. Typed Crossformer
+
+A standard model treats all channels as ordinary input features. However, our channels had three very different roles:
+
+
+
+Candidate trajectories: complete predictions from PF, RAFT, HMM, surface models, etc.
+
+Context features: GR, geometry, position, uncertainty, and candidate disagreement.
+
+Protected anchors: the strongest individual trajectory estimators.
+
+
+We therefore built a TypedBank Crossformer.
+
+Treating all channels identically would ignore the distinction between a complete RAFT trajectory, PF uncertainty, and a local GR derivative. TypedBank preserves this structure explicitly.
+
+Candidate-family pooling
+
+Complete trajectory channels were grouped by their source, such as particle filters, learned alignment, HMM, and surface models. For every local segment, the network assigned normalized weights to the candidates within each family and combined them into one family representation:
+
+$$
+h_f(t)=\sum_{c\in f}w_{f,c}(t)z_c(t),
+\qquad
+\sum_{c\in f}w_{f,c}(t)=1.
+$$
+
+The weights could change along the well. A particle-filter path could be preferred in one interval, while a RAFT or surface trajectory could be more useful elsewhere.
+
+The strongest trajectories were kept as anchor tokens. These anchors queried the family summaries and the GR/geometry context through cross-attention. The model therefore learned a correction to plausible trajectories rather than generating the complete answer from scratch.
+
+Model configuration
+
+
+
+65 input channels, split into trajectories, context, and protected anchors
+
+512-row windows, divided into 8-row segments
+
+6 attention layers with 8 heads
+
+hidden dimension 144 and feed-forward dimension 288
+
+approximately 1.89M parameters in each fold model
+
+AdamW with learning rate 2e-4
+
+five models trained with well-level GroupKFold
+
+
+We also added a zero-initialized skip for the strongest raw trajectory channels:
+
+$$
+\hat y=f_\theta(x_{aug})+
+\sum_{k\in\mathcal A}a_kx_k^{raw},
+\qquad a_k|_{init}=0.
+$$
+
+The strong anchors bypassed channel dropout and input noise, while the weaker physics channels still received regular augmentation.
+
+Training details
+
+The target was always delta TVT, and the loss was masked RMSE over the unknown interval with deep supervision. We used cosine decay, a short warm-up, gradient clipping, channel dropout, input noise, and mixup. Training was performed in FP32.
+
+Seed variation was visible, but diversity from different mechanisms was generally more useful than adding many nearly identical seeds. The architectural difference between the two Typed models provided the final diversity source.
+
+Whole-family dropout
+
+Many Bank channels were near-duplicates from the same physical family. Dropping one channel was not enough because the network could use another similar channel.
+
+A second Typed model used 10% whole-family dropout during training:
+
+$$
+\tilde h_f=\frac{m_f}{1-p}h_f,
+\qquad m_f\sim\operatorname{Bernoulli}(1-p),
+\quad p=0.1.
+$$
+
+This encouraged the network to remain robust when an entire candidate family became unreliable.
+
+4. Stable parent model and post-processing
+
+The parent model used conservative frequency-aware fusion and bounded corrections. Its objective was to improve difficult wells without allowing weaker donors to degrade ordinary wells.
+
+Frequency-aware fusion
+
+Instead of averaging every donor over the full trajectory, we separated donor residuals into low- and high-frequency components:
+
+$$
+LP_\sigma(r)=G_\sigma*r,
+\qquad
+HP_\sigma(r)=r-LP_\sigma(r).
+$$
+
+The main fusion was approximately
+
+$$
+\hat y_{frequency}=\hat y_{anchor}
++0.45LP_{384}(\hat y_A-\hat y_{anchor})
++0.30HP_{384}(\hat y_B-\hat y_{anchor}).
+$$
+
+One donor only corrected the large-scale geological trend, while another donor only corrected local movement.
+
+Bounded physical correction
+
+We then added small corrections for:
+
+
+
+continuity with the known TVT prefix;
+
+agreement between strong PF, RAFT, and surface trajectories;
+
+HMM corrections shrunk by posterior uncertainty;
+
+a strictly self-excluded spatial trend;
+
+a shallow residual adapter using only geometry, visible-prefix, and uncertainty features.
+
+
+For example, the HMM correction was shrunk as its uncertainty increased:
+
+$$
+r_{HMM}=0.4\frac{U_{HMM}-U_{strong}}
+{1+(\sigma_{HMM}/4)^2}.
+$$
+
+The resulting safe parent achieved 6.1369 OOF, 6.888 Public, and 7.090 Private.
+
+The bounded physical chain was independently useful on the Typed model:
+
+
+
+
+Typed prediction stage
+OOF RMSE
+
+
+
+
+Raw prediction
+6.4897
+
+
++ simple nested correction
+6.4367
+
+
++ calibrated correction
+6.4206
+
+
++ full bounded physical chain
+6.3756
+
+
+
+
+5. Final bounded residual
+
+The correction used two Typed models:
+
+
+
+Old Typed model: the original TypedBank model;
+
+New Typed model: the same architecture trained with whole-family dropout.
+
+
+Only the difference between these models was used as a bounded correction:
+
+$$
+r_{typed}=T_{new}(x)-T_{old}(x).
+$$
+
+Our final prediction was
+
+$$
+\boxed{
+\hat y_{final}=\hat y_{safe}
++0.10\left[T_{new}(x)-T_{old}(x)\right]
+}.
+$$
+
+The safe parent produced the main answer; the new model supplied a 10% correction direction.
+
+We also prepared a more conservative 5% version. Both versions transferred consistently:
+
+
+
+
+Model
+Local OOF
+Public LB
+Private LB
+
+
+
+
+Frequency-aware parent
+6.2005
+6.923
+7.101
+
+
+Safe bounded correction
+6.1369
+6.888
+7.090
+
+
++ 5% Typed-model residual
+6.1191
+6.885
+7.088
+
+
++ 10% Typed-model residual (final)
+6.1150
+6.883
+7.087
+
+
+
+
+This was our cleanest ablation. Every step improved Local, Public, and Private scores in the same direction.
+
+The safe model changed the frequency-aware parent only through low-capacity, bounded residuals. The final variants then changed this safe parent only through the difference between two closely related Typed models. Each stage therefore had a clear fallback and a limited failure radius.
+
+6. What did not work well
+
+Other standalone sequence models were useful as diversity probes but remained weaker:
+
+
+
+
+Model family
+OOF RMSE
+
+
+
+
+Inception
+6.6455
+
+
+TCN
+6.6568
+
+
+GRU
+6.6577
+
+
+Spectral network
+6.6696
+
+
+
+
+CatBoost, U-Net, hard selectors, tree gates, and larger residual models were also tested. Aggressive combinations usually showed:
+
+
+
+large local CV improvement;
+
+improvement concentrated in one fold or a few hard wells;
+
+much smaller or negative leaderboard transfer.
+
+
+A component was retained only if it improved all folds, protected ordinary wells, helped difficult wells, and used the same inference path locally and on Kaggle.
+
+Another important failure mode was nested OOF construction. A trajectory could be OOF for its own producer while still being exposed to an outer validation fold through the downstream training set. This did not make the trajectory useless窶杯he signal was often real窶巴ut it made the apparent gain too optimistic. Such features were either rebuilt under the outer-fold contract or admitted only through a small linear/bounded correction.
+
+7. Conclusion
+
+The solution relied on a clear division of labor:
+
+
+
+physics and alignment models propose plausible trajectories;
+
+the Typed neural model estimates which candidates are locally reliable;
+
+conservative fusion and post-processing protect continuity and worst-case behavior.
+
+
+The Public leaderboard was noisy for this model family, while the well-level CV preserved the relative ordering of the final conservative variants.
+
+Thanks again to the hosts, our teammates, and everyone who shared ideas during the competition. We are looking forward to learning from the other solutions!
+
+No comments
+

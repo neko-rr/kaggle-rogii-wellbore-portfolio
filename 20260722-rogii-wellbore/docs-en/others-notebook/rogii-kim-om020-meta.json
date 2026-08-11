@@ -1,0 +1,170 @@
+{
+  "slug": "rogii-kim-om020",
+  "title": "rogii kim om020",
+  "gpu": true,
+  "internet": false,
+  "datasets": [
+    "",
+    "phongnguyn23021656/koolbox-offline",
+    "nina2025/rogii-03",
+    "pilkwang/rogii-model-package",
+    "thbdh5765/rogii-v10-fresh-artifacts",
+    "fleongg/rogii-claude-models-pub",
+    "needless090/rogii-tabicl-mirror",
+    "ravaghi/wellbore-geology-prediction-artifacts"
+  ],
+  "kernels": [],
+  "n_cells": 58,
+  "imports": [
+    "catboost",
+    "glob",
+    "glob,subprocess,sys",
+    "hashlib",
+    "joblib",
+    "json",
+    "koolbox",
+    "lightgbm",
+    "matplotlib",
+    "multiprocessing",
+    "numba",
+    "numpy",
+    "os",
+    "os,",
+    "pandas",
+    "pathlib",
+    "scipy",
+    "seaborn",
+    "sklearn",
+    "sys,",
+    "time",
+    "torch",
+    "warnings"
+  ],
+  "defs": [
+    "_wheel_matches_runtime",
+    "_install_or_path_koolbox",
+    "_make_koolbox_fallback_module",
+    "CFG",
+    "_safe_competition_data_root",
+    "tvt_from_contacts",
+    "load_well",
+    "run_particle_filter",
+    "run_pf_lik_ensemble",
+    "run_pf_lik_ensemble_scales",
+    "beam_search",
+    "run_beam_ensemble",
+    "selector_well_code",
+    "parse_selector_variant",
+    "_selector_tw_gr_arrays",
+    "_selector_eval_mask",
+    "_selector_gr_scale",
+    "_selector_fft_denoise_gr",
+    "_selector_apply_heel_calibration",
+    "_selector_heel_report_fields",
+    "_selector_gr_misfit",
+    "_selector_lag1_autocorr",
+    "_selector_temp_from_resid",
+    "_selector_prefix_trust",
+    "selector_bimodal_scan",
+    "_bimodal_selector_weight",
+    "apply_selector_variant",
+    "_interp1",
+    "_resamp",
+    "_beam_jit",
+    "_pf_ancc",
+    "_pf_z",
+    "_grid",
+    "_gr_sig",
+    "_nn",
+    "_smooth",
+    "beam_search",
+    "run_pf_ancc",
+    "run_pf_z",
+    "robust_slope"
+  ],
+  "md_heads": [
+    [
+      0,
+      "# ROGII Contact-Gated Stratigraphic Alignment"
+    ],
+    [
+      1,
+      "## Prediction Flow"
+    ],
+    [
+      2,
+      "## Main Trajectory Equations"
+    ],
+    [
+      3,
+      "## Heel Calibration and Bimodal Hedge"
+    ],
+    [
+      4,
+      "## Guarded Contact Reconstruction"
+    ],
+    [
+      5,
+      "## Control Panel"
+    ],
+    [
+      14,
+      "## Ridge/PF and Selector Anchor"
+    ],
+    [
+      30,
+      "## Projection and Learned Branch"
+    ],
+    [
+      47,
+      "## Guarded Same-Well Contact Override"
+    ],
+    [
+      50,
+      "## Visible-Prefix Calibration"
+    ],
+    [
+      55,
+      "## Diagnostics and Output Files"
+    ],
+    [
+      56,
+      "## Closing Note"
+    ]
+  ],
+  "first_md": "# ROGII Contact-Gated Stratigraphic Alignment\n\nThis notebook builds a target-free TVT trajectory from three signals: a ridge/PF anchor, a learned trajectory branch, and contact-based self-verification on the visible prefix. Each correction layer is allowed to modify `submission.csv` only when its local diagnostic supports the move.\n\n## Prediction Flow\n\nThe pipeline is ordered from broad fallbacks to highly local self-verification.\n\n1. Build a ridge/PF artifact trajectory and a physical/PF selector trajectory.\n2. Blend them into an SP45-style anchor and apply robust projection in normalized MD space.\n3. Build the learned trajectory branch from mounted pretrained boosters.\n4. Blend the projected anchor and the learned branch.\n5. Apply guarded same-well contact reconstruction only when the visible prefix proves compatibility.\n6. Run visible-prefix calibration either as an audit or as a bounded final correction.\n7. Audit `submission.csv` against `sample_submission.csv`.\n\nThe default `contact_gated_anchor` profile keeps the self-verified contact anchor as the final trajectory. The visible-prefix profiles are separate experiments: they let the best prefix-tested candidate make a bounded final move after the same contact guard is re-applied.\n\n## Main Trajectory Equations\n\nThe first anchor mixes the ridge/PF artifact path and the selector path:\n\n$$\nT_i^{A}=w_rT_i^{ridge}+(1-w_r)T_i^{selector},\n\\qquad w_r=0.30.\n$$\n\nThe projection layer denoises the implied stratigraphic level\n\n$$\nU_i=T_i+Z_i.\n$$\n\nWith normalized measured depth \\(s_i\\), a robust polynomial estimates\n\n$$\n\\hat U_i=U_{last}+f_d(s_i),\n$$\n\nand the projected path is\n\n$$\nT_i^{proj}=(1-\\lambda_p)T_i^{A}+\\lambda_p(\\hat U_i-Z_i),\n\\qquad \\lambda_p=0.75.\n$$\n\nThe learned branch is then blended with the projected anchor:\n\n$$\nT_i^{blend}=w_sT_i^{proj}+(1-w_s)T_i^{learned}.\n$$\n\nThe default anchor profile uses\n\n$$\nw_s=0.60.\n$$\n\nThe variation notebooks change only \\(w_s\\) or the final visible-prefix selection rule.\n\n## Heel Calibration and Bimodal Hedge\n\nGR matching is sensitive to gain and offset differences between the horizontal well and the typewell. On the visible heel \\(H_w\\), the notebook fits\n\n$$\n(\\alpha_w,\\beta_w)=\\arg\\min_{\\alpha,\\beta}\\sum_{i\\in H_w}\\left(G_i^{hw}-(\\alpha G^{tw}(T_i)+\\beta)\\right)^2.\n$$\n\nThe hidden horizontal GR is mapped back to typewell scale before datum scanning:\n\n$$\n\\tilde G_i^{hw}=\\frac{G_i^{hw}-\\beta_w}{\\alpha_w}.\n$$\n\nFor a candidate datum shift \\(\\Delta\\), the scan score is\n\n$$\nJ_w",
+  "code_hits": [
+    [
+      6,
+      "# Profile choices: | # - vp_balanced_final: current submission default; visible-prefix profile output becomes final after contact guard. | # - vp_conservative_final: weaker visible-prefix profile, kept as a conservative comparison. | # - contact_gated_anchor*: diagnostic ablations; they keep the pre-visible-prefix anchor and have underperformed. | # - bimodal_guarded: contact_gated_anchor plus bimodal hedge protection. | SUBMISSION_PROFILE = 'vp_balanced_modelpkg_010' |  | PROFILE_PRESETS = { |     'contact_gat"
+    ],
+    [
+      8,
+      "# Runtime bridge for the visible-prefix implementation. | import os | os.environ['ROGII_GOLD_PREFIX_CAL'] = '1' if RUN_VISIBLE_PREFIX_CALIBRATION else '0' | os.environ['ROGII_GOLD_PROFILE'] = VISIBLE_PREFIX_PROFILE | os.environ['ROGII_GOLD_INCLUDE_PF'] = '1' if VISIBLE_PREFIX_INCLUDE_PF else '0' | os.environ['ROGII_GOLD_CAL_SEEDS'] = str(int(VISIBLE_PREFIX_CAL_SEEDS)) | os.environ['ROGII_GOLD_FINAL_SEEDS'] = str(int(VISIBLE_PREFIX_FINAL_SEEDS)) | os.environ['ROGII_GOLD_PARTICLES'] = str(int(VISIBLE_PREFIX_PAR"
+    ],
+    [
+      9,
+      "import sys, os, glob, subprocess, types | from pathlib import Path |  | _koolbox_roots = [Path(p) for p in globals().get('KOOLBOX_OFFLINE_ROOTS', ()) if str(p).strip()] | _koolbox_root = next((p for p in _koolbox_roots if p.exists()), None) | if _koolbox_root is None: |     # Some notebook environments mount koolbox through a package-manager input |     # whose folder name changes. Search only for koolbox-looking wheels/folders. |     _auto_hits = [] |     for _pat in ('/kaggle/input/**/koolbox*.whl', '/kaggle/in"
+    ],
+    [
+      10,
+      "from lightgbm import LGBMRegressor, log_evaluation, early_stopping | from sklearn.metrics import root_mean_squared_error | from sklearn.model_selection import GroupKFold | from sklearn.linear_model import Ridge | from catboost import CatBoostRegressor | from scipy.spatial import cKDTree | from scipy.signal import savgol_filter | from joblib import Parallel, delayed | from koolbox import Trainer | from pathlib import Path | from numba import njit | import matplotlib.pyplot as plt | import multiprocessing | import seaborn "
+    ],
+    [
+      12,
+      "SELECTOR_N_EVAL_THRESHOLD = 4840.0 | SELECTOR_Z_SPAN_THRESHOLDS = (136.73000000000016, 185.5133333333342) |  | SELECTOR_BIN_VARIANTS = { |     0: 'pf_scale_5_hold_0.2', |     1: 'pf_scale_3_hold_0.15', |     2: 'pf_scale_12_beam_0.2_hold_0.15', |     3: 'pf_scale_5_hold_0.15', |     4: 'pf_scale_5_beam_0.05_hold_0.05', |     5: 'pf_scale_12_beam_0.2_hold_0.05', | } |  | SELECTOR_GLOBAL_VARIANT = 'pf_scale_8_hold_0.2' | SELECTOR_SCALES = (3.0, 5.0, 8.0, 12.0) |  | FORMATION_COLS = ['ANCC', 'ASTNU', 'ASTNL', 'EGFDU', 'EGFDL', "
+    ],
+    [
+      13,
+      "# Optional read-only oracle/tail diagnostics for train wells. | if bool(globals().get('RUN_CV_REPORT', False)): |     import numpy as _cv_np |     import pandas as _cv_pd |     from pathlib import Path as _CvPath |  |     def _cv_rmse(y, p): |         y = _cv_np.asarray(y, dtype=float) |         p = _cv_np.asarray(p, dtype=float) |         m = _cv_np.isfinite(y) & _cv_np.isfinite(p) |         if not bool(m.any()): |             return _cv_np.nan, 0, 0.0 |         err = y[m] - p[m] |         return float(_cv_np.sqrt(_cv_n"
+    ],
+    [
+      19,
+      "for i, params in enumerate(lgb_params):    |     save_path = f\"models/lightgbm-{i+1}\" |      |     if (CFG.artifacts_path / save_path).exists(): |         print(f\"Loading lightgbm-{i+1} from disk...\") |          |         trainer_paths = (CFG.artifacts_path / save_path).glob('*.pkl') |         trainer = joblib.load(list(trainer_paths)[0]) |          |         print(f\"Loaded lightgbm-{i+1} with overall RMSE: {trainer.overall_score:.4f}\\n\") |     else: |       |         trainer = Trainer( |             estimator=LGBMRegres"
+    ],
+    [
+      20,
+      "for i, params in enumerate(cb_params):     |     save_path = f\"models/catboost-{i+1}\" |     if (CFG.artifacts_path / save_path).exists(): |         print(f\"Loading catboost-{i+1} from disk...\") |          |         trainer_paths = (CFG.artifacts_path / save_path).glob('*.pkl') |         trainer = joblib.load(list(trainer_paths)[0]) |          |         print(f\"Loaded catboost-{i+1} with overall RMSE: {trainer.overall_score:.4f}\\n\") |     else: |         trainer = Trainer( |             estimator=CatBoostRegressor(**p"
+    ]
+  ]
+}

@@ -1,0 +1,35 @@
+# 提出ルール — {{COMP_SLUG}}（simulation）
+
+> skill: kaggle-submission-validator  
+> submission-profile: **simulation**  
+> last-updated: {{COMP_DATE}}
+
+## 提出形式
+
+| 項目 | 内容 |
+|---|---|
+| 成果物 | `main.py` または公式指定の agent アーカイブ |
+| **標準提出** | **Notebook / Kernel 紐づけ**（UI または CLI `-k` / `-v`） |
+| 非推奨 | ローカルファイルの **`-f` のみ** |
+
+## ゲート順（必須）
+
+1. Skill `kaggle-submission-strength-gate`（`docs-ja/strength-gate-profile.json`）
+2. `scripts/check-submission-strength-gate.py` **PASS**
+3. `scripts/validate-submission.ps1 -Profile simulation` **PASS**
+4. Notebook 紐づけで提出
+
+```powershell
+python .\scripts\check-submission-strength-gate.py --comp-root .\{{COMP_SLUG}} --purpose mu `
+  --metrics-json .\{{COMP_SLUG}}\exp\strength-gate-metrics.json
+.\scripts\validate-submission.ps1 -ArtifactPath .\main.py -Profile simulation -CompInner .\{{COMP_SLUG}}
+```
+
+## L2（手動）
+
+- [ ] purpose（mu / hedge / diagnostic）を宣言済み
+- [ ] diagnostic を有効枠最終スロットに載せない
+- [ ] タイムアウト・例外時に合法手を返す
+- [ ] **Notebook 紐づけ**（403 時 zip-only 禁止）
+
+SSOT: `.cursor/skills/_shared/NOTEBOOK-LINKED-SUBMIT.md`

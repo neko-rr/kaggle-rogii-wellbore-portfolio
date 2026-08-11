@@ -1,0 +1,135 @@
+﻿Topic #733169: 162nd Place (Silver): Three AI-Agent Lineages, a Frozen-Score Mystery, and Trust
+  Author: Hawksartelier
+  Posted: 2026-08-06 02:26:45.840000
+  Votes: 0  Comments: 0
+
+162nd Place (Silver): Three AI-Agent Lineages, a Frozen-Score Mystery, and Trusting a Leak-Free CV
+
+TL;DR 窶・Clean grouped CV 7.3812 竊・public 7.328 竊・private 8.009, rank 162/6,191.
+No contact reconstruction, no public model artifacts, no probes: every input at inference was
+own-well MD/X/Y/Z/GR, the visible TVT_input prefix, and the well's typewell. The whole campaign
+was run by AI coding agents (three parallel lineages, ~300 versioned experiments with a
+falsification ledger); we humans mostly routed resources, gated submissions, and audited legality.
+The public LB placed us ~1,900th; the private shakeup moved us +1,700 ranks because the public
+6.3窶・.3 cluster was largely same-ID reconstruction and probe fitting that collapsed on hidden wells.
+The most useful things we can share are the numbers: a per-stage CV ladder, a measured
+"estimability wall", and a byte-level forensic story about six submissions that scored identically.
+
+The final pipeline (per-stage pooled 5-fold grouped CV, 773 wells)
+
+
+
+
+stage
+CV
+
+
+
+
+flat carry-forward of TVT_input at PS
+15.91
+
+
+geometric backbone: fold-pure formation-surface dip ensemble (X/Y-conditioned, formations as training targets only)
+7.97
+
+
++ one anchored correction amplitude from multiscale GR竊杯ypewell cost curves (ExtraTrees)
+7.87
+
+
++ two-seed prefix "Reader" CNN over the cost volume + cosine-head Reader, 50/50
+7.5853
+
+
++ prefix-calibrated similarity (scale GR pattern features to the typewell's prefix statistics)
+7.5183
+
+
++ 72-feature anchored Ridge residual
+7.4792
+
+
++ 2ﾃ・capacity "scaled" cosine Reader, unfitted 50/50 with the Ridge leg
+7.3812
+
+
+
+
+Selection was CV-only: nested/leave-fold-out for every fitted choice, exact sum-to-one blend
+weights (a penalised weight-sum silently injects feet of bias when the target is ~11,000 ft), and a
+well-level bootstrap plus sign test as the adoption gate. Public LB was never used for selection 窶・
+which is the single biggest reason rank 162 happened.
+
+The measured "estimability wall" (and its correct interpretation)
+
+We regressed every per-well moment of the incumbent's residual on legal features, cross-fitted by
+fold: level Rﾂｲ=0.001, slope Rﾂｲ=0.015, anchored amplitude corr 竏・.16 (on the strongest 901-feature
+cost set), curvature 竏・.06/+0.01, 500-ft local windows Rﾂｲ竕・, cross-well spatial level 竕・ (residual
+spatially white at 竏・.048 within 1,000 ft). Oracle ceilings said a per-well constant fix caps at
+5.12 and a line at 3.70 窶・big prizes, none estimable. We concluded "sub-5 unreachable from this
+formulation."
+
+The 7th-place writeup (HMM 5.676 single-stage 竊・UNet refiner 竊・5.2025 clean CV) shows what that
+conclusion actually meant: the wall was a property of correcting a weak decoder, not of the data.
+Two of their moves directly answer our dead ends: (1) a refiner pretrained on ~6,000 synthetic
+wells with fabricated first-pass errors 窶・because trained naively, the conditioning channel is
+near-perfect on training wells (own-fold 3.20 vs held-out 9.34) and the net just copies it; and
+(2) disagreement-gated hedges that revive signals with flat correlation r竕遺・0.02 窶・the exact
+value at which we declared neighbour information dead, tested ungated. Levers are also
+level-dependent: refiners that do nothing at LB 7窶・ become decisive at 5窶・, so a falsification
+ledger should record the base it was measured at.
+
+The frozen-score mystery (bring byte counters)
+
+Between 07-26 and 08-02, six submissions spanning three architectures scored exactly 7.906 窶・
+including a backbone-only variant differing from the full model by 2.36 ft RMS locally. The
+total_bytes field of the scored files showed them within 1窶・1 bytes of each other, where genuine
+value changes move a 953k-row CSV by ﾂｱ400窶・00 bytes (calibrated by simulation): Kaggle was scoring
+value-identical files. Local reproduction failed 窶・every input degradation we tried either left the
+variants clearly different or crashed the pipeline outright. The freeze finally broke when the
+"scaled" Reader shipped (7.328), so the collapse was model-side: every correction stage above the
+geometric backbone was evaluating to 竕・ero on hidden wells while remaining healthy on all 773
+training wells and on multi-well local simulations. If your submissions plateau at an identical
+score: check total_bytes first, and build a multi-well hidden-test simulator 窶・a 3-well
+placeholder validates almost nothing (it cost us two regression submissions before we learned this).
+
+What the shakeup did
+
+The clean line's public竊恥rivate offset was 竕・0.68 (7.328竊・.009), roughly uniform across our
+candidates (private spread of our four finals-era models: 8.009窶・.402). Meanwhile most of the
+public 6.3窶・.3 band 窶・the fork cluster built on same-ID contact reconstruction, mounted public
+model packages, and probe-derived shifts 窶・fell behind us. A rigorously leak-free CV over 773
+wells beat a public score computed on a handful; 7th place report the same inversion from the top
+of the board.
+
+Agent-campaign notes (what we'd tell the next team running agents)
+
+
+
+Pooled evidence beats per-fold gates. Our single-fold bootstrap half-width was 0.21 ft while
+screens gated at +0.02窶ｦ+0.05 窶・a ~30-rejection streak contained at least one genuinely good model
+(+0.04, P=0.989 once all folds were pooled). Re-score rejected work with pooled statistics.
+
+Agents lock in "impossible" and iterate micro-perturbations. Both failure modes the 7th-place
+team describe, we hit: measured negatives hardened into a problem-level "unreachable", and long
+chains of ﾂｱ0.01 correction heads. Structural pivots (a new base class) needed human pushes.
+
+Validate deployments against the thing Kaggle actually scores. Bit-exact parity on the 3-well
+stub passed twice for notebooks that were regressions on multi-well tests.
+
+Runtime matters at scale: the hidden set is far larger than the stub; budget seconds-per-well.
+
+
+Credits
+
+Thanks to ROGII and Kaggle for an unusually deep problem; to the discussion authors whose
+measurements we leaned on (the CV-trust and resubmission-noise threads, the autoregressive-GRU
+working note, the oracle-ladder posts); and to the 7th-place team for the most instructive writeup
+of the competition. Full falsification ledger and the byte-forensics scripts are summarised in the
+attached notebook's appendix.
+
+Training/inference notebook (the deployed solution, end-to-end): [link after publishing]
+
+No comments
+

@@ -1,0 +1,251 @@
+﻿Topic #733374: Climbing 1,649 Places by Ignoring the Leaderboard
+  Author: Vignesh A
+  Posted: 2026-08-06 17:16:51.466000
+  Votes: 2  Comments: 1
+
+Final result: 198th of 6,191 窶・Silver. Private 8.147 / public 6.579.
+Solution notebook: rogii-submit-e17
+
+
+
+TL;DR
+
+
+
+I sat at public rank ~1,847 on deadline day and finished private 198th 窶・a +1,649-place climb 窶・without ever tuning on the public leaderboard. Every submission decision was made on a 770-well local holdout; the public board was treated as a noisy read-out, never an objective.
+
+The pipeline is a leak-free 10-column stack: a leak-stripped port of the public classical pipeline, six neural member families (conv+GRU, transformer, domain-randomized, flow-matching diffusion, ImageNet-pretrained vision on a GR-misfit cost image, and a fused dual-branch generative model), an explicit drift basis column, an uncertainty-modulated de-shrink, and a boundary fade 窶・with the final models retrained on all 773 wells in the last 12 hours.
+
+Along the way I ran ~140 controlled experiments, closed each dead end with a measured mechanism rather than a shrug, caught 8 would-be gains that were selection artifacts, and mapped the problem's identifiability wall precisely: ~77% of the remaining error is one per-well number (eval-zone dip) that five independent probes 窶・including exact Bayesian inference 窶・show is not recoverable from the inputs.
+
+This writeup is mostly about the measurements, because the winning pipelines will describe what worked; fewer documents describe what cannot work and how you prove it.
+
+
+
+
+
+
+1. The problem, reframed once and used everywhere
+
+The task: predict TVT (true vertical thickness 窶・the well's stratigraphic position) for the hidden tail of horizontal wells, from trajectory (MD/X/Y/Z), gamma ray (GR), a reference typewell GR-vs-TVT curve, and the known prefix. Pooled RMSE over all eval rows.
+
+The decomposition that organizes everything (due to the community's early analysis [1][2], verified locally): let S(MD) = TVT + Z. Z is known exactly at eval time, so all error lives in the smooth per-well surface trend of S 窶・a datum (level), a dip (slope), and shape. A flat "hold last TVT" baseline scores 15.92; a degree-3 oracle fit of S scores ~4. The whole game is the trend.
+
+Two facts about the data mattered more than any model choice:
+
+
+
+GR is self-similar. The formation is rhythmically bedded, so the lateral's GR matches the typewell at multiple stratigraphic positions ~one bundle (ﾂｱ90 ft) apart. Every explicit alignment method inherits this alias.
+
+The label is an interpretation. The target is one geologist's drawing in steering software. Late in the campaign I measured this literally 窶・see ﾂｧ5.
+
+
+
+
+2. Validation: the only thing that actually mattered
+
+Everything below was decided by one instrument:
+
+
+
+770-well whole-well holdout (all train wells minus the 3 visible test twins, whose labels the loader refuses to read), pooled RMSE on eval zones only, 5-fold grouped CV plus a spatial field-CV co-metric, plus two extra spatial fold maps for any claimed winner.
+
+A measured seed-noise floor of 0.074 ft (pooled) and ~0.05 solo. Anything smaller is not a result.
+
+Promotion rule: ship only what is sign-consistent on both fold maps and clears the floor; anything spatial must also survive leave-spatial-out.
+
+
+The public LB was calibrated, not chased: for this pipeline, public = holdout + ~0.55 ft, stable to a few hundredths across submissions 窶・consistent with yu4u's published pairs [3] and souldrive's "precise ruler, biased instrument" analysis [4]. The private reveal then shifted the level by +1.5 ft (the 52 public wells were systematically easier than the 148 private ones) but preserved the ordering (Spearman rank r = 0.92 across the campaign; Pearson r = 0.72 窶・the level shift is not a ranking failure):
+
+
+
+Two honest caveats on that transfer. First, the level moved a lot: private = public + 1.57 ft on average (sd 0.40) 窶・the 52 public wells were systematically easier than the 148 private ones, which no amount of local CV could have detected. Second, among my final five submissions 窶・the ones separated by less than 0.25 ft 窶・the rank correlation is only ~0.70: at that resolution the public board genuinely could not tell them apart, and neither could my holdout. The ordering held across the campaign, not across near-ties.
+
+Two of my submissions are the cautionary tale in miniature: E17 and E17b are the same recipe (different run) and differ by 0.019 private but 0.133 public. Public rerun noise was ~7ﾃ・the true difference. Byte-identical-resubmission spreads of 0.03窶・.12 were independently measured by several competitors [4][5][11]; every sub-0.1 public delta in this competition was a coin flip.
+
+Eight times during the campaign, an apparent improvement that was real on the primary folds reversed sign on held-out spatial folds or on a confirmation seed 窶・a learned ranker, a risk-gated shrink, two autonomous hyperparameter-search "winners", a dip-disagreement feature, a basis-ladder arm, a fine-grid tilt optimum, and a stale-reference gain. The protocol caught all eight before any reached a submission. That, more than any model, is why the private board was kind.
+
+
+
+3. What shipped (the 15.92 竊・8.147 arc)
+
+
+
+
+Step
+What
+Public
+Private
+
+
+
+
+Baseline fork
+best public notebook, leak paths intact but inert
+8.385
+9.032
+
+
+E1 窶・leak-free port
+ported the strongest public classical pipeline; deleted every leak path
+7.581
+9.600
+
+
+E3窶摘8
++ six neural member families, non-negative least-squares stacking
+6.876
+8.750
+
+
+E9/E10 窶・de-shrink
+per-well drift rescaling k = 1 + ﾎｱ(c竄 + c竄】竄・+ c竄・竄・竏・1), uncertainty-modulated
+6.877
+8.730
+
+
+E12/E14 窶・fused generative member
+6-seed flow-matching dual-branch model + likelihood-tilted sampler
+6.719
+8.293
+
+
+E15 窶・the missing basis column
+added the pivot-anchored drift as an explicit 10th stacker column
+6.703
+8.218
+
+
+E16 窶・particles 竊・networks
+same sample-step budget reshaped: 12 seeds @ 4 samples beats 6 @ 8
+6.745
+8.171
+
+
+E17 窶・full-data retrain
+final 12 seeds trained on all 773 wells (learning curve was steep: 80%竊・00% of wells was worth 0.18 ft)
+6.579
+8.147
+
+
+
+
+Highlights worth stealing:
+
+The leak-free port (biggest single jump). The popular public lineage contains a contact-override: when a test well's id also exists in train/, it reads the true TVT from the train copy and substitutes the answer. On the real hidden set this is dead code (no overlap 窶・confirmed by organizers), but it silently corrupts local validation for every fork. I deleted every such path (three independent occurrences plus a self_wid=None imputer self-inclusion) and re-validated: the port is worth a genuine 7.58 public, and my loader raises an exception if any code path touches a test well's labels.
+
+The de-shrink. Individually MSE-trained members are shrunk toward the anchor, so the blend systematically under-predicts eval-zone drift (~9窶・1%). A per-well rescaling of drift around a pivot, with the correction scaled by cross-family disagreement, transferred to the leaderboard at nearly full value 窶・the only post-process in the campaign that did.
+
+The missing basis column. For weeks the log contained the diagnosis "the stacker lacks a pivot basis column" 窶・and the de-shrink was the post-hoc patch for it. Nobody had simply added the column. One extra serve-legal regressor (the member-mean drift, anchored at the pivot) moved the raw blend 6.356 竊・6.260, earned weight 0.108 in every fold of every map, and stacked additively with everything else. A later audit showed why one column suffices: its energy spectrum across polynomial orders (69.9 / 14.1 / 5.3 / 2.9%) matches the error's own spectrum to a point per order 窶・one scalar amplifies every order in the right proportions.
+
+Particles 竊・networks. The generative member's sampler averages N stochastic trajectories. Measured: halving N is free at pool level (the seed ensemble absorbs sampler Monte-Carlo variance) 窶・so the same compute spent on 12 networks ﾃ・4 samples beats 6 ﾃ・8. This is also what made the final payload fit Kaggle's 9-hour budget after a 60-checkpoint version timed out.
+
+Full-data retrain (final day). Every fold model saw only 616 of 773 wells. A 4-point learning curve (40/60/80/100% of training wells) came back steep 窶・so the final 12 seeds were retrained on everything, with the stacker weights kept from OOF fits. Best submission on both boards.
+
+
+
+4. The wall, with coordinates
+
+The more lasting output is a quantitative map of where this problem stops. Decomposing the final pool's per-well residual:
+
+
+  
+pool MSE = 56% datum + 21% slope + 23% shape 窶・and datum and slope are the same failure: the per-well datum error is the integral of the dip error (correlation +0.98, measured directly). 77% of the error is one number per well: the eval-zone dip.
+
+
+
+
+The transfer function (what each level of dip knowledge buys): Rﾂｲ=0.107 on dip 竊・6.00 pooled; Rﾂｲ=0.515 竊・5.00; a perfect dip oracle 竊・3.45. Reaching ~3 requires dip and curvature known almost exactly.
+
+Five independent probes, one verdict 窶・the dip is not in the inputs:
+
+
+
+Re-target the head: training a network to predict dip directly scores worse than a network never told about dip (the 1024-point dense trajectory target is itself the regularizer; compressing supervision to 3 coefficients destroys it).
+
+Re-weight the loss: tripling the loss weight on the datum+dip component leaves dip accuracy inside the control's seed range 窶・invariant.
+
+Re-combine members: a dip-optimal refit of the stacker weights lands exactly on the shipping pool. The stack is already dip-optimal.
+
+Select from the posterior: the generative sampler's candidates contain the true dip (95% coverage; oracle selection worth 0.86 ft) 窶・but the break-even selection accuracy is 44% top-1 and every serve-legal criterion delivers 竕､10%. A capacity control (the same ranker retargeted to a learnable criterion hits 96.8% top-1) proves the model was never the bottleneck; the signal is absent.
+
+Read it from the likelihood, in the right parameterization: every GR-misfit scan in the public ecosystem (and mine) perturbs the path by a constant datum shift 窶・but the error is a dip ramp. Scanning along the ramp direction for the first time: the misfit surface is flat (|corr| 竕､ 0.03 vs the 0.19 needed to clear even the noise floor), and gradient estimators point the wrong way.
+
+
+Corroborating structure: the dip error is 99.3% shared across 12 seeds and ~90% shared across nine architecturally distinct families (conv, transformer, flow, pretrained vision, exact HMM, particle filter, trees, spectral, retrieval). It is a property of the data, not of any model. Consistent with this, an exact Rao-Blackwellized Bayesian datum posterior moves 0.9窶・.3 ft per well 窶・and correlates ~0.03 with the truth. Exact inference reproduces the wall. The independent Working-Note analyses reached the same verdict from other directions [1][2][6].
+
+Where the winners' extra ~1.5 ft lives is therefore a sharp question. My closures bound it: not in the emission (a learned emission trained end-to-end through a differentiable forward-backward decoder landed within 0.14 ft of a hand-built misfit), not in inference machinery, not in ensembling, not in hyperparameters (a fixed-budget autonomous sweep of 27 recipe changes in the style of Karpathy's autoresearch [7][8] produced zero validated wins 窶・both "winners" reversed sign on a sacred held-out fold), and not in cross-well transfer (the datum error is spatially white at &lt;1 kft). I look forward to reading the winning writeups against this map 窶・after this document is published.
+
+
+
+5. Things measured that I haven't seen elsewhere
+
+
+
+The label is literally a polyline. S = TVT + Z on every eval zone is piecewise-linear to the 0.01-ft storage precision 窶・a median-37-vertex freehand drawing, segments 55窶・11 ft, no dip/length quantization, ~1% of vertices being genuine &gt;1-ft fault throws (present in 26% of wells). The function class is exact 窶・and exploiting it fails in both directions: projecting predictions onto the class is the identity (37 segments reproduce any smooth curve), and generating natively in the class loses precisely in the shape band.
+
+The discriminating GR band is at chance where the metric scores. At 5-ft sampling, matching accuracy in the 10窶・2 ft stratigraphic band on the toe is 7.3% vs a 7.22% chance level. Any matcher engineered to be clever in the fine band is a random number generator on the scored rows 窶・the acquisition-physics coherence measurements [6] seen from the detection side.
+
+Seismic imports invert. Instantaneous-phase matching (gain-invariant by construction, standard in horizon autotracking [9]) loses 13 points to a heel-calibrated amplitude misfit 窶・calibration invariance is a cost, not a lever, because absolute GR level carries real signal. Subspace template detection (Harris 2006 [10]) loses 23.
+
+"Weak GR + strong continuity" is a solution, not a prior. When I let a decoder learn its emission and transition parameters end-to-end against final TVT error, the optimizer 窶・free to choose anything 窶・turned the GR term down and continuity up. The community's founding heuristic drops out as the optimum of an optimization problem.
+
+Two runs of the same notebook differ by 0.13 public. Measure your own rerun noise before believing any delta; several of us converged on ﾏ・沿0.03窶・.12 independently [4][5].
+
+
+
+
+6. Process notes
+
+This campaign was run as a human-directed, tool-assisted research program 窶・Claude Code was used for assistance throughout (experiment implementation, parallel experiment agents, log-keeping), with every result gated by the pre-registered validation protocol above. The working style that mattered:
+
+
+
+Every experiment enters a log with: what changed, delta on both fold maps, seed-checked y/n, keep/reject, and the mechanism. ~140 entries. A rejected idea with a measured mechanism is a result; a rejected idea with a shrug is a future time sink.
+
+Stage-0 gates before GPU spend. Cheap decisive pre-checks killed several multi-GPU-hour programs in minutes (e.g., a "formation-top auxiliary supervision" idea died when 30 minutes of measurement showed the formation-top columns are bit-for-bit derived from the label itself 窶・max deviation 0.05 ft = CSV rounding).
+
+Trust only artifacts on disk. Twice, background monitors delivered plausible-but-fabricated progress numbers; the rule "re-read every reported number from the on-disk log before acting" caught both.
+
+The most expensive mistake was sizing runtime against the visible sample. The visible test/ folder holds 3 wells; the hidden set is ~200. One submission timed out learning this. The fix that survived: an adaptive guard that reads the actual well count at runtime and switches sampler budgets accordingly.
+
+
+
+
+7. What I'd tell someone starting this problem today
+
+
+
+Build the whole-well holdout and measure your noise floor first. Nothing else you do can be evaluated without them.
+
+Delete the contact-override before reading anything else in the public forks 窶・not because it scores on the hidden set (it doesn't), but because it silently destroys your local validation.
+
+Model S = TVT + Z, anchor everything at the cut, and treat GR as a weak witness, not an oracle.
+
+Spend your compute on training-data scale and member diversity, not on seeds (they divide only ~8% of the error), not on hyperparameters (measured flat), not on selection (measured impossible).
+
+When something wins, try to kill it on a spatial holdout and a fresh seed before you celebrate. My eight phantom wins all survived the first look and died on the second.
+
+
+
+
+References
+
+[1] Malyshev D., "The Wiggle Is Free, the Trend Is the Wall" 窶・Working Note Award winner. kaggle.com/writeups/malyshevdanil
+[2] radiant-allomancer, "When Better CV Scores Worse: A Control-First Geosteering Campaign" 窶・Working Note Award winner. kaggle.com/writeups/radiantallomancer
+[3] yu4u, CV/LB pairs in "Does CV correlate with LB?" (competition discussion #719389).
+[4] souldrive, "The public LB is a precise ruler and a biased one" (competition discussion).
+[5] Jiwei Liu, "A top-kernel teardown report generated by nvidia-kaggle" (competition discussion) 窶・byte-identical rerun spreads 0.09窶・.38.
+[6] Yanza A., "The Acquisition Physics of the ROGII Tail: A Measured Tool Response Operator" (Working Note).
+[7] Karpathy A., "A Recipe for Training Neural Networks" (2019). karpathy.github.io/2019/04/25/recipe
+[8] Karpathy A., autoresearch 窶・autonomous fixed-budget training experimentation. github.com/karpathy/autoresearch
+[9] Hale D., "Dynamic warping of seismic images", Geophysics 78(2), 2013.
+[10] Harris D., "Subspace Detectors: Theory", LLNL-TR-2006 窶・subspace template detection in seismology.
+[11] Mamarin G., "Fork the ruler, not the model" (Working Note) 窶・heel-calibration localization measurements and the noise-floor methodology.
+
+Solution code: rogii-submit-e17 (final submission notebook). The full experiment log (~140 entries) and research harness will be published after cleanup.
+
+Comments:
+笏懌楳 Georgy Mamarin (2026-08-07 22:52:22.780000) [+0]
+笏・ Seeing the Working Note cited as [11] in a protocol that was pre-registered and actually run 窶・eight phantom wins killed on spatial folds before they cost a submission 窶・was worth more than the pla...
+

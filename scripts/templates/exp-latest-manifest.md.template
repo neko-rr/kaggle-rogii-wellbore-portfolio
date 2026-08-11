@@ -1,0 +1,19 @@
+# latest/ — 現在読むべき分析 SSOT
+
+> **Agent:** `exp-index.md` の次に **必ず** 本ファイルを読む。  
+> 確定版を `latest/` に置き、旧版は `archive/history/` または `archive/superseded/` へ移す。  
+> コード成果物は [`../../lifecycle-manifest.md`](../../lifecycle-manifest.md) を参照。
+
+| topic | current file | updated | replaces / note |
+|---|---|---|---|
+| _（未作成）_ | — | — | 分析確定後に 1 行追加 |
+
+## ローカル検証 SSOT（該当時）
+
+| topic | file |
+|---|---|
+| protocol | [`../protocol/`](../protocol/) |
+
+## superseded
+
+reject 確定は [`../archive/superseded/README.md`](../archive/superseded/README.md) へ。

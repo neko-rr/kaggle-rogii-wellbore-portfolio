@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "updated": "2026-07-22",
+  "description": "コンペ固有の生成物を exp/work 配下へ移すルーティング表。Rule や共通スクリプトに固有ファイル名を書かない。",
+  "source_roots": [
+    "repo-root",
+    "comp-root"
+  ],
+  "routes": [],
+  "examples": [
+    {
+      "id": "onnxruntime-profile",
+      "pattern": "onnxruntime_profile__*.json",
+      "destination": "work/profiles/onnxruntime",
+      "date_regex": "(?<date>\\d{4}-\\d{2}-\\d{2})",
+      "role": "temporary-profile",
+      "enabled": true
+    }
+  ]
+}

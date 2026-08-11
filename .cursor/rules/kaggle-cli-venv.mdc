@@ -1,0 +1,57 @@
+---
+description: Kaggle CLI はリポジトリ .venv 内。setup スクリプト経由の pip のみ許可。ラッパー必須。コンペ計算依存は requirements-local。
+alwaysApply: true
+---
+
+# Kaggle CLI — venv 前提
+
+## 前提
+
+- リポジトリルートの **`.venv/`** にパッケージを入れる
+- SSOT:
+  - **`requirements-kaggle-cli.txt`** — 全コンペ（`kaggle` · `ruff`）
+  - **`requirements-local-sim.txt`** — simulation 汎用
+  - **`<comp>/requirements-local.txt`** — **当該コンペの計算依存**（numpy 等）  
+    詳細: `_shared/COMP-DEPENDENCIES.md` · Rule `kaggle-comp-dependencies`
+- セットアップ:
+  - CLI: `scripts/setup-kaggle-venv.ps1` — **default `-Profile cli`**
+  - **コンペ計算:** `scripts/setup-comp-venv.ps1 -CompRoot <inner>`
+
+## 許可（Agent）
+
+1. **CLI bootstrap:** `.\scripts\setup-kaggle-venv.ps1` または `-Profile cli`
+2. **sim bootstrap:** `.\scripts\setup-kaggle-venv.ps1 -Profile sim`
+3. **コンペ依存:** `.\scripts\setup-comp-venv.ps1 -CompRoot ".\<date-slug>"`
+4. **リスト更新後の pip:** `.\.venv\Scripts\pip.exe install -r ".\<comp>\requirements-local.txt"`
+5. **アップグレード:** setup に `-Upgrade`
+6. **preflight:** `.\scripts\check-kaggle-cli.ps1` / `-Bootstrap`
+7. **CLI 実行:** `.\scripts\kaggle-cli.ps1 <args>` のみ
+
+## 禁止（Agent）
+
+- **グローバル** `pip install …`（`.venv` 外）
+- **リスト未更新**のワンショット `pip install numpy` 等
+- 生の `kaggle ...`（ラッパー未使用）
+- `.venv` 外への kaggle 再インストール
+
+## preflight FAIL 時
+
+1. `.\scripts\setup-kaggle-venv.ps1`
+2. 計算 import 切れ → `setup-comp-venv.ps1 -CompRoot …`
+3. 再チェック: `.\scripts\check-kaggle-cli.ps1`
+4. 401/403 → `.\.venv\Scripts\kaggle.exe auth login`（対話 — ユーザー実行）
+
+## SSOT
+
+| 種別 | パス |
+|---|---|
+| ルール | 本ファイル · `kaggle-comp-dependencies` |
+| 依存地図 | `_shared/COMP-DEPENDENCIES.md` |
+| Ops Skill | `kaggle-cli-ops` · `kaggle-comp-deps` |
+| ラッパー | `scripts/kaggle-cli.ps1` |
+
+## 混同注意
+
+- tabular — **cli + requirements-local**（numpy は local）
+- simulation — sim profile + 必要なら local
+- **CLI profile だけでは pandas/numpy は入らない**

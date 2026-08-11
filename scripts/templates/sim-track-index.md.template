@@ -1,0 +1,46 @@
+# sim-track-index — {{COMP_NAME}}
+
+> type: simulation-tracker-index  
+> comp-type: simulation  
+> updated: {{COMP_DATE}}  
+> participant: {{PARTICIPANT}}  
+> comp-url: {{COMP_URL}}
+
+---
+
+## 現在地
+
+| 項目 | 値 |
+|---|---|
+| 最終キャプチャ | — |
+| 自チーム LB | — |
+| 自チーム提出数 | 0 |
+
+---
+
+## ファイル索引
+
+| ファイル | 内容 |
+|---|---|
+| `public-notebook-catalog.md` | 公開 NB 最新一覧（上書き · 退避後） |
+| `notebook-score-history.md` | slug 別 score 時系列（**append only**） |
+| `submitted-notebook-registry.md` | 自チーム slug ↔ ローカル |
+| `leaderboard-log.md` | チーム LB 推移（append） |
+
+**ipynb / bot 本体は載せない。** コードは `my-*-notebook/` · 索引は `lifecycle-manifest.md`。
+
+---
+
+## 取得
+
+1. **最優先:** Kaggle Code タブ一覧のユーザー貼り付け
+2. **任意 CLI（ユーザー指示）:** `competitions leaderboard -s` · `submissions`
+
+Skill: `kaggle-simulation-tracker`
+
+---
+
+## 関連
+
+- [`../docs-ja/folder-map.md`](../docs-ja/folder-map.md) — LB/replay の置き場
+- [`../lifecycle-manifest.md`](../lifecycle-manifest.md) — 自チーム bot 索引

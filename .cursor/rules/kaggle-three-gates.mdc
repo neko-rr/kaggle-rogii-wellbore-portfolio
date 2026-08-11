@@ -1,0 +1,14 @@
+---
+description: Kaggle 3段ゲート（学習前・実行・提出前）の軽量リマインド
+alwaysApply: true
+---
+
+# Kaggle Three Gates
+
+- **コード直後（Agent）:** `.py` / `.ipynb` を書いた・直したら **先に** `.\scripts\run-static-checks.ps1`（Skill `kaggle-static-check`）。**FAIL なら学習・kernels に進まない。** Cursor の Ruff **拡張は代替にならない**（人が見ない運用向けに CLI ゲート必須）。
+- 学習前: 長時間 GPU 実行の前に `kaggle-pretrain-gate` を通し、`docs-ja/pretrain-acceptance.md` を確認する。FAIL なら実行しない。**static-check PASS 後**に pretrain。
+- 外部依存: 新規モデル・データ・API・他者 NB 採用時は `kaggle-license-compliance` **Tier R** で `docs-ja/license-ledger.md` を更新する。Discussion で Host 明示許可があれば台帳に追記する。
+- 実行: `kaggle-kernels-runbook` に従い、失敗も `my-ran-notebook/.../run-log.md` に残す。完走は提出条件ではない。
+- 提出前（simulation）: `submission-profile: simulation` のとき **先に** Skill `kaggle-submission-strength-gate`（`docs-ja/strength-gate-profile.json` + `scripts/check-submission-strength-gate.py`）。FAIL なら提出しない。続けて `kaggle-submission-validator` / `scripts/validate-submission.ps1`。purpose=diagnostic を有効枠最終スロットに載せない。
+- 提出前（simulation 以外）: Code Comp なら先に `scripts/check-codecomp-submit-kernel.py`（固定成果物コピー専用 NB 禁止）。続けて `validate-submission.ps1`。PASS のときだけ `my-submitted-notebook/` を凍結。固有条件は `submission-rules.md`。提出形式は Overview どおり（勝手に変えない）。メダル/賞金狙いは `license-ledger.md` + Tier A+（L3）も必須。
+- **提出方式（既定）:** **Notebook 紐づけ**（UI「Submit to Competition」または CLI `-k` / `-v` · **自 kernel のみ**）。SSOT: `.cursor/skills/_shared/NOTEBOOK-LINKED-SUBMIT.md`。ローカル成果物の **zip/csv 直 `-f` のみは非推奨**（採点は通っても Kaggle 上で提出コードが見れなくなる）。**403 時 zip-only 禁止 · 自 fork 更新を先に。**

@@ -1,0 +1,5 @@
+# Local simulation / agent environments
+# Usage: .\scripts\setup-kaggle-venv.ps1 -Profile sim
+# Includes CLI + kaggle-environments for local self-play / eval.
+-r requirements-kaggle-cli.txt
+kaggle-environments>=1.28.0

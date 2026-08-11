@@ -1,0 +1,33 @@
+---
+description: exp/work 作業ゴミ掃除 — パターンで削除、Best は役割で保護
+alwaysApply: true
+---
+
+# exp/work クリーンアップ（汎用）
+
+## 原則
+
+- **消す:** glob（`ort-traces*` / `*-traces*` · `kernels-output-*` · `*-mutation-input*` · `*-donor-*` 等）
+- **整理:** コンペ固有の散乱生成物は `exp/artifact-routing.json` に pattern + destination を登録し、`organize-generated-files.ps1` で `exp/work/` へ移す
+- **守る:** `exp/work-protect.json` の **`best_artifact` / `best_zip`**（と `extra_protect_*`）  
+  任意で `exp/work/current-best` → Best 実体への junction/symlink
+- **禁止:** Rule や共通脚本に **コンペ固有の tip 名・生成物名**をハードコードしない（固有 pattern は routing JSON）
+- **常に残す:** `verify-*-report.json` · `compare-*.json` · `validate-*-zip.json`
+
+## Agent 必須
+
+1. 重い verify / ローカル評価のあと、trace 系を消す（または `cleanup-exp-work.ps1`）
+2. Best が変わったら **`exp-index` と同時に `work-protect.json` の best_* を更新**
+3. ディスク逼迫時: `-Aggressive`（入力・kernels）。古い成果物 dir / zip は  
+   `-IncludeOldArtifacts` / `-PurgeWorkZips` を **明示**したときだけ
+4. 新しい固有生成物が root に出たら、発生元で出力先を `exp/work/<role>/` に指定する。直せない場合だけ routing に追加
+5. 整理は既定ドライラン。内容確認後のみ `-Apply`。未登録ファイルは触らず、削除しない
+
+```powershell
+.\scripts\organize-generated-files.ps1 -ExpDir ".\<comp>\exp"
+.\scripts\organize-generated-files.ps1 -ExpDir ".\<comp>\exp" -Apply
+.\scripts\cleanup-exp-work.ps1 -ExpDir ".\<comp>\exp"
+.\scripts\cleanup-exp-work.ps1 -ExpDir ".\<comp>\exp" -Aggressive -IncludeOldArtifacts -PurgeWorkZips -MinFreeGB 25
+```
+
+SSOT: `exp/artifact-routing.json`（整理）· `exp/work-protect.json`（保護）· Skill `experiment-result-management`

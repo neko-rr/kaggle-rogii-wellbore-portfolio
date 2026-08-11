@@ -1,0 +1,406 @@
+﻿Topic #733326: 35th Solution - HRNet-W18 encoder, U-Net++ decoder, and Heatmap/GRU prediction
+  Author: pay
+  Posted: 2026-08-06 14:12:51.538000
+  Votes: 5  Comments: 0
+
+Overview
+
+First of all, I would like to thank the competition organizers and everyone involved for hosting this competition. Improving the score was quite challenging, but it was also an extremely enjoyable competition that encouraged a great deal of experimentation and iteration.
+
+Instead of approaching this task as a conventional tabular regression problem, I developed my solution based on a 2D Gamma Ray (GR) matching map constructed from the Typewell and Horizontal well GR logs.
+
+The final solution consisted of the following six key components:
+
+
+
+Converting the difference between the Typewell GR and Horizontal GR logs into a 2D GR matching map
+
+Predicting ﾎ忍GFDU using the relationship ﾎ忍GFDU = ﾎ・TVT + Z)
+
+Incorporating a Gaussian Process Regression (GPR)-based prior for ﾎ忍GFDU
+
+A dual-path architecture consisting of an HRNet-W18 encoder, U-Net++ decoder, and Heatmap/GRU prediction heads
+
+Averaging six outputs generated from three models using different numbers of GPR reference points (3, 5, and 9)
+
+Test-Time Augmentation (TTA) using vertical flipping
+
+
+Each individual model achieved a 5-fold CV score of approximately 6.5窶・.6, while the final ensemble improved the CV score to around 6.2窶・.3. Although all individual models and the ensemble achieved very similar Public Leaderboard scores (around 6.8), I selected the final solution based primarily on cross-validation performance.
+
+My final results were:
+
+
+
+Rank: 35th
+
+Private LB: 6.826
+
+Public LB: 6.826 (almost identical to the Private LB)
+
+5-fold CV: 6.273
+
+
+Problem Formulation
+
+Let's denote the position along the horizontal well and t denote the TVT coordinate in the Typewell. Ideally, we would like to estimate a continuous mapping t(s) such that
+
+
+GR(s)
+竕・
+GR(t(s)).
+
+
+In other words, the goal is to find the trajectory in the Typewell that best matches the GR log observed along the horizontal well.
+
+In practice, however, this problem is challenging for several reasons:
+
+
+
+GR logs contain missing values, noise, amplitude differences, and phase shifts.
+
+Similar geological formations often appear repeatedly, resulting in multiple plausible matching peaks.
+
+Even a small local slope error can accumulate into a significant TVT drift over a long horizontal section.
+
+The RMSE metric is heavily influenced by a small number of catastrophic prediction failures.
+
+
+To address these challenges, my solution was built on two main ideas:
+
+
+
+A pretrained CNN to learn robust matching patterns directly from the 2D GR matching map.
+
+A spatial prior distribution to resolve ambiguous matching modes and suppress long-range trajectory drift.
+
+
+Method
+
+2D GR Matching Map
+
+I represented the matching problem as a 2D image, where the horizontal well is placed on the horizontal axis and the Typewell on the vertical axis. For each pixel, the difference between the Typewell GR at a candidate TVT and the Horizontal well GR is computed as
+
+
+M(t,s) = log(1 + |GR(t) 竏・GR(s)|).
+
+
+Smaller values indicate better local matches between the two GR logs.
+
+Rather than containing only the correct trajectory, the resulting image typically exhibits multiple valleys caused by repeated or similar geological formations. The objective of the CNN is therefore not simply to identify local GR similarity, but to infer the correct trajectory by exploiting the continuity of these valleys, their surrounding context, and their consistency with a spatial prior.
+
+Along the horizontal direction, the GR log was downsampled by a factor of 16. In the main experiments, I used an input size of 672 ﾃ・384, corresponding to a vertical resolution of 0.5 ft/pixel. The prediction region started at 28 pixels from the left boundary, with the known anchor positioned at the vertical center (192 pixels).
+
+Coordinate Transformation Using TVT + Z
+
+Instead of predicting TVT directly, I chose EGFDU as the prediction space.
+
+This decision was motivated by two observations from exploratory data analysis:
+
+
+
+the gradient of EGFDU is almost identical to that of TVT + Z, and
+
+EGFDU exhibits smoother and more predictable variation than TVT itself.
+
+
+However, EGFDU is unavailable for the test wells, and the offset between EGFDU and TVT + Z is not constant across the training wells. Therefore, the model must predict the change (or gradient) relative to the last known point before the prediction interval rather than the absolute EGFDU value.
+
+Furthermore, I approximated the Z trajectory within the prediction interval using a linear trend and subtracted this trend as a canvas baseline.
+
+Directly predicting EGFDU from the 2D GR matching map would require a very large vertical receptive field because of the long Typewell axis. To make the problem more tractable for the CNN, I normalized the matching map using the trend of Z.
+
+EDA showed that the trends of Z and EGFDU are nearly parallel for many wells. Therefore, I shifted the matching map so that the linear trend of Z over the prediction interval became the vertical center of the image.
+
+
+B(s) = EGFDU + ﾄ・s 竏・s)
+
+
+
+r(s) = (TVT(s) + Z(s) 竏・B(s)) / 0.5
+
+
+This normalization reduced the median vertical search range of the true trajectory from 156.6 ft to 22.6 ft, representing approximately a 7ﾃ・compression.
+
+Nevertheless, the remaining trajectory slope after normalization turned out to be an important indicator of prediction difficulty. The 90th percentile of the normalized ground-truth slope showed a Spearman correlation of approximately 0.46 with the well RMSE. Wells belonging to the top 20% in terms of residual slope exhibited substantially larger prediction errors. This observation suggested that compensating for the remaining trajectory slope was also necessary.
+
+GPR-Based Spatial Prior
+
+GR matching alone is often insufficient to distinguish among multiple plausible matching modes. To resolve this ambiguity, I incorporated a spatial prior estimated from neighboring wells.
+
+Representative EGFDU points were extracted from each training well, and a spatial surface mapping
+
+
+EGFDU(X, Y) = spatial trend + GP residual.
+
+
+To avoid data leakage, the validation well was completely excluded from GP fitting, and the prior was generated in an out-of-fold (OOF) manner.
+
+The fitted GP was densely queried along the actual XY trajectory of each validation well. The EGFDU gradient along the well path was then estimated from neighboring query points:
+
+
+g = ﾎ忍GFDU / ﾎ播istance
+
+
+Starting from the known PS anchor, these gradients were integrated to construct a prior trajectory for the future interval. The width of the prior band was adaptively adjusted according to the relative uncertainty of the GP prediction.
+
+The three final models differed primarily in the number of reference points used during GP fitting.
+
+
+
+
+Experiment
+Number of GP Reference Points
+
+
+
+
+exp139
+3
+
+
+exp150
+5
+
+
+exp153
+9
+
+
+
+
+Using fewer reference points produced a smoother and more global prior, whereas using more reference points allowed the GP to capture finer local variations in trajectory slope. Although the individual CV scores were very similar, the resulting trajectory drift differed across models. Averaging their predictions improved the final CV score by approximately 0.2窶・.3 compared with the individual models.
+
+Ground Truth Representation
+
+To match the U-Net++ architecture, I represented the ground-truth trajectory as a heatmap rather than a single coordinate.
+
+Specifically, a Gaussian distribution was centered on the ground-truth trajectory. The standard deviation was set to 1/6 pixel. In my experiments, increasing the standard deviation consistently resulted in lower cross-validation performance, indicating that a sharper target distribution was more suitable for this task.
+
+
+
+Model Architecture
+
+The final model consists of an HRNet-W18 encoder, a U-Net++ decoder, followed by two prediction branches: a Heatmap path and a GRU path.
+
+                 2D Matching Map + GP Prior
+                           笏・
+                           笆ｼ
+                  HRNet-W18 Encoder
+                           笏・
+                           笆ｼ
+                    U-Net++ Decoder
+                           笏・
+            笏娯楳笏笏笏笏笏笏笏笏ｴ笏笏笏笏笏笏笏笏笏・
+            笏・                            笏・
+            笆ｼ                             笆ｼ
+      Heatmap Head                  TVT Head
+            笏・                            笏・
+            笆ｼ                             笆ｼ
+      Heatmap Loss             Softmax 竊・Soft-Argmax
+                                          笏・
+                                          笆ｼ
+                                  Heat Coordinate
+                                          笏・
+                Decoder Feature 笏笏笏笏笏笏笏・
+                         笏・
+                  Mean Pool (TVT axis)
+                         笏・
+                         笆ｼ
+          Concatenate (Feature + Coordinate)
+                         笏・
+                         笆ｼ
+                    1D Conv (GELU)
+                         笏・
+                         笆ｼ
+                Bidirectional GRU
+                         笏・
+                         笆ｼ
+                    Delta Head
+                         笏・
+                         笆ｼ
+                  ﾎ乃VT Prediction
+
+
+Encoder窶泥ecoder
+
+
+
+Encoder: HRNet-W18
+
+Decoder: U-Net++
+
+Input Channel 1: 2D GR matching map
+
+Input Channel 2: Known TVT trajectory + OOF GP prior
+
+
+I chose HRNet because preserving high-resolution features is important for capturing the narrow valleys and subtle local phase shifts in the matching map.
+
+I also experimented with several alternative backbones, including ResNet, SE-ResNeXt, and ConvNeXt. However, all of them performed worse than HRNet as standalone models, and none of them improved the ensemble. Consequently, all final models were built using HRNet-W18.
+
+Heat Path
+
+The decoder first predicts vertical logits for every horizontal position. A softmax is then applied along the vertical axis:
+
+
+p(t | s) = softmax(z(t, s))
+
+
+
+tﾌ・s) = ﾎ｣ p(t | s) ﾂｷ t
+
+
+The Heat path excels at local matching and achieves relatively low MAE. However, once it selects an incorrect matching mode, the entire predicted trajectory tends to follow that mode, resulting in large tail errors for the well.
+
+GRU Path
+
+My hypothesis was that the CNN features extracted from the GR matching map contain sufficient information to infer the local direction of trajectory changes. Based on this idea, I added a GRU branch after the U-Net++ decoder to predict trajectory increments.
+
+Specifically, the decoder features are pooled along the vertical axis and concatenated with the coordinates predicted by the Heat path to form a one-dimensional sequence. This sequence is processed by a 1D convolution followed by a bidirectional GRU, which predicts the incremental trajectory at each horizontal position.
+
+
+ﾎ杯(s) =
+f(F(s), t(s))
+
+
+The final trajectory is then reconstructed by cumulatively summing the predicted increments from the last known TVT anchor:
+
+
+t(s) =
+t +
+ﾎ｣ ﾎ杯(j)
+
+
+Although both branches share the same CNN features, they introduce different inductive biases. The Heat path focuses on local matching, whereas the GRU path models sequential consistency through trajectory integration. Simply averaging the outputs of the two branches produced more stable predictions than either branch alone.
+
+Loss Function
+
+The overall training objective consisted of the following losses:
+
+
+
+Smooth L1 loss on the GRU absolute trajectory
+
+Smooth L1 loss on the Heat soft-argmax trajectory
+
+Smooth L1 loss on the first-order differences for both trajectories
+
+Smooth L1 loss on the full-resolution heatmap
+
+Smooth L1 loss on an auxiliary heatmap at 1/8 resolution
+
+
+The first-order difference loss encourages accurate estimation of local trajectory gradients, while the absolute trajectory loss suppresses long-range drift.
+
+For the heatmap supervision, positive and negative pixels were normalized separately so that the narrow ground-truth trajectory would not be overwhelmed by the large background region.
+
+Training
+
+Model evaluation was performed using 5-fold cross-validation at the well level.
+
+To obtain spatially balanced folds, the well coordinates were projected onto a one-dimensional axis using PCA. The wells were then assigned to folds in an interleaved order along this axis, preventing strong spatial bias in the validation splits.
+
+The main training hyperparameters were:
+
+
+
+Epochs: 50
+
+Learning rate schedule: Cosine annealing with a 5-epoch warm-up
+
+
+Initial learning rate: 1e-3
+
+Minimum learning rate: 5e-5
+
+EMA: decay = 0.995
+
+
+Warm-up: 5 epochs
+
+Minimum decay: 0.9
+
+Batch size: 32
+
+
+Data Augmentation
+
+
+
+Vertical flip
+
+Time shift
+
+
+Results
+
+The final prediction was obtained by averaging the outputs from the Heat path and the GRU path with equal weights.
+
+
+
+
+Experiment
+Number of GP Reference Points
+Private
+Public
+CV
+
+
+
+
+ensemble
+
+6.826
+6.826
+6.273
+
+
+exp139
+3
+6.975
+6.713
+6.678
+
+
+exp150
+5
+6.981
+6.810
+6.553
+
+
+exp153
+9
+6.783
+7.104
+6.562
+
+
+
+
+
+
+What Didn窶冲 Work
+
+Alternative Encoder窶泥ecoder Architectures
+
+I experimented with various encoder and decoder combinations besides HRNet and U-Net++.
+
+Depending on the architecture, the CV score varied by approximately 0.3窶・.0. However, none of these alternatives improved the ensemble performance, so I ultimately used only the HRNet-W18 + U-Net++ combination.
+
+Multi-Trajectory / Top-k Prediction
+
+I also explored models that simultaneously predicted multiple candidate trajectories.
+
+However, as training progressed, the different trajectory heads consistently collapsed to the same matching mode. Simply increasing the number of prediction heads was insufficient to preserve the multimodal nature of the matching problem.
+
+LSTM / TCN / Transformer Heads
+
+Finally, I replaced the GRU branch with LSTM, TCN, and Transformer architectures.
+
+Although all of these models were able to learn reasonable trajectories, none of them outperformed the GRU-based approach.
+
+Thank you very much for reading my write-up.
+
+No comments

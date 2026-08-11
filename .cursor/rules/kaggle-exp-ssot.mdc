@@ -1,0 +1,19 @@
+---
+description: 実験の現在地 SSOT（Best / tip / 次アクションは exp-index のみ）
+alwaysApply: true
+---
+
+# 実験 SSOT（現在地は1か所）
+
+- **唯一の正:** `exp/exp-index.md` の「現在地」（Best / tip・主成果物 / 次アクション）
+- **作業キュー:** `exp/experiment-checklist.md` の **Active / Pending のみ**（**CHK-** 行）
+- **禁止台帳:** `exp/improvement-loop-failures.json` の **Fnnn** のみ（**F≠知見**）
+- **ID 規約:** `_shared/EXPERIMENT-ID-NAMESPACES.md` · Rule `kaggle-experiment-id-namespaces`
+- **禁止:** checklist ヘッダや方針ブロックに **LB スコア・Best SUB 番号・tip 名を再掲**しない（リンクのみ可）
+- **禁止:** `AGENTS.md` / `cursor.md` に Best 数値を手書き二重管理しない（`exp-index` へのリンクのみ）
+- **実験1件ごと必須:** Active の当該 CHK 行 + `hyperparameter-table` + `exp-train` または `exp-infer`
+- **`exp-index` 更新:** Best 更新・方針転換・「次アクション」変更時のみ（毎 CHK でスコアを書き直さない）
+- **done / rejected:** Active に溜めない。Wave 終了または週次で `exp/checklist-archive.md`（または `exp/archive/checklist-*.md`）へ移す
+- **ずれ検知（任意）:** `scripts/check-exp-ssot.ps1 -CompRoot <root>`
+
+詳細: Skill `kaggle-experiment-checklist` · `experiment-result-management`

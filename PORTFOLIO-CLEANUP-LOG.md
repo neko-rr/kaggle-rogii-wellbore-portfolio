@@ -1,0 +1,58 @@
+# Portfolio cleanup log
+
+- Date: 2026-08-12
+- Private full archive: GitHub neko-rr/kaggle-rogii-wellbore-geology-prediction (do not overwrite with thinned tree)
+- docs-ja / docs-en: kept as-is
+
+## Removed
+REMOVED 16.7MB  20260722-rogii-wellbore\exp\work  (work cache)
+REMOVED 72.6MB  20260722-rogii-wellbore\my-notebook  (WIP notebooks)
+REMOVED 42.8MB  20260722-rogii-wellbore\my-ran-notebook  (ran not for submit)
+REMOVED 22.1MB  20260722-rogii-wellbore\others-notebook  (third-party full code)
+REMOVED 1.1MB  20260722-rogii-wellbore\my-local-eval-notebook  (local eval)
+REMOVED 1.2MB  20260722-rogii-wellbore\retro\archive  (retro archive bulk)
+REMOVED 0MB  20260722-rogii-wellbore\sim-track  (sim track)
+REMOVED 0MB  .cache  (cache)
+REMOVED 0MB  .ruff_cache  (ruff)
+REMOVED 0.8MB  20260722-rogii-wellbore\my-submitted-notebook\chk458-keep-self-verified-e2e-gpu  (submitted not Final2)
+REMOVED 0.8MB  20260722-rogii-wellbore\my-submitted-notebook\tip-blend-chk485-468-se040  (submitted not Final2)
+REMOVED 0.8MB  20260722-rogii-wellbore\my-submitted-notebook\tip-blend-chk485-468-se060  (submitted not Final2)
+REMOVED 0.8MB  20260722-rogii-wellbore\my-submitted-notebook\tip-blend-ops-c-sub13-090-010  (submitted not Final2)
+REMOVED 0.4MB  20260722-rogii-wellbore\my-submitted-notebook\tip-blend-sub14-compound-090-010  (submitted not Final2)
+REMOVED 0.4MB  20260722-rogii-wellbore\my-submitted-notebook\tip-blend-sub14-farvol-080-020  (submitted not Final2)
+REMOVED 0.4MB  20260722-rogii-wellbore\my-submitted-notebook\tip-blend-sub14-farvol-085-015  (submitted not Final2)
+REMOVED 0.4MB  20260722-rogii-wellbore\my-submitted-notebook\tip-blend-sub14-farvol-088-012  (submitted not Final2)
+REMOVED 0.4MB  20260722-rogii-wellbore\my-submitted-notebook\tip-blend-sub14-farvol-090-010  (submitted not Final2)
+REMOVED 0.4MB  20260722-rogii-wellbore\my-submitted-notebook\tip-blend-sub14-sub13-080-020  (submitted not Final2)
+REMOVED 0.8MB  20260722-rogii-wellbore\my-submitted-notebook\tip-blend-sub14-sub13-090-010  (submitted not Final2)
+REMOVED 0.8MB  20260722-rogii-wellbore\my-submitted-notebook\tip-blend-sub14-sub13-e2e  (submitted not Final2)
+REMOVED 0.8MB  20260722-rogii-wellbore\my-submitted-notebook\tip-blend-sub14-sub9-075-025  (submitted not Final2)
+REMOVED 0.8MB  20260722-rogii-wellbore\my-submitted-notebook\tip-blend-sub14-sub9-090-010  (submitted not Final2)
+REMOVED 0.8MB  20260722-rogii-wellbore\my-submitted-notebook\tip-chk184-portable-farvol  (submitted not Final2)
+REMOVED 1.3MB  20260722-rogii-wellbore\my-submitted-notebook\tip-e2e-chk541-agree-p495  (submitted not Final2)
+REMOVED 1.3MB  20260722-rogii-wellbore\my-submitted-notebook\tip-e2e-chk558b-agree-only-p495  (submitted not Final2)
+REMOVED 0.4MB  20260722-rogii-wellbore\my-submitted-notebook\tip-e2e-chk660-tip-alpha-l-resid  (submitted not Final2)
+REMOVED 0.8MB  20260722-rogii-wellbore\my-submitted-notebook\tip-e2e-learned-traj  (submitted not Final2)
+REMOVED 0.7MB  20260722-rogii-wellbore\my-submitted-notebook\tip-e2e-promote-mpkg-only  (submitted not Final2)
+REMOVED 0.7MB  20260722-rogii-wellbore\my-submitted-notebook\tip-e2e-promote-mpkg010  (submitted not Final2)
+REMOVED 0.7MB  20260722-rogii-wellbore\my-submitted-notebook\tip-e2e-promote-mpkg020  (submitted not Final2)
+REMOVED 0.7MB  20260722-rogii-wellbore\my-submitted-notebook\tip-e2e-promote-pre-bh  (submitted not Final2)
+REMOVED 0.8MB  20260722-rogii-wellbore\my-submitted-notebook\tip-gated-bh-strength-0  (submitted not Final2)
+REMOVED 0.8MB  20260722-rogii-wellbore\my-submitted-notebook\tip-gated-lik-temp-0p08  (submitted not Final2)
+REMOVED 0.8MB  20260722-rogii-wellbore\my-submitted-notebook\tip-gated-lik-temp-0p15  (submitted not Final2)
+REMOVED 0.4MB  20260722-rogii-wellbore\my-submitted-notebook\tip-gated-lik-temp-0p3  (submitted not Final2)
+REMOVED 0.8MB  20260722-rogii-wellbore\my-submitted-notebook\tip-gated-lik-temp-0p5  (submitted not Final2)
+REMOVED 0.8MB  20260722-rogii-wellbore\my-submitted-notebook\tip-gated-selfline-selfdev8  (submitted not Final2)
+REMOVED 0.8MB  20260722-rogii-wellbore\my-submitted-notebook\tip-gated-selfline-selfdev8-s05  (submitted not Final2)
+REMOVED 0.8MB  20260722-rogii-wellbore\my-submitted-notebook\tip-portable-compound-s05  (submitted not Final2)
+REMOVED 0.8MB  20260722-rogii-wellbore\my-submitted-notebook\tip-portable-twostage-s05  (submitted not Final2)
+REMOVED 0.4MB  20260722-rogii-wellbore\my-submitted-notebook\tip-post-unlock-r1-t015  (submitted not Final2)
+REMOVED 0.4MB  20260722-rogii-wellbore\my-submitted-notebook\tip-sub17-before-hedge  (submitted not Final2)
+REMOVED 0.4MB  20260722-rogii-wellbore\my-submitted-notebook\tip-sub18-learned-traj  (submitted not Final2)
+REMOVED 0.4MB  20260722-rogii-wellbore\my-submitted-notebook\tip-submit-chk514-hd-fracSpos07  (submitted not Final2)
+REMOVED 0.4MB  20260722-rogii-wellbore\my-submitted-notebook\tip-submit-chk515-row-signed-or-absd2  (submitted not Final2)
+REMOVED 1.3MB  20260722-rogii-wellbore\my-submitted-notebook\tip-submit-chk579-row-p495  (submitted not Final2)
+PLACEHOLDER 20260722-rogii-wellbore\my-notebook\README.md
+PLACEHOLDER 20260722-rogii-wellbore\others-notebook\README.md
+PLACEHOLDER 20260722-rogii-wellbore\exp\work\README.md
+PLACEHOLDER 20260722-rogii-wellbore\my-ran-notebook\README.md

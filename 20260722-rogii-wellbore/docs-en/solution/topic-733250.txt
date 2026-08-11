@@ -1,0 +1,241 @@
+﻿Topic #733250: 18th Place Solution
+  Author: yu4u
+  Posted: 2026-08-06 08:48:19.784000
+  Votes: 24  Comments: 0
+
+I would like to express my gratitude to the competition host and the Kaggle staff for organizing this outstanding competition.
+
+I would also like to thank Tucker @tuckerarrants . Initially, I used a large-scale stacking architecture that combined PF, statistical features from neighboring wells, and features extracted by 1D and 2D CNNs. After seeing Tucker窶冱 comment that a single model using only data from the target well could achieve a CV score of 5.x, I was encouraged to shift my focus toward improving a single-model solution.
+
+TL;DR
+
+
+
+We turn geosteering into an image-recognition task: the matching surface between the
+lateral GR and the typewell GR is rendered as a 2D image, and a CNN picks the correct
+path (ridge) through it.
+
+The vertical axis of the image is defined as the offset from a reference line (chord)
+drawn from the known well trajectory. This shrinks the range of values to predict, so the
+whole well fits in a narrow vertical window at high resolution 窶・the single biggest lever.
+
+With only 773 training wells, we diversify training data with synthetic samples
+(typewell depth shifts / geology swaps) rendered with a measured noise model.
+
+The final submission is a fixed-weight linear blend of chord models with different
+backbones and resolutions.
+
+
+Problem intuition
+
+Each well has ground-truth TVT only for its first part (the prefix); the rest must be
+predicted. Since the geology is layered, "which depth of the typewell does the current GR
+look like?" is the evidence for TVT 窶・this is geosteering.
+
+The difficulty is the multimodality of the matching. GR columns contain many
+self-similar intervals, so several candidate depths line up as parallel ridges. Most of the
+error comes from a small number of wells that jump onto the wrong ridge (wrong-mode),
+so the real problem is choosing the right ridge, not per-step precision.
+
+Method: render each well as one image and estimate the path
+
+Instead of regressing row by row, we convert the entire well into a single 2D image and
+solve "trace the correct path across the image".
+
+Vertical axis as the residual from a reference line (chord) 窶・the core idea
+
+The horizontal axis is the position along the well; the vertical axis is the candidate TVT.
+The goal here is to narrow the range of values to predict and spend the savings on
+vertical resolution. If the vertical axis is naively the typewell depth, the true path
+drifts widely across the image, so covering every well requires a tall window
+(= coarse resolution or a huge image).
+
+
+
+Instead, we draw a straight line connecting the start and end of the known well
+trajectory (Z) 窶・the chord 窶・and use the offset from this line as the vertical
+axis. The range to predict shrinks dramatically:
+
+
+
+
+
+With the same image size, each vertical pixel can be made finer 窶・down to 0.5窶・ ft/bin.
+
+The GR matching scores (next section) are precomputed once on the typewell depth axis and
+simply re-read with a per-column vertical shift along the chord (no recomputation).
+TVT = chord + residual always restores the physical value.
+
+We also tried a two-stage setup that draws the reference line from a first-stage model's
+predictions, but once resolution and window size could be scaled directly, the simple
+chord drawn mechanically from the known trajectory was the strongest.
+
+
+Input image
+
+The horizontal axis is the position along the well (~10 ft/px, 512 columns); the vertical
+axis is the offset from the chord (0.5窶・ ft/bin and a ﾂｱ96窶・28 ft window depending on the
+model). Five channels:
+
+
+
+GR matching score 窶・how well the GR at each position matches the typewell GR at each
+candidate depth (precomputed). The true path and all the misleading false paths are
+visible here as multiple ridges.
+
+Prior from the known trajectory 窶・the path assuming TVT stays at its last known
+value, drawn as a soft band. A cue for the absolute depth level.
+
+Ground truth over the known interval 窶・the true path in the prefix, where the answer
+is given. Marks "start from here".
+
+Trajectory dip (sin/cos) 窶・the local inclination of the known well trajectory.
+
+
+
+
+Model
+
+The model takes this image and estimates, for each column, where the true path lies
+vertically. We used two head types.
+
+The heatmap head is a UNet that outputs a per-column probability distribution
+(heatmap) over vertical positions. It is trained with cross entropy against a Gaussian
+soft label centered at the true position (ﾏ・= 8 ft); at inference the expectation of the
+heatmap is added back to the chord to restore TVT (the bottom panel of the figure above is
+the training target).
+
+The detection head follows an object-detection-style formulation: the vertical axis is
+divided into coarse cells, and for each column the model classifies which cell contains
+the true path and regresses the offset from the cell center. Combined with a
+DINOv3-pretrained ViT backbone, it served as an ensemble member whose errors correlate
+weakly with the heatmap models.
+
+Synthetic data
+
+A real lateral samples only ~30 ft of the typewell column. During training:
+
+
+
+shift: pretend the well was drilled s0 ft deeper/shallower in its typewell and
+re-render the GR from the typewell (geometry and ground truth stay real; only the
+evidence channel is diversified).
+
+swap: additionally replace the GR waveform (the geology) with another well's typewell.
+
+Re-rendered GR gets a measured noise model (per-well gain + colored noise, calibrated
+to the real coherence). Too-clean synthetic GR was actively harmful.
+
+Dose decay 窶・linearly annealing the synthetic fraction to zero late in training 窶・
+also helped for some models.
+
+
+Augmentation
+
+
+
+crop 窶・jitter the vertical window center and randomize the known/unknown boundary
+(prediction start), exposing the model to various prefix lengths and window positions.
+
+vertical flip 窶・the residual from the chord is symmetric under sign flip, so flip
+the input and target together (p = 0.5). The same symmetry is used at inference and for
+checkpoint selection by averaging with the flipped view (vflip TTA).
+
+horizontal flip 窶・reverse the drilling direction (flipping only the horizontal
+section worked best).
+
+horizontal resize 窶・random horizontal resize with U(0.7, 1.3). At inference, long
+wells are compressed to fit the 512 columns, so training covers that scale variation.
+
+vertical resize 窶・the residual scale differs per well, so resize vertically with
+U(0.8, 1.25) for multi-scale training (the physical mapping is restored at readout).
+
+
+Evaluation used 5-fold CV grouped by well.
+
+Ensemble and final submission
+
+On top of the same input representation we built models with different backbones, heads,
+and resolutions, and selected them by error decorrelation rather than standalone
+accuracy. Single-model CV improved from 6.4 to 5.2 over two months, mostly from the
+coordinate system (chord, resolution, window) and the synthetic data.
+
+The final submission is a fixed-weight linear blend of the four models below. Some slots
+average re-training runs of the identical configuration to reduce variance (CV values are
+after averaging).
+
+
+
+
+Model
+Input size (Wﾃ幽)
+Vertical resolution
+Backbone
+Head
+CV (5-fold pooled)
+
+
+
+
+1
+512ﾃ・84
+0.5 ft/bin
+EfficientNetV2-L
+heatmap
+5.19
+
+
+2
+512ﾃ・56
+1.0 ft/bin
+EfficientNetV2-L
+heatmap
+5.20
+
+
+3
+512ﾃ・12
+0.5 ft/bin
+ConvNeXt-S
+heatmap
+5.17
+
+
+4
+512ﾃ・84
+0.5 ft/bin
+DINOv3 ViT-L/16
+detection
+5.48
+
+
+Ensemble
+
+
+
+
+4.91
+
+
+
+
+Public LB 6.249 / private LB 6.411.
+
+What didn't work (selected)
+
+
+
+Adding raw GR / learned GR matching / a GR denoiser as inputs 窶・the model leaned on
+these "plausible-looking summary inputs" and specific folds collapsed (prior
+amplification). Showing the evidence as-is via the match heatmap was the safest.
+
+Explicit ridge decoding (Hough / DP), a forward-backward smoother on the particle
+filter, typewell-specialized models, self-training.
+
+Making the posterior multimodal (CE-only training, mixup) to rescue wrong-mode wells 窶・
+the posterior never split; wrong-mode is a property of the evidence, not the loss.
+Investing in the "quality of the field" (frame, resolution, synthetic data) beat
+readout tricks.
+
+No comments
+

@@ -1,0 +1,709 @@
+{
+  "version": 1,
+  "updated": "2026-08-06",
+  "description": "抽象仮説の禁止台帳。同じ失敗を言い換えて繰り返さない。F013/F015 は『生FINAL昇格』『tipプロファイル切替』のみ禁止 — S1/S2工程改善は禁止しない（docs-ja/f015-f013-correct-reading.md）。",
+  "escalation": {
+    "T0": {
+      "max_consecutive_nogo": 2,
+      "escalate_to": "T3"
+    },
+    "T1": {
+      "max_consecutive_nogo": 2,
+      "escalate_to": "T3"
+    },
+    "T2": {
+      "max_consecutive_nogo": 2,
+      "escalate_to": "T3"
+    },
+    "T3": {
+      "max_consecutive_nogo": 3,
+      "escalate_to": "rethink-hypothesis"
+    },
+    "T4": {
+      "max_consecutive_nogo": 3,
+      "escalate_to": "T3"
+    }
+  },
+  "failures": [
+    {
+      "id": "F001",
+      "keywords": [
+        "heel",
+        "affine",
+        "gs",
+        "typewell-free",
+        "calibration"
+      ],
+      "reason": "Typewell/GR整合なしの heel gs スイープは CF 門番(15.91)より大幅悪化(30+)。雑な affine を言い換えて再実行しない。heel校正は tip 上の合法 fit + GR 必須。",
+      "action_types": [
+        "T3"
+      ],
+      "source_chk": "CHK-021",
+      "date": "2026-07-23"
+    },
+    {
+      "id": "F002",
+      "keywords": [
+        "neighbor",
+        "copy",
+        "600ft",
+        "far-well"
+      ],
+      "reason": "遠井(~600ft)素朴 TVT コピーは pooled 18.97 へ悪化。Discussion 727149 と一致。距離ゲート無しコピーを再提案しない。",
+      "action_types": [
+        "T3"
+      ],
+      "source_chk": "CHK-022",
+      "date": "2026-07-23"
+    },
+    {
+      "id": "F003",
+      "keywords": [
+        "random-kfold",
+        "row-kfold",
+        "shuffle-cv",
+        "non-group-cv"
+      ],
+      "reason": "CHK-050: Ridge tabular で Random KFold は GroupKFold(well) より楽観（safe +1.4 / tops +4.9）。tops 特徴は Group でも改善するが test に列が無く提出不能な楽観リーク。採択根拠に Random/行単位 CV を使わない。",
+      "action_types": [
+        "T0",
+        "T3",
+        "T4"
+      ],
+      "source_chk": "CHK-050",
+      "date": "2026-07-24"
+    },
+    {
+      "id": "F004",
+      "keywords": [
+        "sunny",
+        "physical-pf",
+        "final2-reserve",
+        "high-corr-only"
+      ],
+      "reason": "Sunny physical SUB-1 Public 9.150（Best 6.524 より +2.63）。CHK-053 で tip と相関 0.999 でも hard20 RMSE は Sunny≈24 vs tip≈14.5。高相関だけを多様性/予備根拠にしない。Sunny を Final 枠に載せない・再提出しない。",
+      "action_types": [
+        "T1",
+        "T2"
+      ],
+      "source_chk": "CHK-030b",
+      "date": "2026-07-24"
+    },
+    {
+      "id": "F005",
+      "keywords": [
+        "kernel-sources-copy",
+        "copy-submit",
+        "intermediate-csv-submit",
+        "mpkg020-copy",
+        "dataset-fixed-csv-copy-nb"
+      ],
+      "reason": "SUB-3 / SUB-17/18: 固定CSVコピーだけの NB（kernel_sources または Dataset）は Code Comp 採点再実行で Scoring Error。提出は自 kernel がコンペデータから E2E 生成する Version のみ。",
+      "action_types": [
+        "T1"
+      ],
+      "source_chk": "SUB-3/SUB-17/SUB-18",
+      "date": "2026-07-28"
+    },
+    {
+      "id": "F006",
+      "keywords": [
+        "nw_n",
+        "last-anchor-blend",
+        "azimuth-postprocess",
+        "constant-tvt-blend"
+      ],
+      "reason": "CHK-020: tip T2 preds に対し NW_N 井を last_anchor TVT へ strength0.25 blend → pooled 8.33→10.93・NW_N 10.74→17.0。far-MD を線形外挿へ寄せる変種も破綻。定数/外挿への postprocess blend を言い換えて再実行しない。方位改善は tip 内部（PF/profile）で行う。",
+      "action_types": [
+        "T3"
+      ],
+      "source_chk": "CHK-020",
+      "date": "2026-07-24"
+    },
+    {
+      "id": "F007",
+      "keywords": [
+        "ncc-lgbm",
+        "tip-high-corr",
+        "ncc-tree-blend"
+      ],
+      "reason": "CHK-031 LGBM+NCC hard20: tip↔ncc pearson≈0.999・cover欠・pooled≈38（CFより良いが tip14.87に大敗）。Final2 多様性に使えない。NCC特徴+木モデルの言い換え再実行禁止。",
+      "action_types": [
+        "T3"
+      ],
+      "source_chk": "CHK-031",
+      "date": "2026-07-24"
+    },
+    {
+      "id": "F008",
+      "keywords": [
+        "pure-ncc",
+        "ncc-only",
+        "soft-argmax-ncc"
+      ],
+      "reason": "CHK-031v2 pure multi-scale NCC（木なし）hard20 pooled≈560で壊滅。相関はtipと0.72だが精度不足。素のNCC soft-argmax単体を本命にしない。",
+      "action_types": [
+        "T3"
+      ],
+      "source_chk": "CHK-031",
+      "date": "2026-07-24"
+    },
+    {
+      "id": "F009",
+      "keywords": [
+        "nw_n",
+        "bh-strength-up",
+        "azimuth-bh-only"
+      ],
+      "reason": "CHK-020 tip内 NW_N のみ _BH_STRENGTH=0.90（他は既定）hard20: pooled 14.869→14.883・NW_N 17.270→17.300 と悪化。方位ビンだけ BH を上げる言い換え再実行禁止。方位改善は別機構（条件付き profile/窓）が必要。",
+      "action_types": [
+        "T3"
+      ],
+      "source_chk": "CHK-020",
+      "date": "2026-07-24"
+    },
+    {
+      "id": "F010",
+      "keywords": [
+        "catboost-residual",
+        "trajectory-tabular-tvt",
+        "tip-corr-099"
+      ],
+      "reason": "CHK-070 CatBoost residual（romanrozen系）hard20: CF超え(31.80 vs 49.56)だが tip pearson≈0.999・tip14.87に大敗。Final2多様性に使えない。軌道+GR tabular で絶対/残差TVTを学習する同型の言い換え再実行禁止。次は CHK-040（heel+窓）等の別機構。",
+      "action_types": [
+        "T3"
+      ],
+      "source_chk": "CHK-070",
+      "date": "2026-07-24"
+    },
+    {
+      "id": "F011",
+      "keywords": [
+        "heel-window-ncc-drift-head",
+        "window-ncc-catboost",
+        "heel-ncc-tip-corr"
+      ],
+      "reason": "CHK-040 heel+窓NCC特徴→CatBoost drift hard20: CF超え(45.96 vs 49.56)・無制約対照(72.24)より良いが tip pearson≈0.999・tip hard≈14.87に大敗。Final2多様性に使えない。窓付きNCC+小型drift学習の言い換え再実行禁止。整合系 Final2 は打ち切り候補。",
+      "action_types": [
+        "T3"
+      ],
+      "source_chk": "CHK-040",
+      "date": "2026-07-24"
+    },
+    {
+      "id": "F012",
+      "keywords": [
+        "gated-neighbor",
+        "neighbor-gr-gate",
+        "soft-neighbor-blend",
+        "offset-transfer"
+      ],
+      "reason": "CHK-081 ゲート近傍: hard20は150ft内1井のみ・soft(v4)でも適用3/20。OOF≈49.59でCF非改善・tip pearson≈0.999。距離+GRゲート近傍転写の言い換え再実行禁止。Final2近傍経路は空間密度不足で打ち切り。",
+      "action_types": [
+        "T3"
+      ],
+      "source_chk": "CHK-081",
+      "date": "2026-07-24"
+    },
+    {
+      "id": "F013",
+      "keywords": [
+        "tip-profile-preset",
+        "vp_conservative",
+        "sp45-050",
+        "bimodal_guarded",
+        "discrete-profile"
+      ],
+      "reason": "CHK-090 vp_conservative E2E≡default tip; CHK-091 SP45 0.5/0.5 hard20 pooled 24.78≫tip14.87; CHK-093 bimodal E2E≡default. tip離散プロファイル切替は枠1改善にならない。言い換え再スイープ禁止。【禁止しない・2026-08-03訂正】SP45/learned を S1/S2 中間材料・ゲート特徴・部分注入に使うこと。詳細: docs-ja/f015-f013-correct-reading.md",
+      "action_types": [
+        "T0",
+        "T1",
+        "T4"
+      ],
+      "source_chk": "CHK-090/091/093",
+      "date": "2026-07-24"
+    },
+    {
+      "id": "F014",
+      "keywords": [
+        "azimuth-train-split",
+        "azimuth-as-feature",
+        "b1-azimuth-learn",
+        "ridge-az-split"
+      ],
+      "reason": "Wave-7: CHK-100 方位2群 Track A 分割は early-ridge hard20 で対照比 pooled+0.54 / well_mean+0.64 悪化（NO-GO）。CHK-103 方位カテゴリ特徴は対照と実質同値（Δ≈0.003・改善なし）。学習内方位条件の言い換え再実行禁止。以降は Final 運用（枠1 tip TrustCV / 枠2 Public最良）。",
+      "action_types": [
+        "T3"
+      ],
+      "source_chk": "CHK-100/103",
+      "date": "2026-07-25"
+    },
+    {
+      "id": "F015",
+      "keywords": [
+        "tip-intermediate-promote",
+        "model-package-only",
+        "gated-mpkg-as-submission",
+        "before-branch-hedge-submit",
+        "submission_model_package",
+        "raw-mid-as-final"
+      ],
+      "reason": "SUB-4–7: tip最終より中間面を submission に昇格すると Public 悪化。gated_010=6.718 · gated_020=6.621 · pre-BH=6.653 · mpkg-only=20.067（tip smoke 6.569 · Best 6.524）。model-package を強める/単独化する提出と、BH前・hedge除去の再提出を禁止。【禁止しない・2026-08-03訂正】S1/S2/S3…工程の品質改善、ゲート決定・注入値利用、tip土台+行/井ゲート再構成（CHK-504/514型）。『S1–S2を一切打つな』は過大一般化。SSOT: docs-ja/f015-f013-correct-reading.md · Rule kaggle-f015-f013-mid-stage",
+      "action_types": [
+        "T0",
+        "T1",
+        "T4"
+      ],
+      "source_chk": "SUB-4/5/6/7",
+      "date": "2026-07-25"
+    },
+    {
+      "id": "F016",
+      "keywords": [
+        "dual-final-well-arbiter",
+        "tip-best-well-arbiter",
+        "tip-equals-best-final",
+        "b4-dual-champion"
+      ],
+      "reason": "Wave-8 CHK-120: tip FINAL と Best FINAL の submission.csv は SHA 一致・行単位 max_abs=0（pearson≈1）。対象は手元 test 相当 3井だが、同一入力上で最終面が一致し井単位切替信号が無い。Public 6.524 vs 6.569（≈seed帯）を理由にアービターを再提案しない。dual-final 井単位アービター言い換え再実行禁止。",
+      "action_types": [
+        "T0",
+        "T3",
+        "T4"
+      ],
+      "source_chk": "CHK-120",
+      "date": "2026-07-25"
+    },
+    {
+      "id": "F017",
+      "keywords": [
+        "heel-constrained-dtw",
+        "sakoe-chiba-dtw-tvt",
+        "band-limited-dtw-path",
+        "b5-heel-dtw"
+      ],
+      "reason": "Wave-9 CHK-130: heel拘束 Sakoe-Chiba DTW→TVT（半径50/100/200・heel GR MSEで選択）は hard20 pooled ≈371 vs tip 14.87（Δ−356）· CF 49.56 も大幅悪化。tip pearson≈0.95 だが精度不足で diversify 条件も未達。制約DTW経路の言い換え再実行禁止。",
+      "action_types": [
+        "T0",
+        "T3",
+        "T4"
+      ],
+      "source_chk": "CHK-130",
+      "date": "2026-07-25"
+    },
+    {
+      "id": "F018",
+      "keywords": [
+        "heel-gr-tw-corr-cf-fallback",
+        "low-alignment-cf-switch",
+        "corr-gate-cf"
+      ],
+      "reason": "Wave-10 CHK-143: heel GR↔TW 相関が低い井だけ tip→CF に落とすと hard20 悪化（最良 thr0.7 でも pooled 25.4 vs tip 14.87）。整合品質ゲートの CF フォールバック言い換え禁止。",
+      "action_types": [
+        "T0",
+        "T3"
+      ],
+      "source_chk": "CHK-143",
+      "date": "2026-07-25"
+    },
+    {
+      "id": "F019",
+      "keywords": [
+        "far-md-heel-line",
+        "md-tertile-line-hybrid",
+        "heel-linear-extrapolation"
+      ],
+      "reason": "Wave-10 CHK-144: 遠MDを heel の MD→TVT 直線外挿（または tip と blend）すると hard20 壊滅（最良でも pooled ≈609 vs tip 14.87）。遠MD線形寄せの言い換え禁止。",
+      "action_types": [
+        "T0",
+        "T3"
+      ],
+      "source_chk": "CHK-144",
+      "date": "2026-07-25"
+    },
+    {
+      "id": "F020",
+      "keywords": [
+        "aggressive-tip-self-line",
+        "far-md-tip-self-line-no-sample-gate",
+        "tip-prox-line-strength-ge-0.15"
+      ],
+      "reason": "Wave-11 CHK-150: tip 自己線（近〜中 tip→遠 blend）は hard20 で効くが、T2 で pooled+≥0.05 を狙うと sample が必ず悪化（厳格ゲート空）。strength≥0.15 / far≥0.5 の再スイープ禁止。SOFT候補 f33-s08 はユーザー明示承認時のみ。",
+      "action_types": [
+        "T0",
+        "T3"
+      ],
+      "source_chk": "CHK-150",
+      "date": "2026-07-25"
+    },
+    {
+      "id": "F021",
+      "keywords": [
+        "best-gate-strength-soften",
+        "gated-selfdev8-s05-resubmit",
+        "portable-compound-as-final1",
+        "farvol-empty-apply-resubmit"
+      ],
+      "reason": "OPS-LB-101112: Best 同ゲート strength 軟化（s08→s05）は Public 6.484→6.530。portable 複合/farvol は tip より良いが Best/旧Best 未達（6.541/6.556）。Winning gate の強度下げ・portable 枠1差替え・空 apply farvol の再提出禁止。",
+      "action_types": [
+        "T0",
+        "T2",
+        "T3"
+      ],
+      "source_chk": "CHK-191",
+      "date": "2026-07-26"
+    },
+    {
+      "id": "F022",
+      "keywords": [
+        "lik-weight-resweep",
+        "pf-scale-variant-resweep",
+        "tip-cv-weight-0p55",
+        "scalar-lik-weight-knob"
+      ],
+      "reason": "CHK-231: tip-cv @T0.15 で scalar weight=0.55 は 33.573（vs 29.899 大幅悪化）。pf_scale_5_hold_0.2 は ≡baseline。weight/variant スカラーノブの言い換え再スイープ禁止。次の中間改善は別尤度特徴（CHK-235）か上流候補命中（232/233）。",
+      "action_types": [
+        "T2",
+        "T3",
+        "T4"
+      ],
+      "source_chk": "CHK-231",
+      "date": "2026-07-27"
+    },
+    {
+      "id": "F023",
+      "keywords": [
+        "mid-bank-pf-soft-proxy",
+        "pf-scale5-T015-as-tipcv",
+        "diversity-prune-midbank-only"
+      ],
+      "reason": "CHK-245: mid-bank PF soft@T0.15 で diversity prune Δ≈+0.317 でも tip-cv は 29.951（vs 29.899 −0.05）。PF soft 代理の PASS を tip-cv 採択根拠にしない。tip 面ノブは tip-cv/GPU で直接見る。",
+      "action_types": [
+        "T2",
+        "T3",
+        "T4"
+      ],
+      "source_chk": "CHK-245",
+      "date": "2026-07-28"
+    },
+    {
+      "id": "F024",
+      "keywords": [
+        "selector-bin-hold-increase",
+        "force-global-hold-0.2",
+        "bin45-hold-0.10"
+      ],
+      "reason": "CHK-234/234b: tip-cv は BIN routing（13/20 が hold=0.05）。全BINを hold0.2 に強制→30.223、code4/5だけ0.10→30.426（vs 29.899 悪化）。薄い hold を上げる言い換え禁止。BIN routing 自体は凍結面の一部として残す。",
+      "action_types": [
+        "T2",
+        "T3",
+        "T4"
+      ],
+      "source_chk": "CHK-234",
+      "date": "2026-07-28"
+    },
+    {
+      "id": "F025",
+      "keywords": [
+        "lik-temp-e2e-wiped-by-post",
+        "temp-ladder-0p1-0p2-0p3-equiv-final",
+        "learned-traj-differs-final-same"
+      ],
+      "reason": "E2E tip で LIK_TEMP=0.10/0.2/0.3 は learned_trajectory では T0.15 と差が出るが、branch_hedge 以降〜最終 submission.csv は T0.15 と byte 同一（SUB-20 T0.10 で SHA≡SUB-14 実測）。T0.5 のみ最終が変わる。T∈{0.10,0.15,0.2,0.3} の最終CSV再提出は枠浪費。温度梯子の Public 診断は tip-cv か post 無効化面で測る。同一CSVの Public 微小差（≲0.08）はノイズ。",
+      "action_types": [
+        "T2",
+        "T3"
+      ],
+      "source_chk": "SUB-16/SUB-20/tip-gated-0p1",
+      "date": "2026-07-29"
+    },
+    {
+      "id": "F026",
+      "keywords": [
+        "unconstrained-pf-diversity",
+        "spr-mix-fan-bimodal-jump-dip",
+        "cascade-oracle-only-adopt",
+        "heel-multimode-far-md-budget-merge"
+      ],
+      "reason": "Wave-21: spr/mix/fan/±15二峰/heel多峰/遠MD/budget/多ラン結合/極性/dip/faultジャンプ/cascade は tip-cv または tip代理を悪化。241 cascade は oracle↑でも tip↓。制約なし PF 多様性・状態拡張の言い換え禁止。次は tip近傍クリップ（258）または cascade∩近傍（261）のみ。",
+      "action_types": ["T2", "T3", "T4"],
+      "source_chk": "Wave-21",
+      "date": "2026-07-28"
+    },
+    {
+      "id": "F027",
+      "keywords": [
+        "cascade-near-clip-tip-soft-t015",
+        "foreign-bank-same-selector",
+        "ceiling-bank-unchanged-tip-lik",
+        "spr12-near-clip-tip-soft"
+      ],
+      "reason": "Wave-22: cascade/spr12 を tip 近傍にクリップしたあと、現行 tip soft LIK_TEMP=0.15 で選んでも tip 面は改善しない（261 Δ−0.25 · 268 Δ+0.02）。天井↑バンクに『同じ選ぶ人』を掛ける言い換え禁止。次は選び方変更・単一シード・バンク専用校正・tip 再初期化（Wave-23）。",
+      "action_types": ["T2", "T3", "T4"],
+      "source_chk": "CHK-261/268",
+      "date": "2026-07-29"
+    },
+    {
+      "id": "F028",
+      "keywords": [
+        "cascade-mode-tip-reinit",
+        "ls-offset-tip-reinit",
+        "cascade-offset-tip-pf",
+        "mode-offset-tip-soft"
+      ],
+      "reason": "Wave-23 CHK-273: cascade coarse の lik 上位モード ls_offset で tip PF(128@4.5) を再初期化しても tip soft 悪化（最良 maxll_pick Δ−1.04）。モード位置寄せの言い換え再スイープ禁止。次はバンク専用校正(274)または後工程/OPS-FINAL2。",
+      "action_types": ["T2", "T3", "T4"],
+      "source_chk": "CHK-273",
+      "date": "2026-07-29"
+    },
+    {
+      "id": "F029",
+      "keywords": [
+        "cascade-bank-lik-temp-refit",
+        "cascade-soft-scale-temp-grid",
+        "bank-dedicated-soft-refit",
+        "cascade-loo-soft-fit"
+      ],
+      "reason": "Wave-23 CHK-274: cascade/near バンク専用 soft(scale,T) 格子+LOOでも tip soft 未達（最良 LOO Δ−1.39 · in-sample でも −1.09）。バンク専用校正の言い換え再スイープ禁止。≠F022 tip weight。次は焼なまし(278)または OPS-FINAL2。",
+      "action_types": ["T2", "T3", "T4"],
+      "source_chk": "CHK-274",
+      "date": "2026-07-29"
+    },
+    {
+      "id": "F030",
+      "keywords": [
+        "warm-cold-anneal-select",
+        "anneal-prune-cascade",
+        "temp-schedule-topk-soft",
+        "cascade-anneal-frac"
+      ],
+      "reason": "Wave-23 CHK-278: cascade 温→冷（frac/topk/mass 刈り込み）でも tip soft 未達（最良 Δ−1.25 · F027対照より悪化すら）。焼なまし選択の言い換え禁止。次は hedge前確定(276)または OPS-FINAL2。",
+      "action_types": ["T2", "T3", "T4"],
+      "source_chk": "CHK-278",
+      "date": "2026-07-29"
+    },
+    {
+      "id": "F031",
+      "keywords": [
+        "ceiling-face-hedge-lock",
+        "hedge-before-swap-ceiling",
+        "attractor-hedge-then-swap",
+        "tip-nearest-lock-hedge"
+      ],
+      "reason": "Wave-23 CHK-276: tip_nearest/cas_argmax を hedge 前確定または hedge 後差替しても tip soft 未達（最良は tip_soft_lock Δ0 · それ以外最良 tip_nearest Δ−0.36）。天井面×attractor hedge lock/swap の言い換え禁止。≠259。次は OPS-FINAL2。",
+      "action_types": ["T2", "T3", "T4"],
+      "source_chk": "CHK-276",
+      "date": "2026-07-29"
+    },
+    {
+      "id": "F032",
+      "keywords": [
+        "seed-feature-ridge-ranker",
+        "loo-seed-ranker-tipsoft",
+        "label-free-seed-ranker",
+        "tip-bank-oracle-rank-ridge"
+      ],
+      "reason": "Wave-23 CHK-277: tip-bank シード特徴→ridge LOO でも tip soft 未達（最良は argmax_ll Δ−1.16 · ランカーはそれ以下）。簡易ランカー言い換え禁止。次は OPS-FINAL2（CHK-281 spr12 同型は見込み薄）。",
+      "action_types": ["T2", "T3", "T4"],
+      "source_chk": "CHK-277",
+      "date": "2026-07-29"
+    },
+    {
+      "id": "F033",
+      "keywords": [
+        "innovation-guided-newton",
+        "residual-newton-pf-guide",
+        "gr-gradient-guided-proposal",
+        "newton-guide-gamma"
+      ],
+      "reason": "Wave-24 CHK-288: PF pos更新への GR残差 Newton 風ガイド（γ×gmax・tip近傍clip含む）は tip soft 壊滅（最良 g0p50_m5 Δ−23.9 · oracleも悪化）。手設計 residual-Newton guided proposal の言い換え再スイープ禁止。≠F026 spr拡散。次は OPS-FINAL2 または別機構（学習proposal/SMC）の明示承認時のみ。",
+      "action_types": ["T2", "T3", "T4"],
+      "source_chk": "CHK-288",
+      "date": "2026-07-30"
+    },
+    {
+      "id": "F034",
+      "keywords": [
+        "learned-ridge-deltatvt-proposal",
+        "conditional-ridge-pf-rate-mix",
+        "train-deltatvt-alpha-mix",
+        "learned-proposal-alpha-sweep"
+      ],
+      "reason": "Wave-24 CHK-289: train井 ridge で ΔTVT を学習し PF rate に α混合（α∈{0.15,0.3,0.5}）は tip soft 悪化（最良 a0p15 Δ−12.8 · α↑で壊滅）。学習済み線形 conditional proposal の α言い換え再スイープ禁止。≠F033 Newton · ≠F032 tip-bank ranker。次は CHK-290（ESS+MCMC）または OPS-FINAL2。",
+      "action_types": ["T2", "T3", "T4"],
+      "source_chk": "CHK-289",
+      "date": "2026-07-30"
+    },
+    {
+      "id": "F035",
+      "keywords": [
+        "ess-resample-in-generation",
+        "mcmc-rejuvenation-pf",
+        "ess-threshold-mcmc-sweep",
+        "smc-ess-mcmc-tipsoft"
+      ],
+      "reason": "Wave-24 CHK-290: 生成中 ESS連動 resample + 局所 MCMC rejuvenation は tip soft 未達（最良 ess05_m2 Δ−0.51 · ESS↑でも tip悪化）。ESS×MCMC 言い換え再スイープ禁止。≠F030後段焼なまし。Wave-24 A/B hard20 全滅 → OPS-FINAL2。",
+      "action_types": ["T2", "T3", "T4"],
+      "source_chk": "CHK-290",
+      "date": "2026-07-30"
+    },
+    {
+      "id": "F036",
+      "keywords": [
+        "hard-only-pack-lik-reweight",
+        "late-het-hard-gate-soft",
+        "spike-mask-tipbank-rescore",
+        "tw-local-scale-pack-soft"
+      ],
+      "reason": "Wave-25 CHK-300–304/312: 既存 tip 粒子バンク上の hard専用 尤度再重み（late_het/late_w/短長窓/スパイクマスク/TW局所スケール）と tipバンク内単一シードは tip soft を改善せず（最良温度T0.12でもΔ+0.03、観測系はΔ−7〜−12）。hardゲートしても『同じバンクを別スコアで選ぶ』は足りない。言い換え再スイープ禁止。次は生成側（PN/regime/segment）またはレーン縮小。",
+      "action_types": ["T2", "T3", "T4"],
+      "source_chk": "CHK-300/312",
+      "date": "2026-07-30"
+    },
+    {
+      "id": "F037",
+      "keywords": [
+        "hard-only-pn-md-schedule",
+        "hard-only-regime-pn-vn",
+        "hard-only-seed-budget-realloc",
+        "hard-only-segmented-pf-join",
+        "hard-only-rate-clip-widen"
+      ],
+      "reason": "Wave-25 CHK-306–310: hard専用 tip PF 再生成（PN(MD)スケジュール・着床前後regime・総シード固定予算再配分・小区間独立PF・rate clip）は tip soft 未達（最良≡baseline Δ0 · PN最良Δ−0.01 · segment Δ−1.74）。≠F033 Newton · ≠F026無制約spr。Wave-25 難井レーン閉鎖 → OPS-FINAL2。言い換え再スイープ禁止。",
+      "action_types": ["T2", "T3", "T4"],
+      "source_chk": "CHK-306/310",
+      "date": "2026-07-30"
+    },
+    {
+      "id": "F038",
+      "keywords": [
+        "parallel-relocate-on-twist",
+        "n-fixed-constant-shift-compass",
+        "proxy-soft-rmse-as-relocate-compass",
+        "wave26-relocate-lane"
+      ],
+      "reason": "Wave-26: soft−oracleはねじれ優勢90%·lik/GRとtip-softはranking_failで逆向き·代理LOOはlik以下·MD帯も平行優勢なし·ねじれ局在28%。N固定平行移動・代理コンパス寄せの言い換え再実行禁止。次はOPS-FINAL2のみ。",
+      "action_types": ["T2", "T3", "T4"],
+      "source_chk": "CHK-321/337",
+      "date": "2026-07-30"
+    },
+    {
+      "id": "F039",
+      "keywords": [
+        "twist-family-oracle-ceiling-only",
+        "missing-mask-label-dependent-fix",
+        "median-segment-warp-probe",
+        "wave27-shape-fix-lane"
+      ],
+      "reason": "Wave-27: 欠測/区分は説明力・oracle天井が大きいが欠測はラベル無し検出FAIL。piecewise/warpは検出PASSでもラベル無しmedian寄せprobeがtip soft悪化（Δ−1.08/−0.04）。天井だけを根拠にした形修正厚化・欠測マスク実装・median寄せ言い換え禁止。OPS-FINAL2へ。",
+      "action_types": ["T2", "T3", "T4"],
+      "source_chk": "CHK-345/358/360/359",
+      "date": "2026-07-30"
+    },
+    {
+      "id": "F040",
+      "keywords": [
+        "heel-selfcorr-md-phase-lag",
+        "ps-local-continuity-decay",
+        "alignment-feat-loo-residual-offset",
+        "last-anchor-sequence-baseline-solo",
+        "dz-weak-rate-prior-soft-clip",
+        "particle-window-gr-reweight-additive",
+        "wave28-usable-fix-hunt"
+      ],
+      "reason": "Wave-28 CHK-363–368: 外部ハントの提出可能直し方6仮説は全てT4 NO-GO。heel自己相関→MD位相はΔ≈0〜悪化。PS連続はgap中央0.07でΔ≈0。整合特徴LOO residualは tip pearson≈0.999・soft悪化。last-anchor/TCN代理は tip+6。dZ rate priorは pooled−0.26でも15/20井悪化で非悪化門番FAIL。GR窓再重みは最良≡baseline。言い換え再スイープ禁止。OPS-FINAL2へ。",
+      "action_types": ["T2", "T3", "T4"],
+      "source_chk": "CHK-363/368",
+      "date": "2026-07-30"
+    },
+    {
+      "id": "F041",
+      "keywords": [
+        "wave29-thin-alt-face-s1a-s1b",
+        "wave29-final-post-knob-zero",
+        "soft-to-selector-cliff-ignored",
+        "tiny-tcn-last-anchor-cf-fail-retry",
+        "wave30-soft-preserve-ranker",
+        "soft-bank-final-select-weight",
+        "soft-preserve-pearson-tip-clone"
+      ],
+      "reason": "Wave-29: S1a/S1b門番未達·B8ノブ0。Wave-30 B9 Soft-Preserve: softバンク+Ridge加重は提出経路・別面条件を満たさなかった。禁止対象は、tiny TCN/薄いS1a-S1bの微修正、FINAL後段ノブ、soft-bank選択・加重、soft温存FINAL選択の言い換え再実行に限定する。学習全般、GPU学習、新しい状態空間・目的関数・生成機構は禁止しない。新機構は既存手法との差分とmechanismを明記して別CHKで検証する。",
+      "action_types": ["T2", "T3", "T4"],
+      "source_chk": "CHK-370/373/380/392",
+      "date": "2026-07-30"
+    },
+    {
+      "id": "F042",
+      "keywords": [
+        "mid-face-preserve-final-submit",
+        "overlap-alpha-self-verified-final",
+        "chk458-public-collapse",
+        "selector-mid-as-submission",
+        "461-stack-diagnostic-submit"
+      ],
+      "reason": "CHK-458: 451+overlap α0.50+gold=self_verified で FINAL≠tip を残した診断提出は Public 7.781/7.760（SUB-14 6.269 から +1.5 · SUB-18 learned 7.7 同帯）。E2E mid残存GOでも提出面として壊滅。pack tip-cv改善を根拠に mid≠tip FINAL を提出する経路・460/461（より遠いmid）の追加提出・同型の言い換え診断連打を禁止。許可: tip×薄いパートナー（B0）· Trust tip-cv が tip を抜いた再現可能 FINAL · 提出なしのCV/差分実験。",
+      "action_types": ["T2", "T3", "T4"],
+      "source_chk": "CHK-458",
+      "date": "2026-08-02"
+    },
+    {
+      "id": "F043",
+      "keywords": [
+        "well-alpha-meta-from-absLm",
+        "residual-alpha-md-schedule-swap",
+        "meta-alpha-knn-ridge-deploy",
+        "two-alpha-absLm-rule-residual",
+        "alpha-clip-band-only-residual"
+      ],
+      "reason": "CHK-745/741/736/746: 現L上の残差α政策（|L-m|メタknn/ridge · 2α rule · MD区間 · [0.2,0.45] clip）は tipdist dual 到達不能。meta deploy meanα≈1 で tipdist≈6 · clipは一律0.45で tipdist≥2.5 · 736は tipdist+0.17で near-miss。oracle↔特徴α相関0.08–0.17。L面を変えずα言い換えで dual 再スイープ禁止。許可=688 L再学習 · 692 dump · 新L上residual regrid。",
+      "action_types": ["T2", "T3", "T4"],
+      "source_chk": "CHK-745/741/736/746",
+      "date": "2026-08-04"
+    },
+    {
+      "id": "F044",
+      "keywords": [
+        "hard-sample-weight-l-retrain-mid-collapse",
+        "fold-driver-weight-l1",
+        "resid-drag-weight-l1",
+        "known-q4-weight-l1-v1c",
+        "md-q4-row-weight-l1",
+        "offline-oracle-weight-as-dual-go",
+        "tvt-oof-alone-l1-pass",
+        "weight-l1-e2e-after-dual-nogo"
+      ],
+      "reason": "CHK-761/782/804/802 (+688 無weightも軽 NOGO): tip-cv 上 L retrain で hard/Q4/drag/MD-Q4 行 sample_weight を盛ると L が mid に吸い寄せ（|L-mid|↓）residual mid+α0.35 が悪化。761/782 hard Δ+3.8〜4.0 d|L-m|≈-7.9 · 802 MD-Q4 行 hard Δ+1.79 d|L-m|≈-4.24（本命 B_Q4 も +1.02）· 804 known×Q4 v1c hard Δ+0.74 d|L-m|≈-1.43 · いずれも mid-collapse 族。CPU offline oracle / coverage knee / TVT OOF 改善は live dual と符号不一致。言い換え: v1d 再マップ · 同 hard upweight 格子 · OOF だけで L1 GO · dual NOGO 後の residual E2E Submit。非 weight も F045/F046 参照。",
+      "action_types": ["T3", "T4"],
+      "source_chk": "CHK-761/782/804/802/688",
+      "date": "2026-08-05"
+    },
+    {
+      "id": "F045",
+      "keywords": [
+        "huber-objective-l-retrain",
+        "mae-fair-loss-shape-l1",
+        "lgb-loss-swap-residual-dual",
+        "huber-alpha-grid-residual",
+        "loss-family-after-huber-nogo"
+      ],
+      "reason": "CHK-784 Colab FAST2: LightGBM objective=huber α0.9（no sample_weight）で residual mid+α0.35 dual が hard Δ+6.27 · hybrid +2.86 · d|L−mid| −4.06 · raw L hard RMSE ~26.9。loss 形状いじりは residual 改善にならず L 自体が崩壊。言い換え: Huber α格子 · MAE/Fair/quantile 即差し · loss 形だけの再学習 dual。許可なし（COMP CLOSED）。",
+      "action_types": ["T3", "T4"],
+      "source_chk": "CHK-784",
+      "date": "2026-08-06"
+    },
+    {
+      "id": "F046",
+      "keywords": [
+        "residual-path-soft-l-star",
+        "pack-d-lstar-as-dual-go",
+        "offline-path-oracle-live",
+        "residual-path-reparam-l1",
+        "l-star-blend-retrain"
+      ],
+      "reason": "CHK-781 Kaggle FAST2 residual-path soft L*: live dual hard Δ+0.44 · hybrid +0.19 · d|L−mid| −0.97 · Q4/SSE も悪化。CPU Pack D 地図の L→L* d_pool −3.03 天井は live dual と符号不一致（L4）。offline path 勝ちを dual GO にしない。言い換え: soft 比/温度/blend 再パラメータ · path loss 格子 dual。COMP CLOSED · 再実行禁止。",
+      "action_types": ["T3", "T4"],
+      "source_chk": "CHK-781",
+      "date": "2026-08-06"
+    }
+  ]
+}

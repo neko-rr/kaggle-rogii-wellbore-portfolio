@@ -1,0 +1,22 @@
+{
+  "competition": "rogii-wellbore-geology-prediction",
+  "fetched_at": "2026-07-25T13:50:35Z",
+  "phase": "during-comp",
+  "note": "fetch-solution-intel.py missing; manual CLI equivalent",
+  "leaderboard_top": [
+    {"rank": 1, "team": "shu01", "score": 4.859},
+    {"rank": 2, "team": "Yannan Chen", "score": 4.902},
+    {"rank": 3, "team": "SaintLouis", "score": 5.108},
+    {"rank": 4, "team": "Rishikesh Jani", "score": 5.237},
+    {"rank": 5, "team": "Shrey Gandhi", "score": 5.265},
+    {"rank": 6, "team": "N&A&O&A", "score": 5.283},
+    {"rank": 7, "team": "L & J & A & A", "score": 5.325},
+    {"rank": 8, "team": "tremors", "score": 5.443},
+    {"rank": 9, "team": "yu4u", "score": 5.443},
+    {"rank": 10, "team": "Tucker Arrants", "score": 5.444}
+  ],
+  "formal_writeups": [],
+  "solution_topics": [726465, 707613, 721549, 699853, 717573, 718670, 702474, 711308, 722236, 722041],
+  "alt_lineage_summary": "docs-ja/discussion/20260725-alt-lineage-intel.md",
+  "probe_plan": "docs-ja/discussion/chk185-candidate-ceiling-plan.md"
+}

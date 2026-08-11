@@ -1,0 +1,32 @@
+{
+  // Kaggle コンペ共通: データ探索・Notebook・Markdown 向けの軽量設定
+  "workbench.iconTheme": "vscode-icons",
+  "python.analysis.typeCheckingMode": "basic",
+  "files.autoSave": "afterDelay",
+  "editor.formatOnSave": true,
+  "git.autofetch": true,
+
+  "[markdown]": {
+    "editor.wordWrap": "on"
+  },
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff"
+  },
+
+  "jupyter.askForKernelRestart": false,
+  "notebook.output.scrolling": true,
+
+  "rainbow_csv.enable_auto_csv_lint": true,
+  "rainbow_csv.enable_cursor_position_info": true,
+
+  "files.watcherExclude": {
+    "**/dataset/**": true,
+    "**/input/**": true,
+    "**/data/**": true
+  },
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/.ipynb_checkpoints": true
+  },
+  "cursorpyright.analysis.typeCheckingMode": "basic"
+}

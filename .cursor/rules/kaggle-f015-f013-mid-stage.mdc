@@ -1,0 +1,21 @@
+---
+description: F013/F015 の正しい読み — S1/S2・中間面の過大禁止を防ぐ（全セッション）
+alwaysApply: true
+---
+
+# F013 / F015 — 中間工程の過大禁止禁止
+
+## 必須
+
+1. **F015** = learned / mpkg / before_* 等を **無加工で FINAL（submission）に昇格**することの禁止。  
+   **禁止しない:** S1/S2/S3… の品質改善、ゲート特徴、tip土台＋部分差し替え（504/514型）。
+2. **F013** = tip **離散プロファイル切替**の言い換え再スイープ禁止。  
+   **禁止しない:** SP45/learned を中間材料として使うこと。
+3. 「S1–S2 を打つな」「中間を触るな」と短絡しない。詳細 SSOT: `20260722-rogii-wellbore/docs-ja/f015-f013-correct-reading.md`
+4. S1/S2 不足仮説は `20260722-rogii-wellbore/exp/s1-s2-hypothesis-backlog.md` と `experiment-checklist.md` を読む。
+5. **F042**（全面 mid≠tip 提出）は別物で維持。
+
+## 禁止の言い換え（Agent）
+
+- ❌ 「F015 だから S1/S2 スキップ」
+- ✅ 「F015 だから生中間面を submission にしない。工程改善とゲート利用は可」

@@ -1,0 +1,65 @@
+# 提出ルール — {{COMP_SLUG}}（notebook-output）
+
+> skill: kaggle-submission-validator  
+> submission-profile: **notebook-output**  
+> last-updated: {{COMP_DATE}}
+
+LB 提出直前の検証ルール **SSOT**。  
+**提出方式 SSOT:** `.cursor/skills/_shared/NOTEBOOK-LINKED-SUBMIT.md`
+
+---
+
+## 提出形式
+
+| 項目 | 内容 |
+|---|---|
+| 成果物 | Overview 指定（例: `submission.csv` / `submission.zip`） |
+| **変更禁止** | Agent が列名・ファイル名・ID 規則を勝手に変えない |
+| **標準提出** | **Notebook 紐づけのみを既定とする**（Kaggle UI または CLI `-k` / `-v`） |
+| 禁止に近い | ローカル成果物の **`-f` のみ**（採点は通っても提出 Notebook が履歴に残らず、後からコードを辿れない） |
+
+> 方針: **できるだけ Notebook 紐づけで提出する。** Kaggle 上でコードが見れなくなる zip-only を避ける。
+
+---
+
+## L0-L1（自動）
+
+Code Competition（hidden 再実行）のとき、先に固定成果物コピー専用 NB を弾く:
+
+```powershell
+.\.venv\Scripts\python.exe .\scripts\check-codecomp-submit-kernel.py -p ".\my-notebook\<slug>"
+# 成果物名が Overview と違う場合のみ:
+#   --artifact-names "<Overviewのファイル名>"
+.\scripts\validate-submission.ps1 -ArtifactPath <artifact> -Profile notebook-output -CompInner .\{{COMP_SLUG}}
+```
+
+コンペ固有の機械検証（列・サイズ・禁止 op 等）があれば `scripts/` に追加し、ここにコマンドを追記する。
+
+## L2（手動）
+
+- [ ] Overview / Evaluation の制約を満たす（**提出形式を変えていない**）
+- [ ] `submission-rules.md` の固有条件を満たす
+- [ ] **自 kernel** がコンペデータから E2E 生成（`check-codecomp-submit-kernel.py` PASS）
+- [ ] 固定提出物コピー専用 NB ではない
+- [ ] 提出は UI Submit または `-k <YOUR_USER>/<SLUG> -v N`
+- [ ] 403 時は zip-only に逃げず、自 fork を先に更新する
+## 提出手順（標準）
+
+### A. Kaggle UI（推奨）
+
+1. Notebook Run All → 出力生成
+2. Save Version
+3. validator PASS
+4. **Submit to Competition**
+
+### B. CLI（notebook 紐づけ）
+
+```powershell
+.\scripts\kaggle-cli.ps1 competitions submit {{COMP_SLUG}} `
+  -f <output-name> `
+  -k <USERNAME>/<KERNEL_SLUG> `
+  -v <VERSION> `
+  -m "<説明>"
+```
+
+`-k` は **自 kernel のみ**。他者 slug は 403 の原因。

@@ -1,0 +1,27 @@
+# 提出ルール — {{COMP_SLUG}}（lora）
+
+> skill: kaggle-submission-validator  
+> submission-profile: **lora**  
+> last-updated: {{COMP_DATE}}
+
+## 提出形式
+
+| 項目 | 内容 |
+|---|---|
+| 成果物 | adapter zip（`adapter_config.json` 含む） |
+| **標準提出** | **Notebook 紐づけ**（UI または CLI `-k` / `-v`） |
+| 非推奨 | ローカル zip の **`-f` のみ** |
+
+## L0-L1（自動）
+
+```powershell
+.\scripts\validate-submission.ps1 -ArtifactPath .\submission.zip -Profile lora -CompInner .\{{COMP_SLUG}}
+```
+
+## L2（手動）
+
+- [ ] rank / r がコンペ上限以内
+- [ ] 禁止ベースモデル・データが混入していない（license-ledger）
+- [ ] **Notebook 紐づけ**で提出（403 時 zip-only 禁止）
+
+SSOT: `.cursor/skills/_shared/NOTEBOOK-LINKED-SUBMIT.md`
