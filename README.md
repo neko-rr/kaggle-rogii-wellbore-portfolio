@@ -270,8 +270,9 @@ WIP（`my-notebook` 等）・他者 NB 全文・`exp/work` 実体は **削除済
 ## 参考文献・リンク
 
 - コンペ: [ROGII - Wellbore Geology Prediction](https://www.kaggle.com/competitions/rogii-wellbore-geology-prediction)  
+- 本リポジトリ（公開ポートフォリオ）: [neko-rr/kaggle-rogii-wellbore-portfolio](https://github.com/neko-rr/kaggle-rogii-wellbore-portfolio)  
 - 本リポ内の運用実体: [`.cursor/skills/`](.cursor/skills/) · [`.cursor/rules/`](.cursor/rules/) · [`scripts/`](scripts/)  
-- Private 全史（復旧用・非公開）: `neko-rr/kaggle-rogii-wellbore-geology-prediction`
+- Private 全史（復旧用・非公開）: [`neko-rr/kaggle-rogii-wellbore-geology-prediction`](https://github.com/neko-rr/kaggle-rogii-wellbore-geology-prediction)
 
 ---
 

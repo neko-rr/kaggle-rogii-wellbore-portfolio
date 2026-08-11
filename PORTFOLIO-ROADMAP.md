@@ -1,26 +1,26 @@
-﻿# Portfolio roadmap・亥・髢玖埋蛻・ｊ・・
+# Portfolio roadmap（公開薄切り）
 
-> Private 蜈ｨ蜿ｲ: `neko-rr/kaggle-rogii-wellbore-geology-prediction`・・*阮・＞繝・Μ繝ｼ縺ｧ荳頑嶌縺・push 縺励↑縺・*・・ 
-> 蜑企勁繝ｭ繧ｰ: [PORTFOLIO-CLEANUP-LOG.md](PORTFOLIO-CLEANUP-LOG.md)
+> Private 全史: `neko-rr/kaggle-rogii-wellbore-geology-prediction`（**薄いツリーで上書き push しない**）  
+> 削除ログ: [PORTFOLIO-CLEANUP-LOG.md](PORTFOLIO-CLEANUP-LOG.md)
 
-## 貂・
+## 済
 
-- [x] Wave 0: README / docs / Final notebooks / results ﾂｷ B remote 菫晁ｭｷ  
-- [x] Wave 1縲・: README 蜈・ｮ・ﾂｷ Skills 蜷梧｢ｱ蟆守ｷ・ﾂｷ **繝舌Ν繧ｯ蜑企勁**・・ork / WIP / others / retro-archive 遲会ｼ・ 
-- [x] `docs-ja` ﾂｷ `docs-en` 縺ｯ**縺昴・縺ｾ縺ｾ谿狗ｽｮ**・亥ｼｷ蛻ｶ譌･譛ｬ隱槫喧縺ｪ縺暦ｼ・ 
+- [x] Wave 0: README / docs / Final notebooks / results · B remote 保護  
+- [x] Wave 1〜2: README 充実 · Skills 同梱導線 · **バルク削除**（work / WIP / others / retro-archive 等）  
+- [x] `docs-ja` · `docs-en` は**そのまま残置**（強制日本語化なし）  
 - [x] LICENSE (MIT)
 
-## 譛ｪ・亥・髢・push 譎ゑｼ・
+## 未（公開 push 時）
 
-- [ ] 譁ｰ隕・Public repo ﾂｷ **orphan main 謗ｨ螂ｨ**・・ 縺ｮ蟾ｨ螟ｧ git 螻･豁ｴ繧定ｼ峨○縺ｪ縺・ｼ・ 
-- [ ] 譛邨・scrub ﾂｷ clone 讀懆ｨｼ  
+- [x] 新規 Public repo · **orphan main**（B の巨大 git 履歴なし）  
+- [x] 最終 scrub · clone 検証  
 
-## 蜈ｬ髢九・荳ｭ蠢・
+## 公開の中心
 
-`README.md` ﾂｷ `docs/` ﾂｷ `notebooks/` ﾂｷ `.cursor/skills|rules` ﾂｷ `scripts/` ﾂｷ `20260722-.../docs-ja|docs-en` ﾂｷ `exp` 縺ｮ SSOT md ﾂｷ `retro/*.md`
-
+`README.md` · `docs/` · `notebooks/` · `.cursor/skills|rules` · `scripts/` · `20260722-.../docs-ja|docs-en` · `exp` の SSOT md · `retro/*.md`
 
 ## Public URL
 
 https://github.com/neko-rr/kaggle-rogii-wellbore-portfolio
 
+Private full archive: https://github.com/neko-rr/kaggle-rogii-wellbore-geology-prediction
